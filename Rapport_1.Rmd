@@ -38,6 +38,7 @@ header-includes:
 \tableofcontents
 \newpage
 \section{Introduction}
+allo
 \section{Analyse exploratoire des données}
 \section{Autres sections ?}
 \section{Conclusion}
