@@ -1,0 +1,82 @@
+---
+output: pdf_document
+header-includes:
+- \usepackage[french]{babel}
+- \usepackage{float}
+- \usepackage{titling}
+---
+\begin{titlingpage}
+  \rightline{Équipe 2}
+  \centering
+  \Large
+  Travail fait par \\
+  \vspace{1cm}
+  \text{Matis Brassard-Verrier (111 182 740) }\\
+  \text{Alyson Marquis (111 183 605)}\\
+  \text{Alexis Picard (111 182 200)}\\
+  \text{Samuel Provencher (111 181 794)}\\
+  \vfill
+  \Large
+  Apprentissage statistique en actuariat \\
+  \vspace{0.5cm}
+  \text{ACT-3114}
+  \vfill
+  \Large
+  Rapport 1\\
+  \vfill
+  \Large
+  Présenté à\\
+  \vspace{0.5cm}
+  \text{Marie-Pier Côté}
+  \vfill
+  \Large
+  École d'actuariat\\
+  \text{Université Laval}\\
+  \text{27 février 2020}
+\end{titlingpage}
+
+\tableofcontents
+\newpage
+\section{Introduction}
+\section{Analyse exploratoire des données}
+\section{Autres sections ?}
+\section{Conclusion}
+\section{Bibliographie}
+\section{Annexe}
+— **Le nom du jeu de données**
+
+kc_house_sales (House sales in King County, USA)
+
+— **La source**
+
+https://www.kaggle.com/harlfoxem/housesalesprediction
+
+— **Une brève description des données (environ deux phrases)**
+
+Cet ensemble de données contient les prix de vente des maisons pour « King County », qui comprend Seattle. Il comprend les maisons vendues entre mai 2014 et mai 2015.
+
+— **La variable réponse et son type**
+
+« House sales » (prix de vente des maisons) -Variable numérique continue
+
+— **La mesure d’exposition (s’il n’y en a pas, le mentionner)**
+
+Il n’y en a pas
+
+— **Cinq variables explicatives et leur type**
+
+Bedrooms : Nombre de chambres – Variable numérique discrète
+
+Bathrooms : Nombre de salles de bain (0.5 est une toilette sans douche) - Variable numérique continue
+
+sqft_living : Superficie de l’espace de vie en pieds carrés - Variable numérique discrète
+
+sqft_lot : Superficie du terrain en pieds carrés - Variable numérique discrète
+
+floors : Nombre d'étages - Variable numérique continue
+
+et plusieurs autres variables bien sur!
+
+— **La taille du jeu de données (nombre d’observations et de variables)**
+
+21 613 lignes pour 21 colonnes (variables)
