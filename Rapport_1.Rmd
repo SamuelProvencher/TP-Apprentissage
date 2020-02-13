@@ -38,13 +38,22 @@ header-includes:
 \tableofcontents
 \newpage
 \section{Introduction}
-allo
+
+\newpage
 \section{Analyse exploratoire des données}
+
+\newpage
 \section{Autres sections ?}
+
+\newpage
 \section{Conclusion}
-allo
+
+\newpage
 \section{Bibliographie}
+
+\newpage
 \section{Annexe}
+\subsection{Présentation du jeu de données soumise dans le forum}
 — **Le nom du jeu de données**
 
 kc_house_sales (House sales in King County, USA)
@@ -82,3 +91,5 @@ et plusieurs autres variables bien sur!
 — **La taille du jeu de données (nombre d’observations et de variables)**
 
 21 613 lignes pour 21 colonnes (variables)
+
+\subsection{Code R}
