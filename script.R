@@ -31,5 +31,37 @@ donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz
 
 library(ggplot2)
 
-ggplot(donnees, aes(x=price, y=bedrooms)) + geom_boxplot()
+ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=factor(bedrooms), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=factor(bathrooms), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=sqft_living, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=sqft_lot, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=factor(floors), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=factor(waterfront), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=factor(view), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_bar(stat="identity") + theme_bw()
+
+ggplot(donnees, aes(x=sqft_above, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=sqft_basement, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=yr_built, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=factor(yr_renovated), y=log(price))) + geom_boxplot() + theme_bw()
+
+ggplot(donnees, aes(x=lat, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+ggplot(donnees, aes(x=long, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+
 
