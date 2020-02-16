@@ -1,12 +1,14 @@
 ############ TRAVAIL PRATIQUE
 
+#Importation####
+
 donnees <- read.csv("kc_house_data.csv")
+donnees.init <- read.csv("kc_house_data.csv")
+
+#Prétraitement####
 
 str(donnees)
 summary(donnees)
-
-<<<<<<< HEAD
-donnees.init <- read.csv("kc_house_data.csv")
 
 donnees <- donnees[!donnees$bathrooms == 0,]
 
@@ -25,10 +27,9 @@ jour <- substr(donnees$date, nchar(donnees$date)-1, nchar(donnees$date))
 
 donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz="UTC")
 
-=======
-# ANALYSE EXPLORATOIRE DES DONNEES
+#ANALYSE EXPLORATOIRE DES DONNEES####
 
 library(ggplot2)
 
 ggplot(donnees, aes(x=price, y=bedrooms)) + geom_boxplot()
->>>>>>> 64f53102939063c229f9f39ffb2ca2a33fd7729c
+
