@@ -55,7 +55,7 @@ ggplot(donnees[which(donnees$sqft_lot<300000),], aes(x=sqft_lot)) + geom_area(st
 
 ggplot(donnees, aes(x=factor(floors))) + geom_bar() + theme_bw()
 
-ggplot(donnees, aes(x=factor(waterfront))) + geom_bar + theme_bw() +
+ggplot(donnees, aes(x=factor(waterfront))) + geom_bar() + theme_bw()
     
 
 #Bivariée
