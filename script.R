@@ -10,13 +10,11 @@ donnees.init <- read.csv("kc_house_data.csv")
 str(donnees)
 summary(donnees)
 
-donnees <- donnees[!donnees$bathrooms == 0,]
+donnees <- donnees[!donnees$bathrooms == 0,] #10 cas
+donnees <- donnees[!donnees$bedrooms == 0,] #6 cas
+#13 cas ont bathrooms = 0 et bedrooms = 0 en meme temps
 
 donnees$bedrooms[which(donnees$bedrooms ==33)] <- as.integer(3)
-
-donnees <- donnees[!donnees$bedrooms == 0,]
-
-donnees$reno <- ifelse(donnees$yr_renovated != 0, as.integer(1), as.integer(0))
 
 donnees <- donnees[,-c(1,17)] #enlève ID et zipcode
 
@@ -30,8 +28,16 @@ donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz
 
 sam <- donnees[which(donnees$yr_built ==1900),] #sam vérifie
 
+# donnees$reno <- ifelse(donnees$yr_renovated != 0, as.integer(1), as.integer(0))
+
+age_reno <- ifelse(donnees$yr_renovated==0, 116, pmax(as.numeric(annee) - donnees$yr_renovated, 0)) #6 données à -1 sinon
+
+library(Hmisc)
+donnees$reno <- as.vector(cut2(age_reno, c(0, 5, 10, 115))) #renommer les niveaux (on peut rajouter des intervalles)
+
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0)
 
+#Ajouter une variable downtown
 #lat et long, on prendra la heat map à matis
 
 library(ggmap)
@@ -59,15 +65,17 @@ summary(donnees)
 
 library(ggplot2)
 #Univariée
-ggplot(donnees, aes(x=date)) + geom_density() + theme_bw()
+ggplot(donnees, aes(x=date)) + geom_density() + theme_bw() #saisonalité dans la vente de maison
 
 ggplot(donnees, aes(x=price)) + geom_density() + theme_bw()
 
-ggplot(donnees, aes(x=log(price))) + geom_density() + theme_bw()
+ggplot(donnees, aes(x=log(price))) + geom_density() + theme_bw() #log pour variable réponse est mieux
 
 ggplot(donnees, aes(x=factor(bedrooms))) + geom_bar() + theme_bw()
 
 ggplot(donnees, aes(x=factor(bathrooms))) + geom_bar() + theme_bw()
+
+ggplot(donnees, aes(x=factor(floor(bathrooms)))) + geom_bar() + theme_bw() #floor = arrondi à l'entier inférieur
 
 ggplot(donnees, aes(x=sqft_living)) + geom_area(stat = "bin") + theme_bw()
 
@@ -76,7 +84,28 @@ ggplot(donnees[which(donnees$sqft_lot<300000),], aes(x=sqft_lot)) + geom_area(st
 ggplot(donnees, aes(x=factor(floors))) + geom_bar() + theme_bw()
 
 ggplot(donnees, aes(x=factor(waterfront))) + geom_bar() + theme_bw()
-    
+
+ggplot(donnees, aes(x=factor(view))) + geom_bar() + theme_bw()
+
+ggplot(donnees, aes(x=factor(condition))) + geom_bar() + theme_bw()
+
+ggplot(donnees, aes(x=factor(grade))) + geom_bar() + theme_bw()
+
+ggplot(donnees, aes(x=sqft_above)) + geom_area(stat = "bin") + theme_bw()
+
+ggplot(donnees, aes(x=sqft_basement)) + geom_area(stat = "bin") + theme_bw() #weird
+
+ggplot(donnees, aes(x=yr_built)) + geom_density() + theme_bw()
+
+ggplot(donnees[which(donnees$yr_renovated!=0),], aes(x=yr_renovated)) + geom_density() + theme_bw()
+
+ggplot(donnees, aes(x=sqft_living15)) + geom_area(stat = "bin") + theme_bw()
+
+ggplot(donnees, aes(x=sqft_lot15)) + geom_area(stat = "bin") + theme_bw()
+
+ggplot(donnees, aes(x=reno)) + geom_bar() + theme_bw()
+
+ggplot(donnees, aes(x=age)) + geom_area(stat = "bin") + theme_bw() # On voit bien le maximum à 115 ans (Maison construite en 1900)
 
 #Bivariée
 
