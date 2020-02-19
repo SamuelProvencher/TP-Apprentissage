@@ -32,6 +32,26 @@ sam <- donnees[which(donnees$yr_built ==1900),] #sam vérifie
 
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0)
 
+#lat et long, on prendra la heat map à matis
+
+library(ggmap)
+register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
+
+map<-get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
+ggmap(map, extent = "device")
+
+#heatmapdata <- data.frame(cbind(log(donnees$price), donnees$lat, donnees$long ))
+#colnames(heatmapdata) <- c("logprice", "lat", "long")
+
+ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
+                                                aes(x = long, y = lat, z = log(price)),
+                                                fun = mean, alpha = 0.6, bins = 30) + 
+    scale_fill_gradient(name = "Log(Price)", low = "green", high = "red") +
+    #annotate("segment", x=min(donnees$long), xend=max(donnees$long), y=47.52, yend = 47.52, colour="black", lty = 2, lwd = 1.3) +
+    annotate("rect", xmin = -122.3, xmax = -122.15, ymin = 47.52, ymax = 47.7, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
+    annotate("text", x= -122, y = 47.6, label = "Centre-ville")
+
+## manque le expensive data...
 str(donnees)
 summary(donnees)
 
@@ -92,19 +112,7 @@ ggplot(donnees, aes(x=lat, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
 ggplot(donnees, aes(x=long, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
-#lat et long, on prendra la heat map à matis
-
-library(ggmap)
-register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
-
-map <- get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
-ggmap(map, extent = "device")
-
-ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
-                                                aes(x = long, y = lat, z = log(price)),
-                                                fun = mean, alpha = 0.6, bins = 30) + 
-    scale_fill_gradient(name = "Log(Price)", low = "green", high = "red") +
-    #annotate("segment", x=min(donnees$long), xend=max(donnees$long), y=47.52, yend = 47.52, colour="black", lty = 2, lwd = 1.3) +
-    annotate("rect", xmin = -122.3, xmax = -122.15, ymin = 47.52, ymax = 47.7, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
-    annotate("text", x= -122, y = 47.6, label = "Centre-ville")
-    
+# ACP
+library(FactoMineR)
+acp <- PCA(donnees[,-1],scale.unit = F)
+acp <- PCA(donnees[,-1])
