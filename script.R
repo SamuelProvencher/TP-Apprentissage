@@ -114,5 +114,23 @@ ggplot(donnees, aes(x=long, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
 # ACP
 library(FactoMineR)
-acp <- PCA(donnees[,-1],scale.unit = F)
-acp <- PCA(donnees[,-1])
+acp <- PCA(donnees[,c(-1, -14, -15, -16, -17)])
+acp$eig
+
+library(factoextra)
+fviz_screeplot(acp, ncp=20)
+
+donnees <- cbind(donnees, acp$ind$coord)
+ggplot() +
+    geom_point(data = donnees,
+               aes(Dim.1, Dim.2, col = price)) +
+    xlab("Dimension 1") +
+    ylab("Dimension 2")  +
+    theme_minimal() +
+    scale_color_gradient(low="green", high="red", trans = "log")
+
+fviz_pca_var(acp,
+             col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE)
+
