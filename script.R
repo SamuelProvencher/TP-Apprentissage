@@ -78,10 +78,8 @@ donnees$expensive_area <- sapply(1:nrow(donnees),
 str(donnees)
 summary(donnees)
 
-#ANALYSE EXPLORATOIRE DES DONNEES####
-
+#### ANALYSE EXPLORATOIRE DES DONNEES - Univariée ####
 library(ggplot2)
-#### Univariée ####
 ggplot(donnees, aes(x=date)) + geom_density() + theme_bw() #saisonalité dans la vente de maison
 
 ggplot(donnees, aes(x=price)) + geom_density() + theme_bw() #asymétrie
@@ -127,7 +125,7 @@ ggplot(donnees, aes(x=age)) + geom_area(stat = "bin") + theme_bw() # On voit bie
 ggplot(donnees, aes(x=factor(expensive_area))) + geom_bar() + theme_bw()
 
 
-#### ggplot Bivariée ####
+#### ANALYSE EXPLORATOIRE DES DONNEES - Bivariée ####
 
 ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
@@ -214,7 +212,7 @@ library(DT)
 poids <- acp$svd$V
 datatable(poids, options = list(dom = 't'))
 
-# À voir si ce sera utile dans rapport, pt utile de changer la couleur
+# À voir si ce sera utile pour expliquer dans rapport, pt utile de changer la couleur
 donnees_view <- cbind(donnees, acp$ind$coord)
 library(leaflet)
 pal1 <- colorNumeric(
