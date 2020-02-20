@@ -1,18 +1,18 @@
 ############ TRAVAIL PRATIQUE
 
-#Importation####
+#### Importation####
 
 donnees <- read.csv("kc_house_data.csv")
 donnees.init <- read.csv("kc_house_data.csv")
 
-#Prétraitement####
+#### Prétraitement ####
 
 str(donnees)
 summary(donnees)
 
 donnees <- donnees[!donnees$bathrooms == 0,] #10 cas
-donnees <- donnees[!donnees$bedrooms == 0,] #6 cas
-#13 cas ont bedrooms = 0
+donnees <- donnees[!donnees$bedrooms == 0,] #13 cas
+#6 cas ont bedrooms = 0 et bathrooms = 0
 #Si on considère que c'est des maisons/jumelé, on trouve ça peu logique de conserver les 6 cas sans chambres (s'il y avait appart, ça pourrait faire du sens)
 
 donnees$bedrooms[which(donnees$bedrooms ==33)] <- as.integer(3)
@@ -36,8 +36,6 @@ nrow(donnees[which(donnees$yr_built ==1903),])
 nrow(donnees[which(donnees$yr_built ==1904),])
 nrow(donnees[which(donnees$yr_built ==1905),])
 # Autre hypothèse : 87 maisons réellement construites en 1900 (pas de données avant)
-
-# donnees$reno <- ifelse(donnees$yr_renovated != 0, as.integer(1), as.integer(0))
 
 age_reno <- ifelse(donnees$yr_renovated==0, 116, pmax(as.numeric(annee) - donnees$yr_renovated, 0)) #6 données à -1 sinon
 # 116 : Maison qui n'ont jamais été rénovées, c'est pour que la fonction cut2 fonctionne
@@ -83,7 +81,7 @@ summary(donnees)
 #ANALYSE EXPLORATOIRE DES DONNEES####
 
 library(ggplot2)
-#Univariée
+#### Univariée ####
 ggplot(donnees, aes(x=date)) + geom_density() + theme_bw() #saisonalité dans la vente de maison
 
 ggplot(donnees, aes(x=price)) + geom_density() + theme_bw() #asymétrie
@@ -129,7 +127,7 @@ ggplot(donnees, aes(x=age)) + geom_area(stat = "bin") + theme_bw() # On voit bie
 ggplot(donnees, aes(x=factor(expensive_area))) + geom_bar() + theme_bw()
 
 
-#Bivariée
+#### ggplot Bivariée ####
 
 ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
@@ -171,32 +169,97 @@ ggplot(donnees, aes(x=lat, y=log(price))) + geom_point(alpha=0.4) + theme_bw() #
 
 ggplot(donnees, aes(x=long, y=log(price))) + geom_point(alpha=0.4) + theme_bw() #Utiliser la heatmap
 
-# Nettoyage des colonnes inutiles ####
+#### Nettoyage des colonnes inutiles ####
 
-donnees <- donnees[,-c(which(colnames(donnees)=="id"), which(colnames(donnees)=="date"), 
+donnees2 <- donnees[,-c(which(colnames(donnees)=="id"), which(colnames(donnees)=="date"), 
                        which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
                        which(colnames(donnees)=="zipcode"), which(colnames(donnees)=="lat"), 
                        which(colnames(donnees)=="long"))]
 
-# ACP ####
+#### ACP ####
 library(FactoMineR)
-acp <- PCA(donnees[,c(-1, -14, -15, -16, -17)])
-acp$eig
+acp <- PCA(donnees2[,c(-which(names(donnees2)=="reno"))])
+acp$eig # valeurs propres, var expliquée et % var expliquée
 
 library(factoextra)
 fviz_screeplot(acp, ncp=20)
 
-donnees <- cbind(donnees, acp$ind$coord)
+#visualisation coordonnées Dim 1 et 2
+donnees_acp <- cbind(donnees2, acp$ind$coord)
 ggplot() +
-    geom_point(data = donnees,
+    geom_point(data = donnees_acp,
                aes(Dim.1, Dim.2, col = price)) +
     xlab("Dimension 1") +
     ylab("Dimension 2")  +
     theme_minimal() +
     scale_color_gradient(low="green", high="red", trans = "log")
 
+#visualisation coordonnées Dim 3 et 4
+ggplot() +
+    geom_point(data = donnees_acp,
+               aes(Dim.3, Dim.4, col = price)) +
+    xlab("Dimension 3") +
+    ylab("Dimension 4")  +
+    theme_minimal() +
+    scale_color_gradient(low="green", high="red", trans = "log")
+
+## Autre façon de visualiser comportant la contribution, comment on fait pour voir autres Dims que 1 et 2?
 fviz_pca_var(acp,
              col.var = "contrib",
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE)
 
+# tentative visualisation en tableau qu'on peut ordonner, Matis es-tu capable de faire en sorte d'afficher les 15 composantes avec les titres des axes?
+library(DT)
+poids <- acp$svd$V
+datatable(poids, options = list(dom = 't'))
+
+# À voir si ce sera utile dans rapport, pt utile de changer la couleur
+donnees_view <- cbind(donnees, acp$ind$coord)
+library(leaflet)
+pal1 <- colorNumeric(
+    palette = "RdYlBu",
+    domain = donnees_view$Dim.1,
+    reverse = TRUE)
+pal2 <- colorNumeric(
+    palette = "RdYlBu",
+    domain = donnees_view$Dim.2,
+    reverse = TRUE)
+
+leaflet(donnees_view) %>% 
+    addTiles() %>%
+    #addProviderTiles(providers$CartoDB.Positron) %>%
+    addCircleMarkers(lng = ~long, 
+                     lat = ~lat, 
+                     color = ~pal1(Dim.1),
+                     radius = 1,
+                     opacity = 1, 
+                     fill = TRUE, 
+                     fillColor = ~pal1(Dim.1), 
+                     fillOpacity = 1,
+                     group = 'Composante 1'
+    ) %>%
+    addCircleMarkers(lng = ~long, 
+                     lat = ~lat, 
+                     color = ~pal2(Dim.2),
+                     radius = 1,
+                     opacity = 1, 
+                     fill = TRUE, 
+                     fillColor = ~pal2(Dim.2), 
+                     fillOpacity = 1,
+                     group = 'Composante 2'
+    ) %>%
+    addLegend("bottomright", pal = pal1, values = ~Dim.1,
+              title = "CP1",
+              opacity = 1,
+              group = 'Composante 1'
+    ) %>%
+    addLegend("bottomleft", pal = pal2, values = ~Dim.2,
+              title = "CP2",
+              opacity = 1,
+              group = 'Composante 2'
+    ) %>%
+    addLayersControl(
+        baseGroups = c("Composante 1", "Composante 2"),
+        options = layersControlOptions(collapsed = FALSE)
+    )
