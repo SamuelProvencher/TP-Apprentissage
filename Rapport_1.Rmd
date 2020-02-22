@@ -38,9 +38,16 @@ header-includes:
 \tableofcontents
 \newpage
 \section{Introduction}
+Dans le cadre du travail,
 
 \newpage
 \section{Analyse exploratoire des données}
+Tout d'abord, afin de bien comprendre la base de données choisie, une analyse exploratoire des données est nécessaire. La présente section traite des erreurs décelées dans le jeu de données et fournit les informations pertinentes sur les variables exogènes ainsi que sur la variable réponse.
+
+La visualisation des données à l'étude a permis de déceler quelques erreurs. Tout d'abord, $10$ observations avaient un nombre de salle de bain égal à $0$. Étant donné qu'il est impossible d'avoir une maison sans salle de bain et que ces observations représentent qu'un faible pourcentage du jeu de données, il a été convenu de supprimer ces $10$ observations. De plus, une observation avait $33$ chambres. En se fiant à l'aire habitable de la maison ainsi qu'aux nombre de salles de bain de cette maison, il a été convenu que le nombre de chambres avait subi une erreur de frappe. C'est pourquoi le nombre de chambres pour cette observation a été mis à $3$. 
+
+- Nb de chambres à 0
+- Année de maison à 1900
 
 \newpage
 \section{Autres sections ?}
@@ -53,7 +60,6 @@ header-includes:
 
 \newpage
 \section{Annexe}
-\subsection{Présentation du jeu de données soumise dans le forum}
 — **Le nom du jeu de données**
 
 kc_house_sales (House sales in King County, USA)
@@ -92,4 +98,3 @@ et plusieurs autres variables bien sur!
 
 21 613 lignes pour 21 colonnes (variables)
 
-\subsection{Code R}
