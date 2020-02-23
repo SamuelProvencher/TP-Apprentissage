@@ -37,17 +37,67 @@ header-includes:
 
 \tableofcontents
 \newpage
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+donnees <- read.csv("kc_house_data.csv")
+
+donnees <- donnees[!donnees$bathrooms == 0,] 
+donnees <- donnees[!donnees$bedrooms == 0,]
+
+donnees$bedrooms[which(donnees$bedrooms ==33)] <- as.integer(3)
+
+donnees$date <- substr(donnees$date,1,8)
+
+annee <- substr(donnees$date,1,nchar(donnees$date)-4)
+mois <- substr(donnees$date,nchar(donnees$date)-3,nchar(donnees$date)-2)
+jour <- substr(donnees$date, nchar(donnees$date)-1, nchar(donnees$date))
+
+donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz="UTC")
+
+age_reno <- ifelse(donnees$yr_renovated==0, 116, pmax(as.numeric(annee) - donnees$yr_renovated, 0))
+
+library(Hmisc)
+donnees$reno <- factor(as.vector(cut2(age_reno, c(0, 10, 115)))) 
+levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové")
+
+donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0)
+```
 \section{Introduction}
-Dans le cadre du travail, le prix de ventes des maisons dans la région de Seattle (King County) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de ventes d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utilisé par une compagnie d'assurance pour des enjeux en assurance habitation ou en gestion des risques (prêts hypothécaires). Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section.
+Dans le cadre du travail, le prix de ventes des maisons dans la région de Seattle (King County) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de ventes d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utilisé par une compagnie d'assurance pour des enjeux en assurance habitation ou en gestion des risques (prêts hypothécaires). Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section. **Biographie pour la source**
 
 \newpage
 \section{Analyse exploratoire des données}
-Tout d'abord, afin de bien comprendre la base de données choisie, une analyse exploratoire des données est nécessaire. La présente section traite des erreurs décelées dans le jeu de données et fournit les informations pertinentes sur les variables exogènes ainsi que sur la variable réponse.
+Tout d'abord, afin de bien comprendre la base de données choisie, une analyse exploratoire des données est nécessaire. La présente section traite des erreurs décelées dans le jeu de données et fournit une informations pertinentes sur les variables exogènes ainsi que sur la variable réponse sous forme d'une analyse univariée et bivariée.
 
+\subsection{Traitement des erreurs}
 La visualisation des données à l'étude a permis de déceler quelques erreurs. Tout d'abord, $10$ observations avaient un nombre de salle de bain égal à $0$. Étant donné qu'il est impossible d'avoir une maison sans salle de bain et que ces observations représentent qu'un faible pourcentage du jeu de données, il a été convenu de supprimer ces $10$ observations. De plus, une observation avait $33$ chambres. En se fiant à l'aire habitable de la maison ainsi qu'aux nombre de salles de bain de cette maison, il a été convenu que le nombre de chambres avait subi une erreur de frappe. C'est pourquoi le nombre de chambres pour cette observation a été mis à $3$. 
 
 - Nb de chambres à 0
 - Année de maison à 1900
+
+\subsection{Analyse univariée}
+
+\subsection{Analyse bivariée}
+\newpage
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+library(gridExtra)
+
+bed <- ggplot(donnees, aes(x=factor(bedrooms), y=log(price))) + geom_boxplot() + theme_bw()
+
+bath <- ggplot(donnees, aes(x=factor(floor(bathrooms)), y=log(price))) + geom_boxplot() + theme_bw()
+
+flo <- ggplot(donnees, aes(x=factor(floors), y=log(price))) + geom_boxplot() + theme_bw()
+
+wat <- ggplot(donnees, aes(x=factor(waterfront), y=log(price))) + geom_boxplot() + theme_bw()
+
+vi <- ggplot(donnees, aes(x=factor(view), y=log(price))) + geom_boxplot() + theme_bw()
+
+con <- ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() + theme_bw()
+
+gra <- ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_boxplot() + theme_bw()
+
+grid.arrange(bed,bath,flo,wat,vi,con,gra,nrow = 4, ncol=2)
+
+```
 
 \newpage
 \section{Autres sections ?}

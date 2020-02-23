@@ -131,7 +131,7 @@ ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
 ggplot(donnees, aes(x=factor(bedrooms), y=log(price))) + geom_boxplot() + theme_bw()
 
-ggplot(donnees, aes(x=factor(round(bathrooms)), y=log(price))) + geom_boxplot() + theme_bw()
+ggplot(donnees, aes(x=factor(floor(bathrooms)), y=log(price))) + geom_boxplot() + theme_bw()
 
 ggplot(donnees, aes(x=sqft_living, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
 
