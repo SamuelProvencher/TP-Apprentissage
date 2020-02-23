@@ -95,6 +95,21 @@ grid.arrange(pri, Lpri ,nrow = 1, ncol=2)
 
 ```
 
+
+\subsubsection{Variable date de vente}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+library(gridExtra)
+
+date <- ggplot(donnees, aes(x=date)) + geom_density() + theme_bw() #saisonalité dans la vente de maison
+
+grid.arrange(date ,nrow = 1, ncol=1)
+
+```
+
+
+\subsection{Analyse bivariée}
+\newpage
+\subsubsection{Heatmap}
 ```{r echo=FALSE, message=FALSE,warning=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 
 library(ggmap)
@@ -118,19 +133,6 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
 
 ```
 
-\subsubsection{Variable date de vente}
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
-library(gridExtra)
-
-date <- ggplot(donnees, aes(x=date)) + geom_density() + theme_bw() #saisonalité dans la vente de maison
-
-grid.arrange(date ,nrow = 1, ncol=1)
-
-```
-
-
-\subsection{Analyse bivariée}
-\newpage
 \subsubsection{Date en fonction du log du prix}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
