@@ -38,7 +38,7 @@ header-includes:
 \tableofcontents
 \newpage
 \section{Introduction}
-Dans le cadre du travail,
+Dans le cadre du travail, le prix de ventes des maisons dans la région de Seattle (King County) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de ventes d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utilisé par une compagnie d'assurance pour des enjeux en assurance habitation ou en gestion des risques (prêts hypothécaires). Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section.
 
 \newpage
 \section{Analyse exploratoire des données}
