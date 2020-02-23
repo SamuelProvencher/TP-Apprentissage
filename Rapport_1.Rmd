@@ -60,6 +60,14 @@ donnees$reno <- factor(as.vector(cut2(age_reno, c(0, 10, 115))))
 levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové")
 
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0)
+
+xmin <-  -122.4
+xmax <-  -122
+ymin <-  47.5
+ymax <-  47.72 ## coordonnées du centre ville
+
+donnees$expensive_area <- sapply(1:nrow(donnees),
+                                   function(i) as.numeric(donnees$lat[i] >= ymin & donnees$lat[i] <= ymax & donnees$long[i] >= xmin & donnees$long[i] <= xmax))
 ```
 \section{Introduction}
 Dans le cadre du travail, le prix de ventes des maisons dans la région de Seattle (King County) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de ventes d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utilisé par une compagnie d'assurance pour des enjeux en assurance habitation ou en gestion des risques (prêts hypothécaires). Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section. **Biographie pour la source**
@@ -69,15 +77,70 @@ Dans le cadre du travail, le prix de ventes des maisons dans la région de Seatt
 Tout d'abord, afin de bien comprendre la base de données choisie, une analyse exploratoire des données est nécessaire. La présente section traite des erreurs décelées dans le jeu de données et fournit une informations pertinentes sur les variables exogènes ainsi que sur la variable réponse sous forme d'une analyse univariée et bivariée.
 
 \subsection{Traitement des erreurs}
-La visualisation des données à l'étude a permis de déceler quelques erreurs. Tout d'abord, $10$ observations avaient un nombre de salle de bain égal à $0$. Étant donné qu'il est impossible d'avoir une maison sans salle de bain et que ces observations représentent qu'un faible pourcentage du jeu de données, il a été convenu de supprimer ces $10$ observations. De plus, une observation avait $33$ chambres. En se fiant à l'aire habitable de la maison ainsi qu'aux nombre de salles de bain de cette maison, il a été convenu que le nombre de chambres avait subi une erreur de frappe. C'est pourquoi le nombre de chambres pour cette observation a été mis à $3$. 
+La visualisation des données à l'étude a permis de déceler quelques erreurs. Tout d'abord, $10$ observations avaient un nombre de salle de bain égal à $0$. Étant donné qu'il est impossible d'avoir une maison sans salle de bain et que ces observations représentent qu'un faible pourcentage du jeu de données, il a été convenu de supprimer ces $10$ observations. Après avoir enlevé ces $10$ observations, il a été remarqué que $6$ maisons comptaient $0$ chambre. En analysant de plus près ces cas, il a été possible de constater que toutes les autres colonnes étaient remplis, donc il ne s'agit pas de données manquantes. De plus, comme ces données contenaient toutes un espace de terrains et qu'elles représentaient une faible proportion, il a été décidé de les enlever. En outre, une observation avait $33$ chambres. En se fiant à l'aire habitable de la maison ainsi qu'aux nombre de salles de bain de cette maison, il a été convenu que le nombre de chambres avait subi une erreur de frappe. C'est pourquoi le nombre de chambres pour cette observation a été mis à $3$. 
 
-- Nb de chambres à 0
-- Année de maison à 1900
+
+- *Année de maison à 1900 (à traiter dans l'analyse univarié)*
 
 \subsection{Analyse univariée}
+\subsubsection{Variable réponse}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
+library(gridExtra)
+
+pri <- ggplot(donnees, aes(x=price)) + geom_density() + theme_bw() #asymétrie
+
+Lpri <- ggplot(donnees, aes(x=log(price))) + geom_density() + theme_bw() #log pour variable réponse est mieux
+
+grid.arrange(pri, Lpri ,nrow = 1, ncol=2)
+
+```
+
+```{r echo=FALSE, message=FALSE,warning=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
+
+library(ggmap)
+register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
+
+map<-get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
+#ggmap(map, extent = "device")
+
+#heatmapdata <- data.frame(cbind(log(donnees$price), donnees$lat, donnees$long ))
+#colnames(heatmapdata) <- c("logprice", "lat", "long")
+
+
+ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
+                                                aes(x = long, y = lat, z = log(price)),
+                                                fun = mean, alpha = 0.6, bins = 100) + 
+    scale_fill_gradient(name = "Log(Price)", low = "green", high = "red") +
+    #annotate("segment", x=min(donnees$long), xend=max(donnees$long), y=47.52, yend = 47.52, colour="black", lty = 2, lwd = 1.3) +
+    annotate("rect", xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
+    annotate("text", x= -122.2, y = 47.6, label = "Zone urbaine")
+
+
+```
+
+\subsubsection{Variable date de vente}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+library(gridExtra)
+
+date <- ggplot(donnees, aes(x=date)) + geom_density() + theme_bw() #saisonalité dans la vente de maison
+
+grid.arrange(date ,nrow = 1, ncol=1)
+
+```
+
 
 \subsection{Analyse bivariée}
 \newpage
+\subsubsection{Date en fonction du log du prix}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
+library(gridExtra)
+
+Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+grid.arrange(Lpri,nrow = 1, ncol=1)
+
+```
+\subsubsection{Variables ..}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -87,6 +150,14 @@ bath <- ggplot(donnees, aes(x=factor(floor(bathrooms)), y=log(price))) + geom_bo
 
 flo <- ggplot(donnees, aes(x=factor(floors), y=log(price))) + geom_boxplot() + theme_bw()
 
+grid.arrange(bed,bath,flo,nrow = 2, ncol=2)
+
+```
+\subsubsection{Variables ..}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+library(gridExtra)
+
+
 wat <- ggplot(donnees, aes(x=factor(waterfront), y=log(price))) + geom_boxplot() + theme_bw()
 
 vi <- ggplot(donnees, aes(x=factor(view), y=log(price))) + geom_boxplot() + theme_bw()
@@ -95,7 +166,43 @@ con <- ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() 
 
 gra <- ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_boxplot() + theme_bw()
 
-grid.arrange(bed,bath,flo,wat,vi,con,gra,nrow = 4, ncol=2)
+grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
+
+```
+\subsubsection{Variables ..}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+library(gridExtra)
+
+
+a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+b <- ggplot(donnees, aes(x=log(sqft_lot), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+c <- ggplot(donnees, aes(x=log(sqft_above), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+
+grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
+
+```
+\subsubsection{Variables ..}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=4.5, fig.width=6, fig.align="center"}
+library(gridExtra)
+
+
+a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+
+b <- ggplot(donnees, aes(x=factor(reno), y=log(price))) + geom_boxplot() + theme_bw()
+
+c <- ggplot(donnees, aes(x=factor(expensive_area), y=log(price))) + geom_boxplot() + theme_bw()
+
+
+grid.arrange(a,b,c,nrow = 2, ncol=2)
 
 ```
 
@@ -107,6 +214,8 @@ grid.arrange(bed,bath,flo,wat,vi,con,gra,nrow = 4, ncol=2)
 
 \newpage
 \section{Bibliographie}
+
+1. Kaggle (2017). House sales in King County, USA. Récupéré de https://www.kaggle.com/harlfoxem/housesalesprediction.
 
 \newpage
 \section{Annexe}
