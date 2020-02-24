@@ -206,11 +206,12 @@ grid.arrange(a,b,c,nrow = 2, ncol=2)
 \section{Création de variables explicatives}
 D'après les données accessibles, il a semblé pertinent d'en utiliser certaines afin de créer d'autres variables explicatives qui seront plus utiles afin de déterminer le prix de vente des maisons de King County.
 
-La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. Avec l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci.
+La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci.
+**COmments:On pourrait dire que c’est plus facile analyser l’age vs yr_built, que c’est plus représentatif. Ca s’expliquerait mieux à des patrons. (T’es pas obligé d’ajouter ca si t’aimes pas!)**
 
-La deuxième variable qui a été créée est celle du nombre d'années depuis la dernière rénovation de la maison (*reno*). Cette variable a d'ailleurs été calculée de la même manière que l'âge de la maison décrite précédemment grâce à la date de vente de la maison de la variable *date* et l'année de rénovation de la maison de la variable *yr_renovated*. Par contre, étant donné le nombre élevé de maisons n'ayant jamais été rénové depuis leur construction dans le jeu de données initiales (20 699 comparativement à 914). Il a été décidé d'en faire une variable catégorielle ordinale. Soit une variable qui se divise en 3 sous-groupes, le premier étant *10 ans et moins* pour les maisons ayant eu une rénovation dans les 10 dernières années précédant leur vente, le deuxième étant *10 ans et plus* pour les maisons ayant eu une rénovation il y a 10 années ou plus et le dernier étant *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction.
+La deuxième variable qui a été créée est celle du nombre d'années depuis la dernière rénovation de la maison (*reno*). Cette variable a d'ailleurs été calculée de la même manière que l'âge de la maison décrite précédemment. La date de vente de la maison de la variable *date* et l'année de rénovation de la maison de la variable *yr_renovated* ont été utilisé. Par contre, étant donné le nombre élevé de maisons n'ayant jamais été rénové dans le jeu de données initiales ($20 699$ comparativement à $914$), il a été décidé d'en faire une variable catégorielle ordinale. Il s'agit d'une variable qui se divise en 3 sous-groupes, le premier étant *10 ans et moins* pour les maisons ayant eu une rénovation dans les 10 années précédant leur vente, le deuxième étant *10 ans et plus* pour les maisons ayant eu une rénovation il y a 10 années ou plus et le dernier étant *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction.
 
-La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). En effet, les variables réprésentant la latitude et la longitude sur la map monde de la maison indique en d'autres mots la position de la maison sur la planète Terre. En utilisant toutes ses données de position des maisons, il est alors facile de les situées sur une carte de la région de King County, la région à l'étude dans ce rapport. VOici d'ailleurs un aperçu des positions de chaque maison vendues à King County:
+La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). En effet, les variables réprésentant la latitude et la longitude de la maison sur la carte thermique ci-dessous (**comments:faire référence ex. figure 3**) indique la position de la maison sur la planète Terre. En utilisant toutes ces données de position des maisons, il est alors facile de les situées sur une carte de la région de King County, la région à l'étude dans ce rapport. Voici d'ailleurs un aperçu des positions de chaque maison vendue à King County.
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
 library(ggmap)
 register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
@@ -226,7 +227,7 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
                                                 fun = mean, alpha = 0.6, bins = 100) + 
     scale_fill_gradient(name = "Log(Prix)", low = "green", high = "red") + ggtitle("Position des maisons vendues de King County")
 ```
-En regardant la **map** (bon mot?) affichée précédement, il est possible de voir qu'une bonne partie des maisons les plus couteuses se situe au nord-ouest de la map près de l'eau et ce qui semble être la zone urbaine en comparaison avec ce que nous pouvons voir de la map. Il est d'ailleurs possible d'identifier la région la plus couteuse en allant chercher les coordonnées des bonnes latitudes et longitudes.
+En regardant la carte thermique affichée ci-dessus, il est possible de voir qu'une bonne partie des maisons les plus couteuses se situe au nord-ouest de la région près de l'eau. Cette région semble être la zone urbaine. Il est d'ailleurs possible d'identifier la région la plus couteuse en allant chercher les coordonnées des bonnes latitudes et longitudes.
 
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
 ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
@@ -236,7 +237,7 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
     annotate("rect", xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
     annotate("text", x= -122.2, y = 47.6, label = "Zone urbaine")+ ggtitle("Position des maisons vendues de King County ")
 ```
-La variable de la région la plus couteuse en est donc une catégorielle qui renvoie 1 lorsque la maison est située dans la région déterminée comme étant la plus couteuse et renvoie 0 lorsque la maison ne se situe pas dans la région la plus couteuse.
+La variable de la région la plus couteuse est une variable catégorielle qui renvoie $1$ lorsque la maison est située dans la zone urbaine et renvoie $0$ lorsque la maison ne se situe pas dans la zone urbaine.
 
 \newpage
 \section{Réduction de la dimensionalité}
