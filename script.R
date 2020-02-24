@@ -66,7 +66,6 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
                                                 aes(x = long, y = lat, z = log(price)),
                                                 fun = mean, alpha = 0.6, bins = 100) + 
     scale_fill_gradient(name = "Log(Price)", low = "green", high = "red") +
-    #annotate("segment", x=min(donnees$long), xend=max(donnees$long), y=47.52, yend = 47.52, colour="black", lty = 2, lwd = 1.3) +
     annotate("rect", xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
     annotate("text", x= -122.2, y = 47.6, label = "Zone urbaine")
 
