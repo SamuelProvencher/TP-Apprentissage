@@ -207,10 +207,16 @@ fviz_pca_var(acp,
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE)
 
-# tentative visualisation en tableau qu'on peut ordonner, Matis es-tu capable de faire en sorte d'afficher les 15 composantes avec les titres des axes?
-library(DT)
-poids <- acp$svd$V
-datatable(poids, options = list(dom = 't'))
+# Visualisation coordonnées
+contrib <- data.frame(acp$var$coord[,1:4])
+contrib$carac <- rownames(contrib)
+contrib.long <- reshape2::melt(contrib)
+
+ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
+    geom_bar(stat="identity",position=PositionDodge)+
+    facet_grid(~variable)+
+    theme(legend.position="top",axis.text.x = element_text(angle = 90))+
+    coord_flip()
 
 # À voir si ce sera utile pour expliquer dans rapport, pt utile de changer la couleur
 donnees_view <- cbind(donnees, acp$ind$coord)
