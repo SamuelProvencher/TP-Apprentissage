@@ -210,6 +210,11 @@ grid.arrange(a,b,c,nrow = 2, ncol=2)
 
 \newpage
 \section{Création de variables explicatives}
+D'après les données accessibles, il a semblé pertinent d'en utiliser certaines afin de créer d'autres variables explicatives qui seront plus utiles afin de déterminer le prix de vente des maisons de King County.
+
+La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. Avec l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci.
+
+La deuxième variable qui a été créée est celle du nombre d'années depuis la dernière rénovation de la maison (*reno*). Cette variable a d'ailleurs été calculée de la même manière que l'âge de la maison décrite précédemment grâce à la date de vente de la maison de la variable *date* et l'année de rénovation de la maison de la variable *yr_renovated*. Par contre, étant donné le nombre élevé de maisons n'ayant jamais été rénové depuis leur construction dans le jeu de données initiales (20 699 comparativement à 914). Il a été décidé d'en faire une variable catégorielle ordinale. Soit une variable qui se divise en 3 sous-groupes, le premier étant *10 ans et moins* pour les maisons ayant eu une rénovation dans les 10 dernières années précédant leur vente, le deuxième étant *10 ans et plus* pour les maisons ayant eu une rénovation il y a 10 années ou plus et le dernier étant *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction.
 
 \newpage
 \section{Réduction de la dimensionalité}
