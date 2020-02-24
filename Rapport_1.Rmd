@@ -70,7 +70,7 @@ donnees$expensive_area <- sapply(1:nrow(donnees),
                                    function(i) as.numeric(donnees$lat[i] >= ymin & donnees$lat[i] <= ymax & donnees$long[i] >= xmin & donnees$long[i] <= xmax))
 ```
 \section{Introduction}
-Dans le cadre du travail, le prix de ventes des maisons dans la région de Seattle (King County) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de ventes d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utilisé par une compagnie d'assurance pour des enjeux en assurance habitation ou en gestion des risques (prêts hypothécaires). Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section. **Biographie pour la source**
+Dans le cadre du travail, le prix de ventes des maisons dans la région de Seattle (King County) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de ventes d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utile pour différentes raisons. Comme la somme assurée d'une maison a un lien très fortement proportionnel à son prix de vente, une compagnie d'assurance pourrait être intéressée de modéliser le prix de vente de maisons dans des nouveaux développements immobiliers afin de tenter de prédire les futures soumissions d'assurance habitation et d'offrir des offres personnalisées aux acheteurs de ces nouvelles maisons. Dans un autre contexte, au niveau de la gestion des risques, certains assureurs ont un portefeuille de prêts hypothécaires ou utilisent des produits dérivés sur prêts hypothécaires pour se couvrir du risque ("hedging"). Ainsi, il pourrait être intéressant d'avoir un estimé des montants de prêts hypothécaires dans une région donné en se basant sur le prix de vente des maisons pour mieux gérer le risque de la compagnie. La pertinence de trouver cette varaible qu'est le prix de ventes des maisons devient alors fort intéressante. Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section. **Biographie pour la source**
 
 \newpage
 \section{Analyse exploratoire des données}
@@ -209,7 +209,10 @@ grid.arrange(a,b,c,nrow = 2, ncol=2)
 ```
 
 \newpage
-\section{Autres sections ?}
+\section{Création de variables explicatives}
+
+\newpage
+\section{Réduction de la dimensionalité}
 
 \newpage
 \section{Conclusion}
