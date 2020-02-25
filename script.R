@@ -207,11 +207,18 @@ ggplot() +
     theme_minimal() +
     scale_color_gradient(low="green", high="red", trans = "log")
 
-## Autre façon de visualiser comportant la contribution, comment on fait pour voir autres Dims que 1 et 2?
+## Autre façon de visualiser comportant la contribution pour Dims que 1 et 2
 fviz_pca_var(acp,
              col.var = "contrib",
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-             repel = TRUE)
+             repel = T)
+
+## Autre façon de visualiser comportant la contribution pour Dims que 3 et 4
+fviz_pca_var(acp,axes = c(3,4),
+             col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = T)
+
 
 # Visualisation coordonnées
 contrib <- data.frame(acp$var$coord[,1:4])
