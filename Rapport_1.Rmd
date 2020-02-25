@@ -81,6 +81,81 @@ La visualisation des données à l'étude a permis de déceler quelques erreurs.
 
 
 \subsection{Analyse univariée}
+La base de données initiales comptaient $20$ variables explicatives. Or, certaines de ces variables n'étaient pas pertinentes dans la modélisation du prix de vente des maisons. Ainsi, $2$ variables explicatives ont été retirées du jeu de données, soit le numéro d'identification de la vente (*ID*) et le code postal (*zipcode*). Le code postal a été retiré, car le jeu de données contient d'autres variables plus précises sur la localisation des différentes maisons. De plus, la variable *Date* a été mise sous le format suivant : année-jour-mois. Voici d'ailleurs un tableau qui présente les variables explicatives retenues ainsi qu'une brève description de celles-ci.
+
+|   Variables explicatives |     Descriptions                                                    |      
+| :----------------------: |:-------------------------------------------------------------------:| 
+|         Date             |  Date de la vente                                                   |     
+|         Bedrooms         |  Nombres de chambres                                                |     
+|         Bathrooms        |  Nombres de salles de bain ($0.5$ lorsqu'il n'y pas de douche)      |     
+|         Sqft_living      |                                                                     | 
+|         Sqft_lot         |                                                                     | 
+|         Floors           |  Nombre d'étages                                                    |  
+|         Waterfront       |Indique si la maison a une vue sur l'eau ($1$ si oui, $0$ autrement) |     
+|         View             |  Qualité de la vue extérieure allant de $0$ à $4$                   |     
+|         Condition        | Condition de la maison allant de $1$ à $5$                          |     
+|         Grade            |Qualité de la contrustion et de la conception allant de $1$ à $13$   | 
+|         Sqft_above       |                                                                     | 
+|         Sqft_basement    |                                                                     |                          
+|         Yr_built         |  Année de construction                                              | 
+|         Yr_renovated     |  Année de rénovation ($0$ si jamais rénovée)                        | 
+|         Lat              |  Latitude                                                           | 
+|         Long             |  Longitude                                                          | 
+|         Sqft_living15    |                                                                     |   
+|         Sqft_lot15       |                                                                     | 
+
+
+Pour poursuivre, le tableau ci-dessous présente les caractéristiques des variables explicatives. blabla
+
+| Variables explicatives |     Minimum                  |     Moyenne                   |    Maximum                   |     Écart-type  | 
+| :--------------------: |:----------------------------:| :----------------------------:| :---------------------------:| :--------------:|  
+|         Bedrooms       |`r min(donnees$bedrooms)`     | `r mean(donnees$bedrooms)`    |`r max(donnees$bedrooms)`     |`r sd(donnees$bedrooms)`|   
+|         Bathrooms      |`r min(donnees$bathrooms)`    |`r mean(donnees$bathrooms)`    |`r max(donnees$bathrooms)`    |`r sd(donnees$bathrooms)`|       
+|         Sqft_living    |`r min(donnees$sqft_living)`  |`r mean(donnees$sqft_living)` |`r max(donnees$sqft_living)`  |`r sd(donnees$sqft_living)`|     
+|         Sqft_lot       |`r min(donnees$sqft_lot)`     | `r mean(donnees$sqft_lot)`    |`r max(donnees$sqft_lot)`     | `r sd(donnees$sqft_lot)` |      
+|         Floors         |`r min(donnees$floors)`       |`r mean(donnees$floors)`      |`r max(donnees$floors)`       |`r sd(donnees$floors)`|          
+|         Waterfront     |`r min(donnees$waterfront)`   |`r mean(donnees$waterfront)`  |`r max(donnees$waterfront)`   |`r sd(donnees$waterfront)`|      
+|         View           |`r min(donnees$view)`         |`r mean(donnees$view)`        |`r max(donnees$view)`         | `r sd(donnees$view)`  |         
+|         Condition      |`r min(donnees$condition)`    |`r mean(donnees$condition)`   |`r max(donnees$condition)`    |`r sd(donnees$condition)`|   
+|         Grade          |`r min(donnees$grade)`        |`r mean(donnees$grade)`       |`r max(donnees$grade)`        | `r sd(donnees$grade)`   |     
+|         Sqft_above     |`r min(donnees$sqft_above)`   |`r mean(donnees$sqft_above)`  |`r max(donnees$sqft_above)`   | `r sd(donnees$sqft_above)`|     
+|         Sqft_basement  |`r min(donnees$sqft_basement)`|`r mean(donnees$sqft_basement)`|`r max(donnees$sqft_basement)`|`r sd(donnees$sqft_basement)`|  
+|         Yr_built       |`r min(donnees$yr_built)`     |`r mean(donnees$yr_built)`    |`r max(donnees$yr_built)`     | `r sd(donnees$yr_built)`    |   
+|         Yr_renovated   |`r min(donnees$yr_renovated)` |`r mean(donnees$yr_renovated)`|`r max(donnees$yr_renovated)` | `r sd(donnees$yr_renovated)`|   
+|         Lat            |`r min(donnees$lat)`          |`r mean(donnees$lat)`         | `r max(donnees$lat)`         | `r sd(donnees$lat)`         |    
+|         Long           |`r min(donnees$long)`         |`r mean(donnees$long)`        | `r max(donnees$long)`        |`r sd(donnees$long)`      |      
+|    Sqft_living15  |`r min(donnees$sqft_living15)`|`r mean(donnees$sqft_living15)`| `r max(donnees$sqft_living15)`| `r sd(donnees$sqft_living15)`|     
+|         Sqft_lot15     |`r min(donnees$sqft_lot15)`   |`r mean(donnees$sqft_lot15)`  |`r max(donnees$sqft_lot15)`    | `r sd(donnees$sqft_lot15)`  |
+
+Maintenant, analysons de plus près certaines de ces variables.
+\newline
+Le graphique suivant présente la densité de la variable *Date*.
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+library(gridExtra)
+library(ggplot2)
+
+date <- ggplot(donnees, aes(x=date)) + geom_density() + theme_bw()
+   
+
+grid.arrange(date ,nrow = 1, ncol=1)
+
+```
+Il est possible de constater qu'il semble y avoir un effet de saisonnalité dans la vente de maisons. En effet, l'été semble être une période où il y a beaucoup de ventes de maisons tandis que l'hiver semble être une période où la vente de maisons est moins fréquente.
+\newline
+Le graphique suivant illustre la distribution de l'année de construction.
+
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+
+year <- ggplot(donnees, aes(x=yr_built)) + geom_density() + theme_bw()
+          
+grid.arrange(year ,nrow = 1, ncol=1)
+
+```
+
+Tout d'abord, il est possible de constater que la base de données contient plus de maisons récentes que de vieilles maisons. On semble remarquer $2$ augmentations majeures sur le graphique. En effet, il y a une hausse vers les années $1950$, puis une seconde vers le début des années $2000$. De plus, on constate une légère concentration de maisons construites en $1900$. Plus précisément, $87$ maisons ont été construites en $1900$.
+
+
+
 \subsubsection{Variable réponse}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
