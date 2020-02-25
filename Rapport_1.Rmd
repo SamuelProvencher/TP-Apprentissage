@@ -88,21 +88,21 @@ La base de données initiales comptaient $20$ variables explicatives. Or, certai
 |         Date             |  Date de la vente                                                   |     
 |         Bedrooms         |  Nombres de chambres                                                |     
 |         Bathrooms        |  Nombres de salles de bain ($0.5$ lorsqu'il n'y pas de douche)      |     
-|         Sqft_living      |                                                                     | 
-|         Sqft_lot         |                                                                     | 
+|         Sqft_living      |  Superficie habitable en pieds carrés                              | 
+|         Sqft_lot         |  Superficie du terrain en pieds carrés                            | 
 |         Floors           |  Nombre d'étages                                                    |  
 |         Waterfront       |Indique si la maison a une vue sur l'eau ($1$ si oui, $0$ autrement) |     
 |         View             |  Qualité de la vue extérieure allant de $0$ à $4$                   |     
 |         Condition        | Condition de la maison allant de $1$ à $5$                          |     
 |         Grade            |Qualité de la contrustion et de la conception allant de $1$ à $13$   | 
-|         Sqft_above       |                                                                     | 
-|         Sqft_basement    |                                                                     |                          
+|         Sqft_above       |  Superficie habitable au-dessus du niveau du sol en pieds carrés    | 
+|         Sqft_basement    |  Superficie habitable du sous-sol en pieds carrés                   |         
 |         Yr_built         |  Année de construction                                              | 
 |         Yr_renovated     |  Année de rénovation ($0$ si jamais rénovée)                        | 
 |         Lat              |  Latitude                                                           | 
 |         Long             |  Longitude                                                          | 
-|         Sqft_living15    |                                                                     |   
-|         Sqft_lot15       |                                                                     | 
+|         Sqft_living15    | Superficie habitable moyenne en pieds carrés des 15 plus proches voisins |   
+|         Sqft_lot15       |  Superficie moyenne du terrain en pieds carrés des 15 plus proches voisins | 
 
 
 Pour poursuivre, le tableau ci-dessous présente les caractéristiques des variables explicatives. blabla
@@ -134,7 +134,11 @@ Le graphique suivant présente la densité de la variable *Date*.
 library(gridExtra)
 library(ggplot2)
 
-date <- ggplot(donnees, aes(x=date)) + geom_density() + theme_bw()
+date <- ggplot(donnees, aes(x=date)) + geom_density() +
+  ggtitle("Distribution des ventes de maisons dans l'années") +
+  xlab("Date") + ylab("Densité") +
+  theme_bw() + #asymétrie
+  theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=8))
    
 
 grid.arrange(date ,nrow = 1, ncol=1)
@@ -146,7 +150,12 @@ Le graphique suivant illustre la distribution de l'année de construction.
 
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
 
-year <- ggplot(donnees, aes(x=yr_built)) + geom_density() + theme_bw()
+year <- ggplot(donnees, aes(x=yr_built)) + geom_density() +
+  ggtitle("Distribution des années de construction") +
+  xlab("Année de construction") + ylab("Densité") +
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=8))
+
           
 grid.arrange(year ,nrow = 1, ncol=1)
 
@@ -166,31 +175,15 @@ pri <- ggplot(donnees, aes(x=price)) + geom_density() +
   ggtitle("Distribution du prix de vente des maisons") +
   xlab("Prix de vente des maisons (USD)") + ylab("Densité") +
   theme_bw() + #asymétrie
-  theme(plot.title = element_text(hjust = 0.5, size = 7))
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
 Lpri <- ggplot(donnees, aes(x=log(price))) + geom_density() + 
   ggtitle("Distribution du logarithme du prix de vente des maisons") +
   xlab("Logarithme du prix de vente des maisons (USD)") + ylab("Densité") +
   theme_bw() + #log pour variable réponse est mieux
-  theme(plot.title = element_text(hjust = 0.5, size = 7))
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
 grid.arrange(pri, Lpri ,nrow = 1, ncol=2)
-
-```
-
-
-\subsubsection{Variable date de vente}
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
-library(gridExtra)
-library(grid)
-
-date <- ggplot(donnees, aes(x=date)) + geom_density() + 
-  ggtitle("Distribution des ventes de maisons dans l'année") +
-  xlab("Moment de l'année") + ylab("Densité") +
-  theme_bw() + #saisonalité dans la vente de maison
-  theme(plot.title = element_text(hjust = 0.5, size = 10))
-
-grid.arrange(date ,nrow = 1, ncol=1)
 
 ```
 
@@ -198,7 +191,7 @@ grid.arrange(date ,nrow = 1, ncol=1)
 \subsection{Analyse bivariée}
 \newpage
 \subsubsection{Heatmap}
-```{r echo=FALSE, message=FALSE,warning=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
+```{r echo=FALSE, message=FALSE,warning=FALSE,fig.pos='H', fig.height=3, fig.width=9, fig.align="center"}
 
 library(ggmap)
 register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
@@ -225,7 +218,7 @@ Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) +
   ggtitle("Logarithme du prix de vente des maisons selon le moment de l'année") +
   xlab("Moment de l'année") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=8,))
 
 grid.arrange(Lpri,nrow = 1, ncol=1)
 
@@ -235,73 +228,125 @@ grid.arrange(Lpri,nrow = 1, ncol=1)
 library(gridExtra)
 
 bed <- ggplot(donnees, aes(x=factor(bedrooms), y=log(price))) + geom_boxplot() + 
-  ggtitle("Logarithme du prix de vente des maisons selon le nombre de chambres") +
+  ggtitle("Effet du nombre de chambres sur le prix de vente d'une maison") +
   xlab("Nombre de chambres") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-bath <- ggplot(donnees, aes(x=factor(floor(bathrooms)), y=log(price))) + geom_boxplot() + 
-  ggtitle("Logarithme du prix de vente des maisons selon le nombre de salles de bain complètes") +
+bath <- ggplot(donnees, aes(x=factor(floor(bathrooms)), y=log(price))) + geom_boxplot() + #Floor ou round ici
+  ggtitle("Effet du nombre de salles de bain complètes sur le prix de vente d'une maison") +
   xlab("Nombre de salles de bain complètes") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 flo <- ggplot(donnees, aes(x=factor(floors), y=log(price))) + geom_boxplot() + 
-  ggtitle("Logarithme du prix de vente des maisons selon le nombre d'e chambres'étages") +
+  ggtitle("Effet du nombre d'étages sur le prix de vente d'une maison") +
   xlab("Nombre d'étages") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 grid.arrange(bed,bath,flo,nrow = 2, ncol=2)
 
 ```
-\subsubsection{Variables ..}
+\subsubsection{Variables waterfront, view, condition et grade}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
 
-wat <- ggplot(donnees, aes(x=factor(waterfront), y=log(price))) + geom_boxplot() + theme_bw()
+wat <- ggplot(donnees, aes(x=factor(waterfront), y=log(price))) + geom_boxplot() +
+  ggtitle("Effet du bord de l'eau sur le prix de vente d'une maison") +
+  xlab("Bord de l'eau") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-vi <- ggplot(donnees, aes(x=factor(view), y=log(price))) + geom_boxplot() + theme_bw()
+vi <- ggplot(donnees, aes(x=factor(view), y=log(price))) + geom_boxplot() +
+  ggtitle("Effet de la vue sur le prix de vente d'une maison") +
+  xlab("Vue") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-con <- ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() + theme_bw()
+con <- ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() +
+  ggtitle("Effet de la condition de la maison sur le prix de vente d'une maison") +
+  xlab("Condition de la maison") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-gra <- ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_boxplot() + theme_bw()
+gra <- ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_boxplot() +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
 
 ```
-\subsubsection{Variables ..}
+\subsubsection{Variables de superficie}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
 
-a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
-b <- ggplot(donnees, aes(x=log(sqft_lot), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+b <- ggplot(donnees, aes(x=log(sqft_lot), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
-c <- ggplot(donnees, aes(x=log(sqft_above), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+c <- ggplot(donnees, aes(x=log(sqft_above), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
-d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
-e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
-f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
 
 grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
 
 ```
-\subsubsection{Variables ..}
+\subsubsection{Variables age, reno et expensive_area}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=4.5, fig.width=6, fig.align="center"}
 library(gridExtra)
 
 
-a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) + theme_bw()
+a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-b <- ggplot(donnees, aes(x=factor(reno), y=log(price))) + geom_boxplot() + theme_bw()
+b <- ggplot(donnees, aes(x=factor(reno), y=log(price))) + geom_boxplot() +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-c <- ggplot(donnees, aes(x=factor(expensive_area), y=log(price))) + geom_boxplot() + theme_bw()
+c <- ggplot(donnees, aes(x=factor(expensive_area), y=log(price))) + geom_boxplot() +
+  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 
 grid.arrange(a,b,c,nrow = 2, ncol=2)
