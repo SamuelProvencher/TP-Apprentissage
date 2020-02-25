@@ -117,7 +117,7 @@ library(gridExtra)
 library(ggplot2)
 
 date <- ggplot(donnees, aes(x=date)) + geom_density() +
-  ggtitle("Distribution des ventes de maisons dans l'années") +
+  ggtitle("Distribution des ventes de maisons dans l'année") +
   xlab("Date") + ylab("Densité") +
   theme_bw() + #asymétrie
   theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=8))
@@ -153,21 +153,24 @@ library(gridExtra)
 
 #https://stackoverflow.com/questions/30026887/plot-title-at-bottom-of-plot-using-ggplot2 pour mettre en-dessous
 
-pri <- ggplot(donnees, aes(x=price)) + geom_density() + 
+pri <- ggplot(donnees, aes(x=price/1000000)) + geom_density() + ##Pour que le pas de graduation soit beau
   ggtitle("Distribution du prix de vente des maisons") +
-  xlab("Prix de vente des maisons (USD)") + ylab("Densité") +
+  xlab("Prix de vente des maisons (M$)") + ylab("Densité") +
   theme_bw() + #asymétrie
   theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
 Lpri <- ggplot(donnees, aes(x=log(price))) + geom_density() + 
   ggtitle("Distribution du logarithme du prix de vente des maisons") +
-  xlab("Logarithme du prix de vente des maisons (USD)") + ylab("Densité") +
+  xlab("Logarithme du prix de vente des maisons") + ylab("Densité") +
   theme_bw() + #log pour variable réponse est mieux
   theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
 grid.arrange(pri, Lpri ,nrow = 1, ncol=2)
 
 ```
+Lorsqu'on regarde le graphique de gauche, où aucune transformation logarithmique n'a été effectué sur la variable du prix, il possible de remarquer que la distribution a une forte asymétrie à droite. Cela a pour effet de décaler la distribution à gauche de la médiane et d'étaler la queue de la distribution vers la droite. Ainsi, dans cette représentation graphique, un grand nombre d'observation est regroupé dans des prix plus faibles.
+
+Pour pallier à cette asymétrie, la transformation logarithmique a été effectué sur la variable réponse. Le résultat est présenté sur le graphique de droite. Il est possible de constater que la distribution dans ce graphique est symétrique et qu'elle s'approche de la forme d'une loi normale. Ainsi, il sera plus facile de modéliser le logarithme et d'analyser les résultats.
 
 
 \subsection{Analyse bivariée}
@@ -186,7 +189,7 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
     scale_fill_gradient(name = "Log(Price)", low = "green", high = "red") +
     annotate("rect", xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
     annotate("text", x= -122.2, y = 47.6, label = "Zone urbaine") +
-  ggtitle("King County, USA") + labs(x = "Longitude", y = "Latitude") +
+  ggtitle("King County, USA") +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -196,7 +199,7 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
 
-Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) + 
+Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.1) + 
   ggtitle("Logarithme du prix de vente des maisons selon le moment de l'année") +
   xlab("Moment de l'année") + ylab("Logarithme du prix de vente") +
   theme_bw() +
@@ -205,6 +208,7 @@ Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.4) +
 grid.arrange(Lpri,nrow = 1, ncol=1)
 
 ```
+Le graphique ci-dessus montre qu'il n'y a pas de relation linéaire entre le moment de la vente de la maison et le logarithme du prix obtenu. En effet, peu importe la date, le logarithme du prix semble distribué normalement et la variance des obseravations est constantes dans le temps. Il est intéressant de remarquer que les transactions sont fort probablement regroupées par semaine (lundi au vendredi) dû à l'horaire des bureaux de notaire, ce qui veut dire qu'aucune ou peu de transactions sont conclues le week-end.
 \subsubsection{Variables bedrooms, bathrooms et floors}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
@@ -215,9 +219,9 @@ bed <- ggplot(donnees, aes(x=factor(bedrooms), y=log(price))) + geom_boxplot() +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-bath <- ggplot(donnees, aes(x=factor(floor(bathrooms)), y=log(price))) + geom_boxplot() + #Floor ou round ici
-  ggtitle("Effet du nombre de salles de bain complètes sur le prix de vente d'une maison") +
-  xlab("Nombre de salles de bain complètes") + ylab("Logarithme du prix de vente") +
+bath <- ggplot(donnees, aes(x=factor(round(bathrooms)), y=log(price))) + geom_boxplot() + #Floor ou round ici
+  ggtitle("Effet du nombre de salles de bain sur le prix de vente d'une maison") +
+  xlab("Nombre de salles de bain") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
@@ -227,9 +231,13 @@ flo <- ggplot(donnees, aes(x=factor(floors), y=log(price))) + geom_boxplot() +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-grid.arrange(bed,bath,flo,nrow = 2, ncol=2)
+#grid.arrange(bed,bath,flo,nrow = 2, ncol=2)
+grid.arrange(bed, bath, grid::nullGrob(), flo, grid::nullGrob(),
+                        layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
 
 ```
+Le constat général de ces trois graphiques est que plus ces variables prennent une valeur élevée, plus le logarithme du prix augmente. Il s'agit d'un constat assez intuitif, donc ce n'est pas surprenant. Un second constat est qu'il y a une plus grande volatilité pour de faibles valeurs de ces trois variables. En effet, cela est attribuable au fait qu'il y a un grand nombre d'observations pour de faibles valeurs. Pour les valeurs plus à droite dans les graphiques, c'est plus dure d'analyser, car les cas sont beaucoup plus rares. Le dernier constat à relever est au niveau de la variable *bathrooms*. À l'aide du graphique de cette variable ci-haut, il est possible de constater que l'impact des salles de bains sur la variable réponse est plus important que l'impact des deux autres variables en raison de la pente plus prononcée. 
+
 \subsubsection{Variables waterfront, view, condition et grade}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
@@ -267,71 +275,73 @@ grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
 library(gridExtra)
 
 
-a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price), col = reno)) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la superficie habitable sur le prix de vente d'une maison") +
+  xlab("Superficie habitable (Pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 b <- ggplot(donnees, aes(x=log(sqft_lot), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet de la superficie du terrain sur le prix de vente d'une maison") +
+  xlab("Superficie du terrain (Pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 c <- ggplot(donnees, aes(x=log(sqft_above), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet de la superficie des étages supérieurs sur le prix de vente d'une maison") +
+  xlab("Superficie des étages supérieurs (Pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet de la superficie du sous-sol sur le prix de vente d'une maison") +
+  xlab("Superficie du sous-sol") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet de la superficie habitable du voisinage sur le prix de vente d'une maison") +
+  xlab("Superficie habitable du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet de la superficie du terrain du voisinage sur le prix de vente d'une maison") +
+  xlab("Superficie du terrain du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 
 grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
 
 ```
-\subsubsection{Variables age, reno et expensive_area}
+\subsubsection{Variables age, reno et expensive area}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=4.5, fig.width=6, fig.align="center"}
 library(gridExtra)
 
 
-a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) + 
+  ggtitle("Effet de l'âge de la construction sur le prix de vente d'une maison") +
+  xlab("Âge de la construction") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-b <- ggplot(donnees, aes(x=factor(reno), y=log(price))) + geom_boxplot() +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+b <- ggplot(donnees, aes(x=reno, y=log(price))) + geom_boxplot() + coord_flip() +
+  ggtitle("Effet des rénovations sur le prix de vente d'une maison") +
+  xlab("Rénovations") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 c <- ggplot(donnees, aes(x=factor(expensive_area), y=log(price))) + geom_boxplot() +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet de la localisation sur le prix de vente d'une maison") +
+  xlab("Localisation") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 
-grid.arrange(a,b,c,nrow = 2, ncol=2)
+#grid.arrange(a,b,c,nrow = 2, ncol=2)
+grid.arrange(b, c, grid::nullGrob(), a, grid::nullGrob(),
+                        layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
 
 ```
 
