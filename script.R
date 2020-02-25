@@ -185,7 +185,7 @@ fviz_screeplot(acp, ncp=20)
 cormat <- cor(donnees2[,c(-which(names(donnees2)=="reno"))],method = "pearson")
 library(reshape2)
 cormat.long <- melt(cormat)
-ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value))+
+ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
     theme(axis.text.x = element_text(angle = 90))
 
 #visualisation coordonnées Dim 1 et 2
