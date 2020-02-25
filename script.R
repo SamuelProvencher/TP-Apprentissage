@@ -181,6 +181,13 @@ acp$eig # valeurs propres, var expliquée et % var expliquée
 library(factoextra)
 fviz_screeplot(acp, ncp=20)
 
+#Corrélation variables, si possible changer la couleur du graphique (bonne couleur, ex: NDC ACP)
+cormat <- cor(donnees2[,c(-which(names(donnees2)=="reno"))],method = "pearson")
+library(reshape2)
+cormat.long <- melt(cormat)
+ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
+    theme(axis.text.x = element_text(angle = 90))
+
 #visualisation coordonnées Dim 1 et 2
 donnees_acp <- cbind(donnees2, acp$ind$coord)
 ggplot() +
