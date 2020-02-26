@@ -26,8 +26,8 @@ jour <- substr(donnees$date, nchar(donnees$date)-1, nchar(donnees$date))
 
 donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz="UTC")
 
-sam <- donnees[which(donnees$yr_built ==1900),] #Hypothèse MP : NA #Par contre ça ne semble pas être des NAs, mais bien que l'âge des maisons a été cappé à 115
-nrow(sam)
+maison_1900 <- donnees[which(donnees$yr_built ==1900),] #Hypothèse MP : NA #Par contre ça ne semble pas être des NAs, mais bien que l'âge des maisons a été cappé à 115
+nrow(maison_1900)
 # 87 cas
 nrow(donnees[which(donnees$yr_built ==1901),])
 # vs 29 en 1901, donc théoriquement 87-29=58 maisons construites avant 1900. Pas énorme sur 21000 données. On devrait les garder.
@@ -47,7 +47,7 @@ levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové"
 
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0) #cap à 115
 
-#lat et long, on prendra la heat map à matis
+#lat et long, on prendra la heat map
 
 library(ggmap)
 register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
@@ -55,8 +55,6 @@ register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg")
 map<-get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
 ggmap(map, extent = "device")
 
-#heatmapdata <- data.frame(cbind(log(donnees$price), donnees$lat, donnees$long ))
-#colnames(heatmapdata) <- c("logprice", "lat", "long")
 xmin <-  -122.4
 xmax <-  -122
 ymin <-  47.5
@@ -178,10 +176,11 @@ library(FactoMineR)
 acp <- PCA(donnees2[,c(-which(names(donnees2)=="reno"))])
 acp$eig # valeurs propres, var expliquée et % var expliquée
 
+#diagramme d'éboulis
 library(factoextra)
 fviz_screeplot(acp, ncp=20)
 
-#Corrélation variables, si possible changer la couleur du graphique (bonne couleur, ex: NDC ACP)
+#Corrélation variables
 cormat <- cor(donnees2[,c(-which(names(donnees2)=="reno"))],method = "pearson")
 library(reshape2)
 cormat.long <- melt(cormat)
@@ -215,8 +214,7 @@ fviz_pca_var(acp,
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = T)
 
-
-# Visualisation coordonnées
+# Visualisation contributions des 4 composantes
 contrib <- data.frame(acp$var$coord[,1:4])
 contrib$carac <- rownames(contrib)
 contrib.long <- reshape2::melt(contrib)
@@ -227,7 +225,7 @@ ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
     theme(legend.position="top",axis.text.x = element_text(angle = 90))+
     coord_flip()
 
-# À voir si ce sera utile pour expliquer dans rapport, pt utile de changer la couleur
+# map des coordonnées de la 4e dimension
 donnees_view <- cbind(donnees, acp$ind$coord)
 library(leaflet)
 pal4 <- colorNumeric(
