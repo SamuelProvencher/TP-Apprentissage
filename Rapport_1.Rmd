@@ -40,34 +40,48 @@ header-includes:
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 donnees <- read.csv("kc_house_data.csv")
 
-donnees <- donnees[!donnees$bathrooms == 0,] 
-donnees <- donnees[!donnees$bedrooms == 0,]
+donnees <- donnees[!donnees$bathrooms == 0,] #10 cas
+donnees <- donnees[!donnees$bedrooms == 0,] #13 cas
+#6 cas ont bedrooms = 0 et bathrooms = 0
+#Si on considère que c'est des maisons/jumelé, on trouve ça peu logique de conserver les 6 cas sans chambres (s'il y avait appart, ça pourrait faire du sens)
 
-donnees$bedrooms[which(donnees$bedrooms ==33)] <- as.integer(3)
+#suppression 33 chambres
+donnees <- donnees[!donnees$bedrooms == 33,]
 
+#suppression sqft_living (redondance), id et zipcode
+donnees <- donnees[,-c(which(colnames(donnees)=="sqft_living"), which(colnames(donnees)=="id"),
+                       which(colnames(donnees)=="zipcode"))]
+
+#separation champs de la date
 donnees$date <- substr(donnees$date,1,8)
-
 annee <- substr(donnees$date,1,nchar(donnees$date)-4)
 mois <- substr(donnees$date,nchar(donnees$date)-3,nchar(donnees$date)-2)
 jour <- substr(donnees$date, nchar(donnees$date)-1, nchar(donnees$date))
 
+#changement format date
 donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz="UTC")
 
-age_reno <- ifelse(donnees$yr_renovated==0, 116, pmax(as.numeric(annee) - donnees$yr_renovated, 0))
+# facteur 0-1 pour la reno
+donnees$reno <- (donnees$yr_renovated==0)*1
 
-library(Hmisc)
-donnees$reno <- factor(as.vector(cut2(age_reno, c(0, 10, 115)))) 
-levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové")
+#creation de la variable age
+donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0) #cap à 115
 
-donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0)
+#lat et long, on prendra la heat map
+library(ggmap)
+register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
+
+map<-get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
 
 xmin <-  -122.4
 xmax <-  -122
 ymin <-  47.5
-ymax <-  47.72 ## coordonnées du centre ville
+ymax <-  47.72
+
+#Removed 2 rows containing missing values (geom_tile). ???
 
 donnees$expensive_area <- sapply(1:nrow(donnees),
-                                   function(i) as.numeric(donnees$lat[i] >= ymin & donnees$lat[i] <= ymax & donnees$long[i] >= xmin & donnees$long[i] <= xmax))
+    function(i) as.numeric(donnees$lat[i] >= ymin & donnees$lat[i] <= ymax & donnees$long[i] >= xmin & donnees$long[i] <= xmax))
 ```
 \section{Introduction}
 Dans le cadre du travail, le prix de vente des maisons dans la région de Seattle (King County, USA) sera modélisé en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. Le prix de vente d'une maison est une valeur positive évaluée en dollars américains. Cette valeur modélisée pourrait être utile pour différentes raisons. Comme la somme assurée d'une maison a un lien très fortement proportionnel à son prix de vente, une compagnie d'assurance pourrait être intéressée de modéliser le prix de vente de maisons dans des nouveaux développements immobiliers afin de tenter de prédire les futures soumissions d'assurance habitation et d'offrir des offres personnalisées aux acheteurs de ces nouvelles maisons. Dans un autre contexte, au niveau de la gestion des risques, certains assureurs ont un portefeuille de prêts hypothécaires ou utilisent des produits dérivés sur prêts hypothécaires pour se couvrir du risque (*hedging*). Ainsi, il pourrait être intéressant d'avoir une estimation des montants de prêts hypothécaires dans une région donnée en se basant sur le prix de vente des maisons afin de mieux gérer le risque de la compagnie. La pertinence de trouver cette variable qu'est le prix de vente des maisons devient alors fort intéressante. Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section. **Biographie pour la source**
