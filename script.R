@@ -19,7 +19,8 @@ donnees <- donnees[!donnees$bedrooms == 0,] #13 cas
 donnees <- donnees[!donnees$bedrooms == 33,]
 
 #suppression sqft_living (redondance)
-donnees <- donnees[,-c(which(colnames(donnees)=="sqft_living"))]
+donnees <- donnees[,-c(which(colnames(donnees)=="sqft_living"), which(colnames(donnees)=="id"),
+                       which(colnames(donnees)=="zipcode"))]
 
 #separation champs de la date
 donnees$date <- substr(donnees$date,1,8)
@@ -166,11 +167,9 @@ ggplot(donnees, aes(x=long, y=log(price))) + geom_point(alpha=0.4) + theme_bw() 
 
 #### Nettoyage des colonnes inutiles ####
 
-#suppression données non-numériques pour l'acp
-donnees2 <- donnees[,-c(which(colnames(donnees)=="id"), which(colnames(donnees)=="date"), 
-                       which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
-                       which(colnames(donnees)=="zipcode"), which(colnames(donnees)=="lat"), 
-                       which(colnames(donnees)=="long"))]
+#suppression données non utiles pour l'acp
+donnees2 <- donnees[,-c(which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
+                       which(colnames(donnees)=="lat"), which(colnames(donnees)=="long"))]
 
 donnees2_test <- donnees2
 
