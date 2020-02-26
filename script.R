@@ -15,7 +15,7 @@ donnees <- donnees[!donnees$bedrooms == 0,] #13 cas
 #6 cas ont bedrooms = 0 et bathrooms = 0
 #Si on considère que c'est des maisons/jumelé, on trouve ça peu logique de conserver les 6 cas sans chambres (s'il y avait appart, ça pourrait faire du sens)
 
-donnees$bedrooms[which(donnees$bedrooms ==33)] <- as.integer(3)
+donnees <- donnees[!donnees$bedrooms == 33,]
 
 
 donnees$date <- substr(donnees$date,1,8)
