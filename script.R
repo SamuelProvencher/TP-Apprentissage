@@ -15,7 +15,7 @@ donnees <- donnees[!donnees$bedrooms == 0,] #13 cas
 #6 cas ont bedrooms = 0 et bathrooms = 0
 #Si on considère que c'est des maisons/jumelé, on trouve ça peu logique de conserver les 6 cas sans chambres (s'il y avait appart, ça pourrait faire du sens)
 
-#sppression 33 chambres
+#suppression 33 chambres
 donnees <- donnees[!donnees$bedrooms == 33,]
 
 #suppression sqft_living (redondance), id et zipcode
