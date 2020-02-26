@@ -186,18 +186,20 @@ cormat <- cor(donnees2[,c(-which(names(donnees2)=="reno"))],method = "pearson")
 library(reshape2)
 cormat.long <- melt(cormat)
 ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
-    theme(axis.text.x = element_text(angle = 90))
+    theme(axis.text.x = element_text(angle = 90)) +
+    scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white')
 
 #visualisation coordonnées Dim 1 et 2
 donnees_acp <- cbind(donnees2, acp$ind$coord)
-ggplot() +
+plot_ly <- ggplot() +
     geom_point(data = donnees_acp,
                aes(Dim.1, Dim.2, col = price)) +
     xlab("Dimension 1") +
     ylab("Dimension 2")  +
     theme_minimal() +
     scale_color_gradient(low="green", high="red", trans = "log")
-
+library(plotly)
+ggplotly(plot_ly)
 #visualisation coordonnées Dim 3 et 4
 ggplot() +
     geom_point(data = donnees_acp,
@@ -209,12 +211,6 @@ ggplot() +
 
 ## Autre façon de visualiser comportant la contribution pour Dims que 1 et 2
 fviz_pca_var(acp,
-             col.var = "contrib",
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-             repel = T)
-
-## Autre façon de visualiser comportant la contribution pour Dims que 3 et 4
-fviz_pca_var(acp,axes = c(3,4),
              col.var = "contrib",
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = T)
@@ -234,49 +230,25 @@ ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
 # À voir si ce sera utile pour expliquer dans rapport, pt utile de changer la couleur
 donnees_view <- cbind(donnees, acp$ind$coord)
 library(leaflet)
-pal1 <- colorNumeric(
+pal4 <- colorNumeric(
     palette = "RdYlBu",
-    domain = donnees_view$Dim.1,
-    reverse = TRUE)
-pal2 <- colorNumeric(
-    palette = "RdYlBu",
-    domain = donnees_view$Dim.2,
+    domain = donnees_view$Dim.4,
     reverse = TRUE)
 
 leaflet(donnees_view) %>% 
     addTiles() %>%
-    #addProviderTiles(providers$CartoDB.Positron) %>%
     addCircleMarkers(lng = ~long, 
                      lat = ~lat, 
-                     color = ~pal1(Dim.1),
+                     color = ~pal4(Dim.4),
                      radius = 1,
                      opacity = 1, 
                      fill = TRUE, 
-                     fillColor = ~pal1(Dim.1), 
+                     fillColor = ~pal4(Dim.4), 
                      fillOpacity = 1,
-                     group = 'Composante 1'
+                     group = 'Composante 4'
     ) %>%
-    addCircleMarkers(lng = ~long, 
-                     lat = ~lat, 
-                     color = ~pal2(Dim.2),
-                     radius = 1,
-                     opacity = 1, 
-                     fill = TRUE, 
-                     fillColor = ~pal2(Dim.2), 
-                     fillOpacity = 1,
-                     group = 'Composante 2'
-    ) %>%
-    addLegend("bottomright", pal = pal1, values = ~Dim.1,
-              title = "CP1",
+    addLegend("bottomleft", pal = pal4, values = ~Dim.4,
+              title = "CP4",
               opacity = 1,
-              group = 'Composante 1'
-    ) %>%
-    addLegend("bottomleft", pal = pal2, values = ~Dim.2,
-              title = "CP2",
-              opacity = 1,
-              group = 'Composante 2'
-    ) %>%
-    addLayersControl(
-        baseGroups = c("Composante 1", "Composante 2"),
-        options = layersControlOptions(collapsed = FALSE)
+              group = 'Composante 4'
     )
