@@ -15,17 +15,22 @@ donnees <- donnees[!donnees$bedrooms == 0,] #13 cas
 #6 cas ont bedrooms = 0 et bathrooms = 0
 #Si on considère que c'est des maisons/jumelé, on trouve ça peu logique de conserver les 6 cas sans chambres (s'il y avait appart, ça pourrait faire du sens)
 
+#sppression 33 chambres
 donnees <- donnees[!donnees$bedrooms == 33,]
 
+#suppression sqft_living (redondance)
+donnees <- donnees[,-c(which(colnames(donnees)=="sqft_living"))]
 
+#separation champs de la date
 donnees$date <- substr(donnees$date,1,8)
-
 annee <- substr(donnees$date,1,nchar(donnees$date)-4)
 mois <- substr(donnees$date,nchar(donnees$date)-3,nchar(donnees$date)-2)
 jour <- substr(donnees$date, nchar(donnees$date)-1, nchar(donnees$date))
 
+#changement format date
 donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz="UTC")
 
+#maisons à 1900
 maison_1900 <- donnees[which(donnees$yr_built ==1900),] #Hypothèse MP : NA #Par contre ça ne semble pas être des NAs, mais bien que l'âge des maisons a été cappé à 115
 nrow(maison_1900)
 # 87 cas
@@ -37,20 +42,13 @@ nrow(donnees[which(donnees$yr_built ==1904),])
 nrow(donnees[which(donnees$yr_built ==1905),])
 # Autre hypothèse : 87 maisons réellement construites en 1900 (pas de données avant)
 
-age_reno <- ifelse(donnees$yr_renovated==0, 116, pmax(as.numeric(annee) - donnees$yr_renovated, 0)) #6 données à -1 sinon
-# 116 : Maison qui n'ont jamais été rénovées, c'est pour que la fonction cut2 fonctionne
-
+# facteur 0-1 pour la reno
 donnees$reno <- (donnees$yr_renovated==0)*1
 
-# library(Hmisc)
-# donnees$reno <- factor(as.vector(cut2(age_reno, c(0, 10, 115)))) # (on peut rajouter des intervalles)
-# levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové")
-#Beaucoup de maisons n'ont jamais été rénovés (surprenant), probablement que la variable tient seulement compte des grosses rénos ou bien cette question n'a pas toujours été posée
-
+#creation de la variable age
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0) #cap à 115
 
 #lat et long, on prendra la heat map
-
 library(ggmap)
 register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
 
@@ -73,7 +71,7 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
 
 donnees$expensive_area <- sapply(1:nrow(donnees),
                                    function(i) as.numeric(donnees$lat[i] >= ymin & donnees$lat[i] <= ymax & donnees$long[i] >= xmin & donnees$long[i] <= xmax))
-
+#vérif finale
 str(donnees)
 summary(donnees)
 
@@ -168,13 +166,23 @@ ggplot(donnees, aes(x=long, y=log(price))) + geom_point(alpha=0.4) + theme_bw() 
 
 #### Nettoyage des colonnes inutiles ####
 
+#suppression données non-numériques pour l'acp
 donnees2 <- donnees[,-c(which(colnames(donnees)=="id"), which(colnames(donnees)=="date"), 
                        which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
                        which(colnames(donnees)=="zipcode"), which(colnames(donnees)=="lat"), 
                        which(colnames(donnees)=="long"))]
 
+donnees2_test <- donnees2
+
 #### ACP ####
 library(FactoMineR)
+
+#test log du prix dans ACP
+donnees2_test$price <- log(donnees2$price)
+acp_test <- PCA(donnees2_test[,c(-which(names(donnees2_test)=="reno"))])
+acp_test$eig
+
+#vrai ACP
 acp <- PCA(donnees2[,c(-which(names(donnees2)=="reno"))])
 acp$eig # valeurs propres, var expliquée et % var expliquée
 
