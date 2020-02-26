@@ -289,11 +289,11 @@ grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
 library(gridExtra)
 
 
-a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price), col = reno)) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie habitable sur le prix de vente d'une maison") +
-  xlab("Superficie habitable (Pieds carrés)") + ylab("Logarithme du prix de vente") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
+#a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price), col = reno)) + geom_point(alpha=0.4) +
+ # ggtitle("Effet de la superficie habitable sur le prix de vente d'une maison") +
+  #xlab("Superficie habitable (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  #theme_bw() +
+  #theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 b <- ggplot(donnees, aes(x=log(sqft_lot), y=log(price))) + geom_point(alpha=0.4) +
   ggtitle("Effet de la superficie du terrain sur le prix de vente d'une maison") +
@@ -313,11 +313,11 @@ d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=lo
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie habitable du voisinage sur le prix de vente d'une maison") +
-  xlab("Superficie habitable du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
+#e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
+ # ggtitle("Effet de la superficie habitable du voisinage sur le prix de vente d'une maison") +
+  #xlab("Superficie habitable du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  #theme_bw() +
+  #theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) +
   ggtitle("Effet de la superficie du terrain du voisinage sur le prix de vente d'une maison") +
@@ -326,8 +326,8 @@ f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 
-grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
-
+#grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
+grid.arrange(b,c,d,f,nrow = 3, ncol=2)
 ```
 \subsubsection{Variables age, reno et expensive area}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=4.5, fig.width=6, fig.align="center"}
@@ -363,10 +363,10 @@ grid.arrange(b, c, grid::nullGrob(), a, grid::nullGrob(),
 \section{Création de variables explicatives}
 D'après les données accessibles, il a semblé pertinent d'en utiliser certaines afin de créer d'autres variables explicatives qui seront plus utiles afin de déterminer le prix de vente des maisons de King County.
 
-La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci.
-**COmments:On pourrait dire que c’est plus facile analyser l’age vs yr_built, que c’est plus représentatif. Ca s’expliquerait mieux à des patrons. (T’es pas obligé d’ajouter ca si t’aimes pas!)**
+La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci. Analyser l'âge de la maison est plus facile qu'analyser deux dates prises séparement. Combiné ensemble ces deux dates crée un variable numérique discrète plus utile pour en déduire le prix d'une maison. En d'autres mots, cette varaible expliquera mieux les patrons de réponse.
+**correct Sam? besoin de ta validation**
 
-La deuxième variable qui a été créée est celle du nombre d'années depuis la dernière rénovation de la maison (*reno*). Cette variable a d'ailleurs été calculée de la même manière que l'âge de la maison décrite précédemment. La date de vente de la maison de la variable *date* et l'année de rénovation de la maison de la variable *yr_renovated* ont été utilisé. Par contre, étant donné le nombre élevé de maisons n'ayant jamais été rénové dans le jeu de données initiales ($20 699$ comparativement à $914$), il a été décidé d'en faire une variable catégorielle ordinale. Il s'agit d'une variable qui se divise en 3 sous-groupes, le premier étant *10 ans et moins* pour les maisons ayant eu une rénovation dans les 10 années précédant leur vente, le deuxième étant *10 ans et plus* pour les maisons ayant eu une rénovation il y a 10 années ou plus et le dernier étant *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction.
+La deuxième variable qui a été créée est celle à savoir si la maison a été rénové ou non depuis sa construction, elle a été nommé *reno*. À prime abord, il a été testé si cette nouvelle variable ne devrait pas plutôt être catégorielle ordinale avec des catégories allant de *10 ans et moins* pour les maisons ayant eu une rénovation dans les $10$ années précédant leur vente, *10 ans et plus* pour les maisons ayant eu une rénovation il y a $10$ années ou plus et *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction. Par contre, après une analyse plus poussée, les catégories autres que celle *Jamais rénové* affichait une moyenne et une médiane similaire les uns entre les autres. Les séparer en plusieurs catégories semblent donc désuet, c'est pourquoi au final, la variable *réno* prend comme valeur $1$ si la maison a déjà été rénové depuis sa construction ou $0$ si elle n'a jamais été rénové.
 
 La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). En effet, les variables réprésentant la latitude et la longitude de la maison sur la carte thermique ci-dessous (**comments:faire référence ex. figure 3**) indique la position de la maison sur la planète Terre. En utilisant toutes ces données de position des maisons, il est alors facile de les situées sur une carte de la région de King County, la région à l'étude dans ce rapport. Voici d'ailleurs un aperçu des positions de chaque maison vendue à King County.
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
@@ -384,7 +384,7 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
                                                 fun = mean, alpha = 0.6, bins = 100) + 
     scale_fill_gradient(name = "Log(Prix)", low = "green", high = "red") + ggtitle("Position des maisons vendues de King County")
 ```
-En regardant la carte thermique affichée ci-dessus, il est possible de voir qu'une bonne partie des maisons les plus couteuses se situe au nord-ouest de la région près de l'eau. Cette région semble être la zone urbaine. Il est d'ailleurs possible d'identifier la région la plus couteuse en allant chercher les coordonnées des bonnes latitudes et longitudes.
+En regardant la carte thermique affichée ci-dessus, il est possible de voir qu'une bonne partie des maisons les plus couteuses se situe au nord-ouest de la région, tout près de l'eau. Cette région semble être la zone urbaine. Il est d'ailleurs possible d'identifier la région la plus couteuse en allant chercher les coordonnées des bonnes latitudes et longitudes.
 
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
 ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
@@ -398,6 +398,22 @@ La variable de la région la plus couteuse est une variable catégorielle qui re
 
 \newpage
 \section{Réduction de la dimensionalité}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
+donnees2 <- donnees[,-c(which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
+                       which(colnames(donnees)=="lat"), which(colnames(donnees)=="long"), which(colnames(donnees)=="date"))]
+donnees2_test <- donnees2
+
+#### ACP ####
+library(FactoMineR)
+
+#vrai ACP
+acp <- PCA(donnees2[,c(-which(names(donnees2)=="reno"))],graph = F)
+```
+Il se trouve que malgré tout le prétraitement des données et l'analyse univariée et bivariée de celles-ci, on se retrouve avec un jeu de données contenant `r ncol(donnees2)` variables différentes.
+
+
+
+
 
 \newpage
 \section{Conclusion}
