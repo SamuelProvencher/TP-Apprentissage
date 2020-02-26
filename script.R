@@ -40,9 +40,11 @@ nrow(donnees[which(donnees$yr_built ==1905),])
 age_reno <- ifelse(donnees$yr_renovated==0, 116, pmax(as.numeric(annee) - donnees$yr_renovated, 0)) #6 données à -1 sinon
 # 116 : Maison qui n'ont jamais été rénovées, c'est pour que la fonction cut2 fonctionne
 
-library(Hmisc)
-donnees$reno <- factor(as.vector(cut2(age_reno, c(0, 10, 115)))) # (on peut rajouter des intervalles)
-levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové")
+donnees$reno <- (donnees$yr_renovated==0)*1
+
+# library(Hmisc)
+# donnees$reno <- factor(as.vector(cut2(age_reno, c(0, 10, 115)))) # (on peut rajouter des intervalles)
+# levels(donnees$reno) <- c("10 ans et moins", "10 ans et plus", "Jamais rénové")
 #Beaucoup de maisons n'ont jamais été rénovés (surprenant), probablement que la variable tient seulement compte des grosses rénos ou bien cette question n'a pas toujours été posée
 
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0) #cap à 115
@@ -115,7 +117,7 @@ ggplot(donnees, aes(x=sqft_living15)) + geom_area(stat = "bin") + theme_bw()
 
 ggplot(donnees, aes(x=sqft_lot15)) + geom_area(stat = "bin") + theme_bw()
 
-ggplot(donnees, aes(x=reno)) + geom_bar() + theme_bw()
+ggplot(donnees, aes(x=factor(reno))) + geom_bar() + theme_bw()
 
 ggplot(donnees, aes(x=age)) + geom_area(stat = "bin") + theme_bw() # On voit bien le maximum à 115 ans (Maison construite en 1900)
 
