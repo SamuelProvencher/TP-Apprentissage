@@ -512,12 +512,12 @@ donnees2_test <- donnees2
 library(FactoMineR)
 
 #vrai ACP
-acp <- PCA(donnees2[,c(-which(names(donnees2)=="reno"))],graph = F)
+acp <- PCA(donnees2,graph = F)
 ```
 Il se trouve que malgré tout le prétraitement des données et l'analyse univariée et bivariée de celles-ci, on se retrouve avec un jeu de données contenant `r ncol(donnees2)` variables différentes. Ce nombre semble élevé et le nombre de variables fait en sorte qu'on ne peut visualiser efficacement ces données en grande dimension ou même identifier convenablement des maisons exceptionnelles.
 Afin de voir si certaines variables sont corrélées entre elles, il est possible d'afficher la matrice des corrélations de Pearson:
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
-cormat <- cor(donnees2[,c(-which(names(donnees2)=="reno"))],method = "pearson")
+cormat <- cor(donnees2,method = "pearson")
 library(reshape2)
 cormat.long <- melt(cormat)
 ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
