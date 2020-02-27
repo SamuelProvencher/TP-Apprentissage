@@ -67,7 +67,7 @@ jour <- substr(donnees$date, nchar(donnees$date)-1, nchar(donnees$date))
 donnees$date <- as.POSIXct(paste(annee,mois,jour,sep="-"), format="%Y-%m-%d", tz="UTC")
 
 # facteur 0-1 pour la reno
-donnees$reno <- (donnees$yr_renovated==0)*1
+donnees$reno <- (donnees$yr_renovated!=0)*1
 
 #creation de la variable age
 donnees$age <- ifelse(as.numeric(annee) - donnees$yr_built >= 0, as.numeric(annee) - donnees$yr_built, 0) #cap à 115
