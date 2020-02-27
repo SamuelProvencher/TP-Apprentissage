@@ -152,7 +152,7 @@ Pour poursuivre, le tableau ci-dessous présente les caractéristiques sommative
 
 ![](caracteristiques.png){width="100%"}
 
-Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. Aucun impact n'est envisagé quant à l'analyse de cette variable puisque les graphiques seront gradués de $3$ à $13$. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_lot15*, *sqft_above*, *sqft_basement*, *sqft_living15* et *sqft_living*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque, telle que la transformation logarithmique, pourrait être de mise. Il est également possible de constater que la proportion de maisons situées sur le bord d'un lac est de `r round(mean(donnees$waterfront),2)*100` %.
+Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. Aucun impact n'est envisagé quant à l'analyse de cette variable puisque les graphiques seront gradués de $3$ à $13$. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_lot15*, *sqft_above*, *sqft_basement*, *sqft_living15* et *sqft_living*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque, telle que la transformation logarithmique, pourrait être de mise. Il est également possible de constater que la proportion de maisons situées sur le bord d'un lac est de `r round(mean(donnees$waterfront),2)*100` %.
 
 Maintenant, analysons de plus près certaines de ces variables.
 \newline
@@ -589,6 +589,7 @@ Finalement, la quatrième composante semble représenter les petites maisons en 
 Nous allons illustrer les valeurs de la quatrième composante sur la carte de King County pour confirmer notre intuition:
 
 # mettre carte leaflet composante 4
+![](Composante_4_map.png){width="100%"}
 
 \newpage
 \section{Conclusion}
