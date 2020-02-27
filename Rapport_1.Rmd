@@ -532,7 +532,7 @@ fviz_screeplot(acp, ncp = 15, main = "Diagramme d'éboulis", ylab = "Pourcentage
 acp$eig
 ```
 
-En utilisant la méthode du coude en se référant au diagramme d'éboulis, des choix sensés du nombre de dimensions à garder seraient 2, 4, 8 ou 11 dimensions. Cependant, dans le contexte de l'ACP il est intéressant de garder une proportion considérable de la variance des données originales. Garder 2 ou 4 dimensions résulterait respectivement en 42 % ou 61 % de la variance originale, ce qui n'est pas considéré comme étant assez. Cependant, avec 7 dimensions, 83% de la variance originale est expliquée, ce qui dépasse le seuil de 80%. Nous souhaitons aussi avoir une réduction considérable du nombre de dimensions, donc le dernier choix possible de 11 nous semble trop élevé. Nous allons donc conserver 8 composantes principales pour la suite.
+En utilisant la méthode du coude en se référant au diagramme d'éboulis, des choix sensés du nombre de dimensions à garder seraient 2, 4, 8 ou 11 dimensions. Cependant, dans le contexte de l'ACP il est intéressant de garder une proportion considérable de la variance des données originales. Garder 2 ou 4 dimensions résulterait respectivement en 42 % ou 62 % de la variance originale, ce qui n'est pas considéré comme étant assez. Cependant, avec 8 dimensions, 84 % de la variance originale est expliquée, ce qui dépasse le seuil de 80 %. Nous souhaitons aussi avoir une réduction considérable du nombre de dimensions, donc le dernier choix possible de 11 nous semble trop élevé. Nous allons donc conserver 8 composantes principales pour la suite.
 
 Examinons maintenant les contributions des variables initiales sur les 4 premières dimensions que nous avons conservées avec l'ACP.
 
@@ -588,6 +588,30 @@ Nous allons illustrer les valeurs de la quatrième composante sur la carte de Ki
 
 \newpage
 \section{Conclusion}
+
+En somme, pour tenter de modéliser le prix de vente des maisons de King County selon les caractéristiques observées des maisons, nous avons tout d'abord trouvé un jeu de données approprié contenant les prix de vente de plus de 21000 maisons entre mai 2014 et mai 2015. 
+
+Ensuite, une analyse exploratoire univariée et bivariée a été conduite sur ce jeu de données pour en faire ressortir des tendances. Entre autres, nous avons observé que les caractéristiques physiques des maisons, telles que leur nombre de chambres, d'étages et de salles de bain, la qualité de la construction et les superficies de la maison et du terrain ont une forte influence positive sur le prix de vente de la maison. C'est aussi le cas de la localisation de la maison (en général, les maisons en ville, sur le bord de l'eau et/ou qui possèdent une belle vue sont plus chères). Certaines caractéristiques avaient quant à elle peu d'impact sur le prix, comme le moment de l'année où la maison a été vendue.
+
+L'analyse exploratoire nous a également permis de détecter des valeurs aberrantes, qui ont été corrigées. Entre autres, nous avons enlevé des maisons avec aucune chambre, avec aucune salle de bain ou avec un nombre excessif de chambres.
+
+Par la suite, de nouvelles variables explicatives ont été créées lorsqu'il a été jugé que certaines variables n'étaient pas dans une forme assez éloquente. L'une d'entre elles est l'âge de la maison, déterminé à partir de l'année où celle-ci a été construite. Nous avons également créé des variables binaires indiquant:
+
+* Si la maison est située en ville ou non;
+* Si la maison a été rénovée ou non.
+
+Enfin, une analyse en composantes partielles (ACP) a été conduite sur les données pour en réduire la dimensionalité. L'ACP nous a également permis de mieux visualiser les données à l'aide des nouvelles composantes, qui réflètent les valeurs de plusieurs des variables explicatives d'origine à la fois.
+
+Tout cela nous a permis de mieux comprendre les données en notre possession. La prochaine étape sera de créer un véritable modèle pour tenter de déterminer le prix de vente des maisons selon leurs caractéristiques. Quelques pistes nous semblent intéressantes pour les modèles que nous pourrons tenter:
+
+* Un modèle de régression linéaire multiple semble tout approprié pour le problème que nous essayons ici de résoudre.
+* Si une analyse des variables que nous allons utiliser semble dévoiler un problème de multicollinéarité, la régression régularisée ridge pourrait être intéressante.
+* Si nous nous rendons compte que seules certaines variables ont un très grand impact sur le prix de vente des maisons, nous pourrions conduire une régression régularisée lasso pour procéder à la sélection des variables.
+* Si nous détectons un problème important d'hétéroscédasticité dans les données, une régression pondérée pourrait être envisagée.
+* Enfin, les modèles de régression Poisson, binomiale négative ou logistique ne semblent pas avoir un potentiel intéressant pour la suite des choses.
+
+D'autres modèles que nous verrons plus tard dans le cadre du cours, tels que les arbres de régression, les forêts aléatoires et les modèles de *gradient boosting* pourraient également se révéler être intéressants.
+
 
 \newpage
 \section{Bibliographie}
