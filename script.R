@@ -247,7 +247,7 @@ leaflet(donnees_view) %>%
     addCircleMarkers(lng = ~long, 
                      lat = ~lat, 
                      color = ~pal4(Dim.4),
-                     radius = 1,
+                     radius = 0.75,
                      opacity = 1, 
                      fill = TRUE, 
                      fillColor = ~pal4(Dim.4), 
