@@ -95,11 +95,11 @@ La visualisation des données à l'étude a permis de déceler quelques erreurs.
 
 
 \subsection{Analyse univariée}
-\subsection{Variables explicatives}
+\subsubsection{Variables explicatives}
 La base de données initiales comptaient $20$ variables explicatives. Or, certaines de ces variables n'étaient pas pertinentes dans la modélisation du prix de vente des maisons. Ainsi, $2$ variables explicatives ont été retirées du jeu de données, soit le numéro d'identification de la vente (*ID*) et le code postal (*zipcode*). Le code postal a été retiré, car le jeu de données contient d'autres variables plus précises sur la localisation des différentes maisons. De plus, la variable *Date* a été mise sous le format suivant : année-jour-mois. Voici d'ailleurs un tableau qui présente les variables explicatives retenues ainsi qu'une brève description de celles-ci.
 
 |   Variables explicatives |     Descriptions                                                    |      
-| :----------------------: |:-------------------------------------------------------------------:| 
+| :----------------------: |:-------------------------------------------------------------------| 
 |         Date             |  Date de la vente                                                   |     
 |         Bedrooms         |  Nombres de chambres                                                |     
 |         Bathrooms        |  Nombres de salles de bain ($0.5$ lorsqu'il n'y pas de douche)      |     
@@ -121,15 +121,39 @@ La base de données initiales comptaient $20$ variables explicatives. Or, certai
 
 Comme on peut le voir, cette base données contient des variables assez intéressantes. En effet, elle est composée de variables numériques, temporelles ainsi que spaciale. Cela nous permettra de représenter les données à l'aide d'une carte de la région de Seattle.
 
+```{r echo=FALSE, message=FALSE}
+# library(knitr)
+# library(kableExtra)
+# 
+# gr <- table(donnees$grade)
+# co <- as.numeric(table(donnees$condition))
+# vi <- as.numeric(table(donnees$view))
+# wa <- as.numeric(table(donnees$waterfront))
+#
+# ll <- max(length(gr), length(co), length(vi), length(wa))
+
+#gr <- c(gr, rep(0, ll-length(gr)))
+# co <- c(co, rep(0, ll-length(co)))
+# vi <- c(vi, rep(0, ll-length(vi)))
+# wa <- c(wa, rep(0, ll-length(wa)))
+# 
+# dt <- data.frame(Valeurs = row.names((table(donnees$grade))), Grade = as.numeric(gr))
+# 
+# kable(dt)
+
+```
+
 Pour poursuivre, le tableau ci-dessous présente les caractéristiques sommatives des variables explicatives. 
 
 ![](caracteristiques.png){width="100%"}
 
-Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. **Rajouter plus de chose sur ça, genre pour simplifier, on enlève 1 et 2 même si ça les trace pas**. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_above*, *sqft_basement*, *sqft_living15* et *sqft_living*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque ,telle que la transformation logarithmique, pourrait être de mise.
+Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. Aucun impact n'est envisagé quant à l'analyse de cette variable puisque les graphiques seront gradués de $3$ à $13$. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_lot15*, *sqft_above*, *sqft_basement*, *sqft_living15* et *sqft_living*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque, telle que la transformation logarithmique, pourrait être de mise. Il est également possible de constater que la proportion de maisons situées sur le bord d'un lac est de `r round(mean(donnees$waterfront),2)*100` %.
 
 Maintenant, analysons de plus près certaines de ces variables.
 \newline
+\newline
 **Date**
+\newline
 Le graphique suivant présente la densité de la variable *Date*.
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
 library(gridExtra)
@@ -145,9 +169,11 @@ date <- ggplot(donnees, aes(x=date)) + geom_density() +
 grid.arrange(date ,nrow = 1, ncol=1)
 
 ```
-Il est possible de constater qu'il semble y avoir un effet de saisonnalité dans la vente de maisons. En effet, l'été semble être une période où il y a beaucoup de ventes de maisons tandis que l'hiver semble être une période où la vente de maisons est moins fréquente.
+Il est possible de constater qu'il semble y avoir un effet de saisonnalité dans la vente de maisons. En effet, l'été semble être une période où il y a beaucoup de ventes de maisons tandis que l'hiver semble être une période où la vente de maisons est moins fréquente. C'est important d'être au fait de cette tendance dams le domaine immobillier.
+\newline
 \newline
 **Yr_built**
+\newline
 Le graphique suivant illustre la distribution de l'année de construction.
 
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
@@ -163,9 +189,10 @@ grid.arrange(year ,nrow = 1, ncol=1)
 
 ```
 
-Tout d'abord, il est possible de constater que la base de données contient plus de maisons récentes que de vieilles maisons. On semble remarquer $2$ augmentations majeures sur le graphique. En effet, il y a une hausse vers les années $1950$, puis une seconde vers le début des années $2000$. De plus, on constate une légère concentration de maisons construites en $1900$. Plus précisément, $87$ maisons ont été construites en $1900$. Or, le nombre de maisons construites en $1901$ et $1902$ est similaire à celui pour $1900$. Ainsi, nous avons pris l'hypothèse que les données ont commencé à être recueillies en $1900$.
+Tout d'abord, il est possible de constater que la base de données contient plus de maisons récentes que de vieilles maisons. On semble remarquer $2$ augmentations majeures sur le graphique. En effet, il y a une hausse vers les années $1950$, puis une seconde vers le début des années $2000$. De plus, on constate une légère concentration de maisons construites en $1900$. Plus précisément, $87$ maisons ont été construites en $1900$. Or, le nombre de maisons construites en $1901$ et $1902$ est similaire à celui pour $1900$. Ainsi, nous avons pris l'hypothèse que les données ont été collecté sur des maisons construites à partir de $1900$.
 
 \subsubsection{Variable réponse}
+La variable réponse de notre jeu de données est la variable *price*. Elle représente le prix de vente des maisons dans la région de Seattle et est illustrée par les graphiques suivants.
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -186,9 +213,9 @@ Lpri <- ggplot(donnees, aes(x=log(price))) + geom_density() +
 grid.arrange(pri, Lpri ,nrow = 1, ncol=2)
 
 ```
-Lorsqu'on regarde le graphique de gauche, où aucune transformation logarithmique n'a été effectué sur la variable du prix, il possible de remarquer que la distribution a une forte asymétrie à droite. Cela a pour effet de décaler la distribution à gauche de la médiane et d'étaler la queue de la distribution vers la droite. Ainsi, dans cette représentation graphique, un grand nombre d'observation est regroupé dans des prix plus faibles.
+Lorsqu'on regarde le graphique de gauche, où aucune transformation logarithmique n'a été effectuée sur la variable du prix, il est possible de remarquer que la distribution a une forte asymétrie à droite. Cela a pour effet de décaler la distribution à gauche de la médiane et d'étaler la queue de la distribution vers la droite. Ainsi, dans cette représentation graphique, un grand nombre d'observations est regroupé dans des prix plus faibles.
 
-Pour pallier à cette asymétrie, la transformation logarithmique a été effectué sur la variable réponse. Le résultat est présenté sur le graphique de droite. Il est possible de constater que la distribution dans ce graphique est symétrique et qu'elle s'approche de la forme d'une loi normale. Ainsi, il sera plus facile de modéliser le logarithme et d'analyser les résultats.
+Pour pallier cette asymétrie, la transformation logarithmique a été effectuée sur la variable réponse. Le résultat est présenté sur le graphique de droite. Il est possible de constater que la distribution dans ce graphique est symétrique et qu'elle s'approche de la forme d'une loi normale. Ainsi, il sera plus facile de modéliser le logarithme et d'analyser les résultats.
 
 
 \subsection{Analyse bivariée}
@@ -213,7 +240,8 @@ ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
 
 ```
 
-\subsubsection{Date en fonction du logarithme du prix}
+**Date en fonction du logarithme du prix**
+\newline
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -226,8 +254,11 @@ Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.1) +
 grid.arrange(Lpri,nrow = 1, ncol=1)
 
 ```
-Le graphique ci-dessus montre qu'il n'y a pas de relation linéaire entre le moment de la vente de la maison et le logarithme du prix obtenu. En effet, peu importe la date, le logarithme du prix semble distribué normalement et la variance des obseravations est constantes dans le temps. Il est intéressant de remarquer que les transactions sont fort probablement regroupées par semaine (lundi au vendredi) dû à l'horaire des bureaux de notaire, ce qui veut dire qu'aucune ou peu de transactions sont conclues le week-end.
-\subsubsection{Variables bedrooms, bathrooms et floors}
+Le graphique ci-dessus montre qu'il n'y a pas de relation linéaire entre le moment de la vente de la maison et le logarithme du prix obtenu. En effet, peu importe la date, le logarithme du prix semble distribué normalement et la variance des obseravations est constantes dans le temps. Il est intéressant de remarquer que les transactions sont fort probablement regroupées par semaine (lundi au vendredi) dû à l'horaire des bureaux de notaires, ce qui veut dire qu'aucune ou peu de transactions sont conclues la fin de semaine.
+\newline
+\newline
+**Variables *bedrooms*, *bathrooms* et *floors***
+\newline
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -254,9 +285,13 @@ grid.arrange(bed, bath, grid::nullGrob(), flo, grid::nullGrob(),
                         layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
 
 ```
-Le constat général de ces trois graphiques est que plus ces variables prennent une valeur élevée, plus le logarithme du prix augmente. Il s'agit d'un constat assez intuitif, donc ce n'est pas surprenant. Un second constat est qu'il y a une plus grande volatilité pour de faibles valeurs de ces trois variables. En effet, cela est attribuable au fait qu'il y a un grand nombre d'observations pour de faibles valeurs. Pour les valeurs plus à droite dans les graphiques, c'est plus dure d'analyser, car les cas sont beaucoup plus rares. Le dernier constat à relever est au niveau de la variable *bathrooms*. À l'aide du graphique de cette variable ci-haut, il est possible de constater que l'impact des salles de bains sur la variable réponse est plus important que l'impact des deux autres variables en raison de la pente plus prononcée. Tout porte à croire que ces 3 variables sont reliées à la superficie habitable, car habituellement, les maisons plus dispendieuses sont plus grosses en terme de superficie, de nombre de chambres, étages et salles de bain.
-
-\subsubsection{Variables waterfront, view, condition et grade}
+Le constat général de ces trois graphiques est que plus ces variables prennent des valeurs élevées, plus le logarithme du prix augmente. Il s'agit d'un constat assez intuitif, donc ce n'est pas surprenant. Un second constat est qu'il y a une plus grande volatilité pour de faibles valeurs de ces trois variables. En effet, cela est attribuable au fait qu'il y a un grand nombre d'observations pour de faibles valeurs. Pour les valeurs plus à droite dans les graphiques, c'est plus difficile d'analyser, car les cas sont beaucoup plus rares. Le dernier constat à relever est au niveau de la variable *bathrooms*. À l'aide du graphique de cette variable ci-haut, il est possible de constater que l'impact des salles de bains sur la variable réponse est plus important que l'impact des deux autres variables en raison de la pente plus prononcée. Tout porte à croire que ces 3 variables sont reliées à la superficie habitable, car habituellement, les maisons plus dispendieuses sont plus grosses en terme de superficie, de nombre de chambres, étages et salles de bain. 
+\newline
+Remarque : il est à noter que pour des fins de visualisation, la variable *bathrooms* a été arrondie.
+\newline
+\newline
+**Variables *waterfront*, *view*, *condition* et *grade***
+\newline
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -280,15 +315,20 @@ con <- ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() 
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 gra <- ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_boxplot() +
-  ggtitle("Effet de la qualité de la construction sur le prix de vente d'une maison") +
-  xlab("Qualité de la construction") + ylab("Logarithme du prix de vente") +
+  ggtitle("Effet du grade (construction et conception) sur le prix de vente d'une maison") +
+  xlab("Qualité de la construction et conception (grade)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
 
+
 ```
-\subsubsection{Variables de superficie}
+À première vue, il semble que plus ces quatre variables augmentent de niveau, plus le logarithme du prix augmente. Ce constat est logique puisque ce sont toutes des caractéristiques recherchées par les acheteurs. Par contre, au niveau de la variable *condition*, il est plus difficile d'avoir la certitude que la relation tient puisque les boîtes à moustaches sont à des hauteurs statistiquement semblables. Les deux variables dont le changement de niveau amène les plus gros impacts sur la variable réponse sont *waterfront* et *grade*. Pour ce qui est de *waterfront*, il est à noter que seulement `r round(mean(donnees$waterfront),2)*100` % des maisons est situé sur le bord de l'eau, donc pour ces maisons, un prix plus élevé est attendu. En somme, la qualité de la construction et conception et la présence d'un plan d'eau ont un impact significatif sur la valeur d'une propriété dans cette région tandis que la condition de la maison et la vue extérieure ont un impact d'une moindre envergure.
+\newline
+\newline
+**Variables de superficie**
+\newline
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -313,15 +353,15 @@ c <- ggplot(donnees, aes(x=log(sqft_above), y=log(price))) + geom_point(alpha=0.
 
 d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=log(price))) + geom_point(alpha=0.4) +
   ggtitle("Effet de la superficie du sous-sol sur le prix de vente d'une maison") +
-  xlab("Superficie du sous-sol") + ylab("Logarithme du prix de vente") +
+  xlab("Superficie du sous-sol (pieds carrés") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-#e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
- # ggtitle("Effet de la superficie habitable du voisinage sur le prix de vente d'une maison") +
-  #xlab("Superficie habitable du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
-  #theme_bw() +
-  #theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
+e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
+  ggtitle("Effet de la superficie habitable du voisinage sur le prix de vente d'une maison") +
+  xlab("Superficie habitable du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) +
   ggtitle("Effet de la superficie du terrain du voisinage sur le prix de vente d'une maison") +
@@ -331,9 +371,65 @@ f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.
 
 
 #grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
-grid.arrange(b,c,d,f,nrow = 3, ncol=2)
+grid.arrange(c,d,b,f,grid::nullGrob(), e, grid::nullGrob(), 
+             layout_matrix = matrix(c(1,1,2,2,3,3,4,4,5,6,6,7), byrow = TRUE, ncol = 4))
+
 ```
-\subsubsection{Variables age, reno et expensive area}
+**axe et titre à changer**
+Tout d'abord, il a été convenu d'utiliser les données de superficie à l'échelle logarithmique afin de mieux visualiser les données. Ainsi, toute les références aux variables dans les prochaines lignes seront considérées à l'échelle **logarithmique**. En premier lieu, une relation linéaire très évidente est présente entre les variables *sqft_above* ainsi que *sqft_living15* et le prix tel qu'illustré dans le premier et dernier graphique ci-haut. En second lieu, la relation entre la superficie du sous-sol (*sqft_basement*) et le prix, observable sur le second graphique ci-haut, n'est pas aussi évidente. Pour la visualisation, il a été nécessaire de retirer `r sum(donnees$sqft_basement==0)` observations qui n'avaient pas de sous-sol. Pour les maisons possédant un sous-sol, il est possible de conclure que plus le sous-sol est grand, plus le prix de vente sera élevé, cependant, la relation linéaire n'est pas aussi forte qu'elle l'était pour les deux variables mentionnées plus haut. En troisième lieu, à l'aide des deux graphiques centraux, la superficie du terrain (*sqft_lot*) et la superficie des terrains du voisinage (*sqft_lot15*) ne semblent pas avoir d'impact sur le prix de vente d'une maison. Cela est très surprenant et inattendu, car règle générale, les terrains ont égalament des valeurs foncières. Une hypothèse pour cette absence de relation est que les maisons du jeu de données sont principalement situées dans une zone urbanisée (région de Seattle) où les terrains seraient de dimensions similaires. Lorsque ces deux variables sont observées de plus près, une grosse masse de données autour de la médiane est découverte, ce qui rend l'hypothèse plausible (se référer au tableau sommaire de l'analyse univariée). Bref, la superficie totale d'une maison et celle des maison du voisinage ont un impact significatif sur le prix de vente tandis que la superficie du terrain de la maison et celle du terrain du voisinage ne semblent pas avoir d'impact.
+
+
+**graph**
+
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+
+blo <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floor(bathrooms)))) + 
+    geom_point(alpha=0.5) +
+    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre de salles de bain") +
+    xlab("Superficie habitable au-dessus du sol (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
+            legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 8)) +
+    scale_color_brewer(palette = "Set1") +
+    labs(colour = "Salles de bain")
+
+bla <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(bedrooms))) + 
+    geom_point(alpha=0.5) +
+    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre de chambres") +
+    xlab("Superficie habitable (Pieds carrés) au-dessus du sol") + ylab("Logarithme du prix de vente") +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
+          legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 8)) +
+    scale_color_brewer(palette = "Paired") +
+    labs(colour = "Chambres")
+
+bli <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floors))) + 
+    geom_point(alpha=0.5) +
+    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre d'étages") +
+    xlab("Superficie habitable au-dessus du sol (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
+          legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 8)) +
+    scale_color_brewer(palette = "Set2") +
+    labs(colour = "Étages")
+
+grid.arrange(blo,bla,bli, nrow=3, ncol=1)
+
+
+
+
+```
+Tel que mentionné précédemment, il semblait avoir une relation entre la variable *sqft_above* et
+le nombre de chambres, d'étages et salles de bain. Les graphiques ci-haut permettent d'affirmer ce constat.
+En effet, on remarque que les maisons qui ont plus de chambres, d'étages ou de salles de bain
+sont généralement les maisons dont la superficie habitable au-dessus du niveau du sol
+est la plus grande. On observe également une tendance linéaire positive. 
+Autrement dit, les maisons qui ont une plus grande superficie habitable au-dessus du niveau du sol
+ainsi qu'un grand nombre d'une des 3 variables se vendent à des prix plus élevées.
+\newline
+\newline
+**Variables *âge*, *reno* et *expensive area***
+\newline
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=4.5, fig.width=6, fig.align="center"}
 library(gridExtra)
 
@@ -344,7 +440,7 @@ a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-b <- ggplot(donnees, aes(x=reno, y=log(price))) + geom_boxplot() + coord_flip() +
+b <- ggplot(donnees, aes(x=factor(reno), y=log(price))) + geom_boxplot() +
   ggtitle("Effet des rénovations sur le prix de vente d'une maison") +
   xlab("Rénovations") + ylab("Logarithme du prix de vente") +
   theme_bw() +
@@ -362,12 +458,12 @@ grid.arrange(b, c, grid::nullGrob(), a, grid::nullGrob(),
                         layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
 
 ```
-
+bla
 \newpage
 \section{Création de variables explicatives}
 D'après les données accessibles, il a semblé pertinent d'en utiliser certaines afin de créer d'autres variables explicatives qui seront plus utiles afin de déterminer le prix de vente des maisons de King County.
 
-La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci. Analyser l'âge de la maison est plus facile qu'analyser deux dates prises séparement. Combiné ensemble ces deux dates crée un variable numérique discrète plus utile pour en déduire le prix d'une maison. En d'autres mots, cette varaible expliquera mieux les patrons de réponse.
+La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci. Analyser l'âge de la maison est plus facile qu'analyser deux dates prises séparement. Combiné ensemble ces deux dates crée une variable numérique discrète plus utile pour en déduire le prix d'une maison. En d'autres mots, cette variable expliquera mieux les patrons de réponse.
 **correct Sam? besoin de ta validation**
 
 La deuxième variable qui a été créée est celle à savoir si la maison a été rénové ou non depuis sa construction, elle a été nommé *reno*. À prime abord, il a été testé si cette nouvelle variable ne devrait pas plutôt être catégorielle ordinale avec des catégories allant de *10 ans et moins* pour les maisons ayant eu une rénovation dans les $10$ années précédant leur vente, *10 ans et plus* pour les maisons ayant eu une rénovation il y a $10$ années ou plus et *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction. Par contre, après une analyse plus poussée, les catégories autres que celle *Jamais rénové* affichait une moyenne et une médiane similaire les uns entre les autres. Les séparer en plusieurs catégories semblent donc désuet, c'est pourquoi au final, la variable *réno* prend comme valeur $1$ si la maison a déjà été rénové depuis sa construction ou $0$ si elle n'a jamais été rénové.
