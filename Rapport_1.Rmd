@@ -552,9 +552,10 @@ fviz_screeplot(acp, ncp = 15, main = "Diagramme d'éboulis", ylab = "Pourcentage
 ```
 
 ```{r, echo=F,warning=FALSE}
-library(kableExtra)
-kable(acp$eig, "latex") %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+library(knitr)
+tableau <- acp$eig
+colnames(tableau) <- c("Valeur propre", "Pourcentage de la variance", "Pourcentage cumulatif de la variance")
+kable(tableau)
 ```
 
 En utilisant la méthode du coude en se référant au diagramme d'éboulis, des choix sensés du nombre de dimensions à garder seraient 2, 4, 8 ou 11 dimensions. Cependant, dans le contexte de l'ACP il est intéressant de garder une proportion considérable de la variance des données originales. Garder 2 ou 4 dimensions résulterait respectivement en 42 % ou 62 % de la variance originale, ce qui n'est pas considéré comme étant assez. Cependant, avec 8 dimensions, 84 % de la variance originale est expliquée, ce qui dépasse le seuil de 80 %. Nous souhaitons aussi avoir une réduction considérable du nombre de dimensions, donc le dernier choix possible de 11 nous semble trop élevé. Nous allons donc conserver 8 composantes principales pour la suite.
