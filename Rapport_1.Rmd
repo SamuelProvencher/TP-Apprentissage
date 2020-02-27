@@ -4,6 +4,7 @@ header-includes:
 - \usepackage[french]{babel}
 - \usepackage{float}
 - \usepackage{titling}
+- \DeclareUnicodeCharacter{2212}{-}
 ---
 \begin{titlingpage}
   \rightline{Équipe 2}
@@ -332,7 +333,7 @@ Remarque : il est à noter que pour des fins de visualisation, la variable *bat
 \newpage
 **Variables *waterfront*, *view*, *condition* et *grade***
 \newline
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+```{r echo=FALSE, warning=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
 
@@ -370,7 +371,7 @@ grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
 \newpage
 **Variables de superficie**
 \newline
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+```{r echo=FALSE, warning=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
 #a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price), col = reno)) + geom_point(alpha=0.4) +
@@ -419,15 +420,15 @@ Tout d'abord, il a été convenu d'utiliser les données de superficie à l'éch
 
 Examinons maintenant plus en détail la relation entre la superficie habitable au-dessus du sol et le prix de vente des maisons selon le nombre de salles de bain, le nombre de chambres et le nombre d'étages. 
 
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
+```{r echo=FALSE, warning=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 
 blo <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floor(bathrooms)))) + 
     geom_point(alpha=0.5) +
     ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre de salles de bain") +
     xlab("Superficie habitable au-dessus du sol (Pieds carrés)") + ylab("Logarithme du prix de vente") +
-    theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
-            legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 8)) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5, size = 4), axis.title = element_text(size=4.5),
+            legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 5), legend.position =     "bottom") +
     scale_color_brewer(palette = "Set1") +
     labs(colour = "Salles de bain")
 
@@ -435,9 +436,9 @@ bla <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(bedroom
     geom_point(alpha=0.5) +
     ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre de chambres") +
     xlab("Superficie habitable (Pieds carrés) au-dessus du sol") + ylab("Logarithme du prix de vente") +
-    theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
-          legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 8)) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5, size = 4), axis.title = element_text(size=4.5),
+          legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 5), legend.position =         "bottom") +
     scale_color_brewer(palette = "Paired") +
     labs(colour = "Chambres")
 
@@ -445,13 +446,14 @@ bli <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floors)
     geom_point(alpha=0.5) +
     ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre d'étages") +
     xlab("Superficie habitable au-dessus du sol (Pieds carrés)") + ylab("Logarithme du prix de vente") +
-    theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
-          legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 8)) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5, size = 4), axis.title = element_text(size=4.5),
+          legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 5), legend.position = "bottom") +
     scale_color_brewer(palette = "Set2") +
     labs(colour = "Étages")
 
-grid.arrange(blo,bla,bli, nrow=3, ncol=1)
+grid.arrange(blo, bla, grid::nullGrob(), bli, grid::nullGrob(),
+                        layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
 ```
 
 Tel que mentionné précédemment, il semble avoir une relation entre la variable *sqft_above* et le nombre de chambres, d'étages et salles de bain. Les graphiques ci-haut permettent d'affirmer ce constat. En effet, on remarque que les maisons qui ont plus de chambres, d'étages ou de salles de bain sont généralement les maisons dont la superficie habitable au-dessus du niveau du sol est la plus grande. On observe également une tendance linéaire positive. Autrement dit, les maisons qui ont une plus grande superficie habitable au-dessus du niveau du sol ainsi qu'un grand nombre d'une des 3 variables en question ici se vendent à des prix plus élevés.
@@ -482,7 +484,7 @@ La variable *expensive_area* est donc une variable catégorielle qui renvoie $1$
 
 Pour déterminer que la création de cette nouvelle variable est pertinente, examinons si la présence d'une maison dans la zone sélectionnée a effectivement une influence sur son prix:
 
-```{r, echo = F, fig.height=4, fig.align="center"}
+```{r, warning=F, echo = F, fig.height=4, fig.align="center"}
 ggplot(donnees, aes(x=log(sqft_above), y = log(price), col = factor(expensive_area))) + 
     geom_point(alpha=0.4) +
     scale_color_brewer(palette = "Set1") +
@@ -497,7 +499,7 @@ On peut bel et bien constater que les maisons localisées dans la zone urbaine o
 
 Nous pouvons aussi conduire une analyse bivariée sur les deux autres nouvelles variables explicatives, soit *reno* et *age*:
 
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
+```{r echo=FALSE, warning=F, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
 a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.1) + 
   ggtitle("Effet de l'âge de la construction sur le prix de vente d'une maison") +
