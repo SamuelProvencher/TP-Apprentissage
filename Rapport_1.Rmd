@@ -35,8 +35,13 @@ header-includes:
   \text{27 février 2020}
 \end{titlingpage}
 
+\pagenumbering{gobble}
+
 \tableofcontents
+
 \newpage
+\pagenumbering{arabic}
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 donnees <- read.csv("kc_house_data.csv")
 
@@ -519,11 +524,25 @@ ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=val
     theme(axis.text.x = element_text(angle = 90)) +
     scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white') +labs(title = "Matrice de corrélation de Pearson")
 ```
-À l'aide de cette représentation, il est possible de voir les covariances entre chaque variable du jeu de données. Encore là, il y a beaucoup de couleurs rouge et bleu qui apparaissent, signe d'une bonne corrélation entre les variables. Cependant, il est difficile d'indiquer quelle variable peut correctement compenser pour une autre. C'est pourquoi, l'ACP sera appliqué au jeu de données afin de bien résumer l’information contenue dans les `r ncol(donnees2)` variables efficacement. À partir de nos données qui occupent un certain espace \(\mathbb{R}^n\), l'analyse en composantes principales (ACP) ferra une projection vers un nouvel espace \(\mathbb{R}^m\). On cherche naturellement que \(m<n\), à des fins de réduire les besoins en ressources de calcul. Avec ette méthode, il sera possible de faire de la visualisation, puisque qu'il est facile de représenter \(\mathbb{R}^2\). L'ingéniosité de l'ACP consiste à maximiser la variance de la projection, limitant la perte d'information inhérente à un espace de plus faible dimension. 
 
-Ici, l'espace initial est $\mathbb{R}^{16}$. L'ACP nous permettra de réduire le nombre de variables résumant les caractéristiques de chacune d'entre elles, en minimisant la perte de variance et donc d'information. Procédons donc:
+À l'aide de cette représentation, il est possible de voir les covariances entre chaque variable du jeu de données. Encore là, il y a beaucoup de couleurs rouge et bleu qui apparaissent, signe de corrélations considérables entre les variables. Cependant, il est difficile de déterminer quelle variable peut correctement compenser pour une autre. C'est pourquoi l'ACP sera appliquée au jeu de données afin de bien résumer l’information contenue dans les `r ncol(donnees2)` variables efficacement. À partir de nos données qui occupent un certain espace \(\mathbb{R}^n\), l'analyse en composantes principales (ACP) fera une projection vers un nouvel espace \(\mathbb{R}^m\). On cherche naturellement que \(m<n\), afin de réduire les besoins en ressources de calcul. Avec cette méthode, il sera plus facile de faire de la visualisation, puisque par exemple, on pourra observer deux composantes de l'ACP à la fois dans un espace \(\mathbb{R}^2\). Comme chaque composante de l'ACP contiendra des informations venant de plusieurs des variables initiales, cette visualisation permettra donc de ressortir des tendances dans les données qui tiennent compte de plusieurs variables à la fois.
 
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
+Ici, l'espace initial est $\mathbb{R}^{16}$. L'ACP nous permettra de réduire le nombre de variables résumant les caractéristiques de chacune d'entre elles, en minimisant la perte de variance et donc d'information. Tout d'abord, nous allons tenter de déterminer le nombre optimal de dimensions à conserver à l'aide d'un diagramme d'éboulis et de l'analyse des vecteurs propres résultant de l'ACP.
+
+```{r, echo=F}
+library(factoextra)
+fviz_screeplot(acp, ncp = 15, main = "Diagramme d'éboulis", ylab = "Pourcentage expliqué de la variance")
+```
+
+```{r, echo=F}
+acp$eig
+```
+
+En utilisant la méthode du coude en se référant au diagramme d'éboulis, des choix sensés du nombre de dimensions à garder seraient 2, 4, 7 ou 10 dimensions. Cependant, dans le contexte de l'ACP il est intéressant de garder une proportion considérable de la variance des données originelles. Garder 2 ou 4 dimensions résulterait respectivement en 45 % ou 65 % de la variance originale, ce qui n'est pas considéré comme étant assez. Cependant, avec 7 dimensions, 82% de la variance originale est expliquée, ce qui dépasse le seuil de 80%. Nous souhaitons aussi avoir une réduction considérable du nombre de dimensions, donc le dernier choix possible de 10 nous semble trop élevé. Nous allons donc conserver 7 composantes principales pour la suite.
+
+Examinons maintenant les contributions des variables initiales sur les 4 premières dimensions que nous avons conservées avec l'ACP.
+
+```{r, echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
 # Visualisation contributions des 4 composantes
 contrib <- data.frame(acp$var$coord[,1:4])
 contrib$carac <- rownames(contrib)
@@ -535,15 +554,18 @@ ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
     theme(legend.position="top",axis.text.x = element_text(angle = 90))+
     coord_flip()+labs(title = "Contributions des différentes variables aux 4 premières composantes")
 ```
+
 Sur le précédent graphique, il est possible de voir la contribution des variables aux $4$ premières composantes créées. Commençons par analyser les deux premières composantes.
 
-On remarque que la première composante semble indiquer la présence de grosses maisons qui viennent juste d'être construites. En effet, la première composante prendra une grande valeur positive lorsque les variables *sqft_living15*, *sqft_above*, *floors*, *bedrooms* et *bathrooms* seront élevées. Toutes ces variables sont de parfaits indicateurs quand à la grosseur de la maison. Il n'est pas rare qu'une grosse maison possède ces caractéristiques. De plus, quand la maison est grande et spacieuse, celle-ci coûte de plus en plus cher et a une tendance à être très belle. D'où les 2 variables *price* et *grade* qui apportent une bonne contribution aussi. Vu la contribution de la variable *age* vers le négatif au contraire des autres, il faudrait assumé que pour une valeur élevée de la composante 1, celle-ci prendra une valeur minime et donc que la maison sera très récente.
-À l'inverse, une petite valeur de la composante 1 indiquerait l'effet contraire de ce qui a été dit précédemment et donc une petite maison ayant été construite depuis longtemps puisque la variable *age* contribue beaucoup dans les négatifs et les autres valeurs mentionnées on quant à eux plus d'importance dans le positif.
+On remarque que la première composante semble indiquer la présence de grosses maisons qui viennent juste d'être construites. En effet, la première composante prendra une grande valeur positive lorsque les variables *sqft_living15*, *sqft_above*, *floors*, *bedrooms* et *bathrooms* seront élevées. Toutes ces variables sont de parfaits indicateurs quand à la grosseur de la maison. Il n'est pas rare qu'une grosse maison possède ces caractéristiques. De plus, quand la maison est grande et spacieuse, celle-ci coûte de plus en plus cher et a une tendance à être très belle, d'où les 2 variables *price* et *grade* qui apportent une bonne contribution aussi. Vu la contribution de la variable *age* vers le négatif au contraire des autres, il faudrait assumer que pour une valeur élevée de la composante 1, l'âge prendra une faible valeur et donc que la maison sera très récente.
 
-La $2$e composante quant à elle semble plutôt indiquer la présence de vieille maison situées sur le bord de l'eau. Pour une valeur positive élevée de la composante, la contribution viendra majoritairement des variables *view*, *waterfront*, *age* et *sqft_basement*. Les 2 premières indiquent la présence d'une belle vue souvent associée à une vue sur la mer, tandis que l'age indiquera que la maison est vieille. Si on va plus loin, ceci est logique puisque connaissant bien notre histoire américaine, à l'époque les cours d'eau étaient favorisés vu l'importance des transports maritimes ou même le bonheur d'avoir accès à l'eau pour se baigner/faire du bateau. L'importance de l'eau n'a pas diminué pour autant avec le temps et c'est pourquoi des maisons situées près de l'eau sont souvent favorisées et sont donc très chères au final surtout si elles sont bien situées, d'où la bonne contribution de *condition*, *price* et *expensive area*. À noter l'importance de *sqft_basement* en positif et *floors* en négatif qui seraient indicateurs que les maisons associées par la composante 2 aient soit une grosse étage dans les valeurs positives ou plusieurs petits étages dans les valeurs négatives.
+À l'inverse, une petite valeur de la composante 1 indiquerait l'effet contraire de ce qui a été dit précédemment, soit une petite maison ayant été construite depuis longtemps, puisque la variable *age* contribue beaucoup dans les négatifs et les autres valeurs mentionnées ont quant à elles plus d'importance dans le positif.
+
+La $2$e composante quant à elle semble plutôt indiquer la présence de vieilles maison situées sur le bord de l'eau. Pour une valeur positive élevée de la composante, la contribution viendra majoritairement des variables *view*, *waterfront*, *age* et *sqft_basement*. Les 2 premières indiquent la présence d'une belle vue souvent associée à une vue sur la mer, tandis que l'âge indiquera que la maison est vieille. Si on va plus loin, ceci est logique puisque connaissant bien notre histoire américaine, à l'époque les cours d'eau étaient favorisés vu l'importance des transports maritimes ou même le bonheur d'avoir accès à l'eau pour se baigner ou faire du bateau. L'importance de l'eau n'a pas diminué pour autant avec le temps et c'est pourquoi des maisons situées près de l'eau sont souvent favorisées et sont donc très chères au final, surtout si elles sont bien situées, d'où la bonne contribution de *condition*, *price* et *expensive area*. À noter l'importance de *sqft_basement* en positif et *floors* en négatif qui seraient indicateurs que les maisons associées par la composante 2 aient soit une grosse étage dans les valeurs positives ou plusieurs petits étages dans les valeurs négatives.
+
 Ce qui permettrait de dire qu'une valeur négative de la composante 2 indiquerait plutôt de petites maisons avec beaucoup d'étages, mais non situées près de l'eau.
 
-En allant plus loin avec ces dimensions, il est même possible de confirmer nos affirmations avec les coordonnées des chacune des maisons de notre jeu de données en fonction des 2 premières composantes:
+En allant plus loin avec ces dimensions, il est même possible de confirmer nos affirmations avec les prix de vente de chacune des maisons de notre jeu de données en fonction des 2 premières composantes:
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
 donnees_acp <- cbind(donnees2, acp$ind$coord)
 ggplot() +
@@ -552,11 +574,20 @@ ggplot() +
     xlab("Dimension 1") +
     ylab("Dimension 2")  +
     theme_minimal() +
-    scale_color_gradient(low="green", high="red", trans = "log")+labs(title = "Coordonnées des maisons selon les 2 premières composantes")
+    scale_color_gradient(low="green", high="red", trans = "log")+labs(title = "Prix de vente des maisons selon les 2 premières composantes")
 ```
-En effet, le long de l'axe des X, on peut voir le changement de couleur qui passe de vert pâle à gauche à rouge foncé vers la droite, signe que le prix des maisons augmente au fur et à mesure que la composante 1 prend de l'importance. Les grosses maisons récentes été associées à de grandes valeurs de cette composante et les petites maisons vieilles à des petites valeurs, sans argumenter il est donc logique de voir la différence de prix comme décrit précédemment.
 
-Pour la 2e composante, il avait été dit qu'une valeur élevée représentait une vieille maison sur le bord de l'eau avec un étage tandis qu'une valeur faible représentait une maison récente à beaucoup d'étages mais non située près de l'eau. En fait, les caractéristiques positives de ces deux descriptions viennent compensées les négatives et ce du côté des deux extrêmes. C'est pourquoi on ne peut apercevoir de distinctions précises dans le prix avec la couleur selon les maisons si on regarde à la verticale. Une maison près de l'eau, mais ayant peu d'étages et étant vieille représenterait donc le même prix qu'une maison récente avec beaucoup d'étages, mais qui perd de la valeur vu qu'elle n'est pas près de l'eau.
+En effet, le long de l'axe des X, on peut voir le changement de couleur qui passe de vert pâle à gauche à rouge foncé vers la droite, signe que le prix des maisons augmente au fur et à mesure que la composante 1 prend de l'importance. Les grosses maisons récentes ont été associées à de grandes valeurs de cette composante et les petites maisons vieilles à des petites valeurs. Il est donc logique de voir la différence de prix comme décrite précédemment sans argumenter.
+
+Pour la 2e composante, il avait été dit qu'une valeur élevée représentait une vieille maison sur le bord de l'eau avec un étage tandis qu'une valeur faible représentait une maison récente à beaucoup d'étages mais non située près de l'eau. En fait, les caractéristiques positives de ces deux descriptions viennent compenser les négatives et ce du côté des deux extrêmes. C'est pourquoi on ne peut apercevoir de distinctions précises dans le prix avec la couleur selon les maisons si on regarde à la verticale. Une maison près de l'eau, mais ayant peu d'étages et étant vieille représenterait donc le même prix qu'une maison récente avec beaucoup d'étages, mais qui perd de la valeur vu qu'elle n'est pas près de l'eau.
+
+Enchaînons avec la troisième composante. Cette dernière est particulièrement influencée par les variables *sqft_lot*, *sqft_lot15*, *expensive_area* et *floors*. Une maison ayant une troisième composante de grande valeur possède donc un grand terrain, ses voisins ont également un grand terrain, elle n'est pas située dans la zone métropolitaine et (à un moindre mesure) possède peu d'étages. Selon toute logique, cette dimension représente donc l'état urbain ou rural des maisons. En effet, une maison avec une troisième composante élevée serait une maison en campagne qui possède un très grand terrain et peu d'étages (les maisons de campagne sont souvent plus anciennes et possèdent moins d'étages que les maisons récentes). À l'inverse, une maison située en ville et possédant un petit terrain et beaucoup d'étages aura une valeur très faible pour la troisième composante.
+
+Finalement, la quatrième composante semble représenter les petites maisons en condition moyenne situées sur le bord de mer et possédant une belle vue. En effet, les variables *waterfront* et *view* ont un impact positif sur la composante, alors que les variables *bedrooms*, *condition* et *sqft_basement* ont un impact négatif. On pourrait donc croire que ce sont des petits chalets sur le bord de l'eau qui possèdent peu de chambres, pas de sous-sol et qui sont en condition moyenne, comme des "camps de pêche". À l'inverse, une maison qui ne correspond pas à ce descriptif aura une valeur négative pour la quatrième composante.
+
+Nous allons illustrer les valeurs de la quatrième composante sur la carte de King County pour confirmer notre intuition:
+
+# mettre carte leaflet composante 4
 
 \newpage
 \section{Conclusion}
