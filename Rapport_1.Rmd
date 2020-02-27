@@ -150,7 +150,7 @@ Comme on peut le voir, cette base de données contient des variables assez inté
 
 Pour poursuivre, le tableau ci-dessous présente les caractéristiques sommatives des variables explicatives. 
 
-![](caracteristiques.png){width="100%"}
+![Caractéristiques sommatives des variables explicatives](caracteristiques.png){width="100%"}
 
 Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. Aucun impact n'est envisagé quant à l'analyse de cette variable puisque les graphiques seront gradués de $3$ à $13$. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_lot15*, *sqft_above*, *sqft_basement*, *sqft_living15* et *sqft_living*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque, telle que la transformation logarithmique, pourrait être de mise. Il est également possible de constater que la proportion de maisons situées sur le bord d'un lac est de `r round(mean(donnees$waterfront),2)*100` %.
 
@@ -552,7 +552,8 @@ ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
     geom_bar(stat="identity",position=PositionDodge)+
     facet_grid(~variable)+
     theme(legend.position="top",axis.text.x = element_text(angle = 90))+
-    coord_flip()+labs(title = "Contributions des différentes variables aux 4 premières composantes")
+    coord_flip()+labs(title = "Contributions des différentes variables aux 4 premières composantes") +
+  theme(plot.title = element_text(size = rel(0.8)))
 ```
 
 Sur le précédent graphique, il est possible de voir la contribution des variables aux $4$ premières composantes créées. Commençons par analyser les deux premières composantes.
@@ -575,7 +576,7 @@ ggplot() +
     ylab("Dimension 2")  +
     theme_minimal() +
     scale_color_gradient(low="green", high="red", trans = "log")+labs(title = "Prix de vente des maisons selon les 2 premières composantes") +
-  theme(plot.title = element_text(size = rel(1.5)))
+  theme(plot.title = element_text(size = rel(1)))
 ```
 
 En effet, le long de l'axe des abscisses, on peut voir le changement de couleur qui passe de vert pâle à gauche à rouge foncé vers la droite, signe que le prix des maisons augmente au fur et à mesure que la composante 1 prend de l'importance. Les grosses maisons récentes ont été associées à de grandes valeurs de cette composante et les petites maisons vieilles à des petites valeurs. Il est donc logique de voir la différence de prix comme décrite précédemment sans argumenter.
@@ -589,7 +590,7 @@ Finalement, la quatrième composante semble représenter les petites maisons en 
 Nous allons illustrer les valeurs de la quatrième composante sur la carte de King County pour confirmer notre intuition:
 
 # mettre carte leaflet composante 4
-![](Composante_4_map.png){width="100%"}
+![4ème composante sur la carte de King County](Composante_4_map.png){width="100%"}
 
 \newpage
 \section{Conclusion}
