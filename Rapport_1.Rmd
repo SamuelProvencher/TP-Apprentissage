@@ -95,6 +95,7 @@ La visualisation des données à l'étude a permis de déceler quelques erreurs.
 
 
 \subsection{Analyse univariée}
+\subsection{Variables explicatives}
 La base de données initiales comptaient $20$ variables explicatives. Or, certaines de ces variables n'étaient pas pertinentes dans la modélisation du prix de vente des maisons. Ainsi, $2$ variables explicatives ont été retirées du jeu de données, soit le numéro d'identification de la vente (*ID*) et le code postal (*zipcode*). Le code postal a été retiré, car le jeu de données contient d'autres variables plus précises sur la localisation des différentes maisons. De plus, la variable *Date* a été mise sous le format suivant : année-jour-mois. Voici d'ailleurs un tableau qui présente les variables explicatives retenues ainsi qu'une brève description de celles-ci.
 
 |   Variables explicatives |     Descriptions                                                    |      
@@ -118,13 +119,17 @@ La base de données initiales comptaient $20$ variables explicatives. Or, certai
 |         Sqft_living15    | Superficie habitable moyenne en pieds carrés des 15 plus proches voisins |   
 |         Sqft_lot15       |  Superficie moyenne du terrain en pieds carrés des 15 plus proches voisins | 
 
+Comme on peut le voir, cette base données contient des variables assez intéressantes. En effet, elle est composée de variables numériques, temporelles ainsi que spaciale. Cela nous permettra de représenter les données à l'aide d'une carte de la région de Seattle.
 
-Pour poursuivre, le tableau ci-dessous présente les caractéristiques des variables explicatives. blabla
+Pour poursuivre, le tableau ci-dessous présente les caractéristiques sommatives des variables explicatives. 
 
 ![](caracteristiques.png){width="100%"}
 
+Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. **Rajouter plus de chose sur ça, genre pour simplifier, on enlève 1 et 2 même si ça les trace pas**. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_above*, *sqft_basement*, *sqft_living15* et *sqft_living*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque ,telle que la transformation logarithmique, pourrait être de mise.
+
 Maintenant, analysons de plus près certaines de ces variables.
 \newline
+**Date**
 Le graphique suivant présente la densité de la variable *Date*.
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
 library(gridExtra)
@@ -142,6 +147,7 @@ grid.arrange(date ,nrow = 1, ncol=1)
 ```
 Il est possible de constater qu'il semble y avoir un effet de saisonnalité dans la vente de maisons. En effet, l'été semble être une période où il y a beaucoup de ventes de maisons tandis que l'hiver semble être une période où la vente de maisons est moins fréquente.
 \newline
+**Yr_built**
 Le graphique suivant illustre la distribution de l'année de construction.
 
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
@@ -157,9 +163,7 @@ grid.arrange(year ,nrow = 1, ncol=1)
 
 ```
 
-Tout d'abord, il est possible de constater que la base de données contient plus de maisons récentes que de vieilles maisons. On semble remarquer $2$ augmentations majeures sur le graphique. En effet, il y a une hausse vers les années $1950$, puis une seconde vers le début des années $2000$. De plus, on constate une légère concentration de maisons construites en $1900$. Plus précisément, $87$ maisons ont été construites en $1900$.
-
-
+Tout d'abord, il est possible de constater que la base de données contient plus de maisons récentes que de vieilles maisons. On semble remarquer $2$ augmentations majeures sur le graphique. En effet, il y a une hausse vers les années $1950$, puis une seconde vers le début des années $2000$. De plus, on constate une légère concentration de maisons construites en $1900$. Plus précisément, $87$ maisons ont été construites en $1900$. Or, le nombre de maisons construites en $1901$ et $1902$ est similaire à celui pour $1900$. Ainsi, nous avons pris l'hypothèse que les données ont commencé à être recueillies en $1900$.
 
 \subsubsection{Variable réponse}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
@@ -250,7 +254,7 @@ grid.arrange(bed, bath, grid::nullGrob(), flo, grid::nullGrob(),
                         layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
 
 ```
-Le constat général de ces trois graphiques est que plus ces variables prennent une valeur élevée, plus le logarithme du prix augmente. Il s'agit d'un constat assez intuitif, donc ce n'est pas surprenant. Un second constat est qu'il y a une plus grande volatilité pour de faibles valeurs de ces trois variables. En effet, cela est attribuable au fait qu'il y a un grand nombre d'observations pour de faibles valeurs. Pour les valeurs plus à droite dans les graphiques, c'est plus dure d'analyser, car les cas sont beaucoup plus rares. Le dernier constat à relever est au niveau de la variable *bathrooms*. À l'aide du graphique de cette variable ci-haut, il est possible de constater que l'impact des salles de bains sur la variable réponse est plus important que l'impact des deux autres variables en raison de la pente plus prononcée. 
+Le constat général de ces trois graphiques est que plus ces variables prennent une valeur élevée, plus le logarithme du prix augmente. Il s'agit d'un constat assez intuitif, donc ce n'est pas surprenant. Un second constat est qu'il y a une plus grande volatilité pour de faibles valeurs de ces trois variables. En effet, cela est attribuable au fait qu'il y a un grand nombre d'observations pour de faibles valeurs. Pour les valeurs plus à droite dans les graphiques, c'est plus dure d'analyser, car les cas sont beaucoup plus rares. Le dernier constat à relever est au niveau de la variable *bathrooms*. À l'aide du graphique de cette variable ci-haut, il est possible de constater que l'impact des salles de bains sur la variable réponse est plus important que l'impact des deux autres variables en raison de la pente plus prononcée. Tout porte à croire que ces 3 variables sont reliées à la superficie habitable, car habituellement, les maisons plus dispendieuses sont plus grosses en terme de superficie, de nombre de chambres, étages et salles de bain.
 
 \subsubsection{Variables waterfront, view, condition et grade}
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
