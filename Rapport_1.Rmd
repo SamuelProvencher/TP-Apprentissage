@@ -164,7 +164,7 @@ Pour poursuivre, le tableau ci-dessous présente les caractéristiques sommative
 
 ![Caractéristiques sommatives des variables explicatives](caracteristiques.png){width="100%"}
 
-Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. Aucun impact n'est envisagé quant à l'analyse de cette variable puisque les graphiques seront gradués de $3$ à $13$. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_lot15*, *sqft_above*, *sqft_basement*, *sqft_living15*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque, telle que la transformation logarithmique, pourrait être de mise. Il est également possible de constater que la proportion de maisons situées sur le bord de l'eau est d'uniquement `r round(mean(donnees$waterfront),2)*100` %.
+Il est possible de faire ressortir quelques informations de ce tableau. Tout d'abord, la variable *grade* est une variable qui prend des valeurs entières de $1$ à $13$. Or, le minimun est de $3$. Aucun impact n'est envisagé quant à l'analyse de cette variable puisque les graphiques seront gradués de $3$ à $13$. De plus, quelques variables ont un très grand écart-type, soit *sqft_lot*, *sqft_lot15*, *sqft_above*, *sqft_basement* et *sqft_living15*. Ainsi, il faudra porter une attention particulière lors de la représentation graphique de ces variables. Une transformation quelconque, telle que la transformation logarithmique, pourrait être de mise. Il est également possible de constater que la proportion de maisons situées sur le bord de l'eau est d'uniquement `r round(mean(donnees$waterfront),2)*100` %.
 
 Maintenant, analysons de plus près certaines de ces variables.
 \newline
@@ -244,14 +244,14 @@ Nous pouvons examiner le prix de vente des maisons selon leur latitude et leur l
 lat <- ggplot(donnees, aes(x=lat, y = log(price))) + 
   geom_point(alpha = 0.1) +
   ggtitle("Prix de vente des maisons selon leur latitude (log)") +
-  xlab("Latitude") + ylab("Log(prix)") +
+  xlab("Latitude") + ylab("Logarithme du prix de vente") +
   theme_bw() + #asymétrie
   theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
 long <- ggplot(donnees, aes(x=long, y = log(price))) + 
   geom_point(alpha = 0.1) + 
   ggtitle("Prix de vente des maisons selon leur longitude (log)") +
-  xlab("Longitude") + ylab("Log(prix)") +
+  xlab("Longitude") + ylab("Logarithme du prix de vente") +
   theme_bw() + #log pour variable réponse est mieux
   theme(plot.title = element_text(hjust = 0.5, size = 7), axis.title = element_text(size=6))
 
@@ -266,17 +266,18 @@ Il a été réalisé que visualiser les prix des maisons de cette manière étai
 library(ggmap)
 register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
 
-map<-get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
+map <- get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
 
-ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
+carte <- ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
                                                 aes(x = long, y = lat, z = log(price)),
                                                 fun = mean, alpha = 0.6, bins = 100) + 
     scale_fill_gradient(name = "Log(Price)", low = "green", high = "red") +
-  ggtitle("King County, USA") +
+  ggtitle("Prix des maisons vendues à King County, USA") +
   theme(plot.title = element_text(hjust = 0.5))
+carte
 ```
 
-Il est beaucoup plus facile de faire ressortir des tendances de cette manière. En regardant la carte thermique affichée ci-dessus, il est possible de voir qu’une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l’eau. Cette région semble être la zone urbaine de Seattle. Quant à elles, les maisons situées en région rurale ou en banlieue éloignée ont des prix de vente beaucoup plus bas. Cette carte thermique sera reprise à la section "Création de variables explicatives" lorsque nous transformerons les variables latitude et longitude en une nouvelle variable plus éloquente.
+Il est beaucoup plus facile de faire ressortir des tendances de cette manière. En regardant la carte thermique affichée ci-dessus, il est possible de voir qu’une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l’eau. Cette région semble être la zone urbaine de Seattle. Quant à elles, les maisons situées en région rurale ou en banlieue éloignée ont des prix de vente beaucoup plus bas. Comme la localisation a un impact sur le prix que nous ne voulons pas ignorer, mais que les variables *latitude* et *longitude* ne reflètent pas par elles-mêmes cet impact, nous transformerons ces deux dernières variables en une nouvelle variable plus éloquente à la section "Création de variables explicatives".
 
 **Date en fonction du logarithme du prix**
 \newline
@@ -372,7 +373,6 @@ grid.arrange(wat,vi,con,gra,nrow = 2, ncol=2)
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 library(gridExtra)
 
-
 #a <- ggplot(donnees, aes(x=log(sqft_living), y=log(price), col = reno)) + geom_point(alpha=0.4) +
  # ggtitle("Effet de la superficie habitable sur le prix de vente d'une maison") +
   #xlab("Superficie habitable (Pieds carrés)") + ylab("Logarithme du prix de vente") +
@@ -380,32 +380,32 @@ library(gridExtra)
   #theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 b <- ggplot(donnees, aes(x=log(sqft_lot), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie du terrain sur le prix de vente d'une maison") +
-  xlab("Superficie du terrain (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  ggtitle("Prix de vente des maisons selon la superficie du terrain (log)") +
+  xlab("Logarithme de la superficie du terrain (pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 c <- ggplot(donnees, aes(x=log(sqft_above), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie des étages supérieurs sur le prix de vente d'une maison") +
-  xlab("Superficie des étages supérieurs (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  ggtitle("Prix de vente des maisons selon la superficie des étages supérieurs (log)") +
+  xlab("Logarithme de la superficie des étages supérieurs (pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 d <- ggplot(donnees[!donnees$sqft_basement ==0,], aes(x=log(sqft_basement), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie du sous-sol sur le prix de vente d'une maison") +
-  xlab("Superficie du sous-sol (pieds carrés") + ylab("Logarithme du prix de vente") +
+  ggtitle("Prix de vente des maisons selon la superficie du sous-sol (log)") +
+  xlab("Logarithme de la superficie du sous-sol (pieds carrés") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 e <- ggplot(donnees, aes(x=log(sqft_living15), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie habitable du voisinage sur le prix de vente d'une maison") +
-  xlab("Superficie habitable du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  ggtitle("Prix de vente des maisons selon la superficie habitable du voisinage (log)") +
+  xlab("Logarithme de la superficie habitable du voisinage (pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.4) +
-  ggtitle("Effet de la superficie du terrain du voisinage sur le prix de vente d'une maison") +
-  xlab("Superficie du terrain du voisinage (Pieds carrés)") + ylab("Logarithme du prix de vente") +
+  ggtitle("Prix de vente des maisons selon la superficie du terrain du voisinage (log)") +
+  xlab("Logarithme de la superficie du terrain du voisinage (pieds carrés)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
@@ -413,13 +413,11 @@ f <- ggplot(donnees, aes(x=log(sqft_lot15), y=log(price))) + geom_point(alpha=0.
 #grid.arrange(a,b,c,d,e,f,nrow = 3, ncol=2)
 grid.arrange(c,d,b,f,grid::nullGrob(), e, grid::nullGrob(), 
              layout_matrix = matrix(c(1,1,2,2,3,3,4,4,5,6,6,7), byrow = TRUE, ncol = 4))
-
 ```
-**axe et titre à changer**
-Tout d'abord, il a été convenu d'utiliser les données de superficie à l'échelle logarithmique afin de mieux visualiser les données. Ainsi, toute les références aux variables dans les prochaines lignes seront considérées à l'échelle **logarithmique**. En premier lieu, une relation linéaire très évidente est présente entre les variables *sqft_above* ainsi que *sqft_living15* et le prix tel qu'illustré dans le premier et dernier graphique ci-haut. En second lieu, la relation entre la superficie du sous-sol (*sqft_basement*) et le prix, observable sur le second graphique ci-haut, n'est pas aussi évidente. Pour la visualisation, il a été nécessaire de retirer `r sum(donnees$sqft_basement==0)` observations qui n'avaient pas de sous-sol. Pour les maisons possédant un sous-sol, il est possible de conclure que plus le sous-sol est grand, plus le prix de vente sera élevé. Cependant, la relation linéaire n'est pas aussi forte qu'elle l'était pour les deux variables mentionnées plus haut. En troisième lieu, à l'aide des deux graphiques centraux, la superficie du terrain (*sqft_lot*) et la superficie des terrains du voisinage (*sqft_lot15*) ne semblent pas avoir d'impact sur le prix de vente d'une maison. Cela est très surprenant et inattendu, car règle générale, les terrains ont également des valeurs foncières. Une hypothèse pour cette absence de relation est que les maisons du jeu de données sont principalement situées dans une zone urbanisée (région de Seattle) où les terrains seraient de dimensions similaires. Lorsque ces deux variables sont observées de plus près, une grosse masse de données autour de la médiane est découverte, ce qui rend l'hypothèse plausible (se référer au tableau sommaire de l'analyse univariée). Bref, la superficie totale d'une maison et celle des maison du voisinage ont un impact significatif sur le prix de vente tandis que la superficie du terrain de la maison et celle du terrain du voisinage ne semblent pas avoir d'impact.
 
+Tout d'abord, il a été convenu d'utiliser les données de superficie à l'échelle logarithmique afin de mieux visualiser les données. Ainsi, toute les références aux variables dans les prochaines lignes seront considérées à l'échelle **logarithmique**. En premier lieu, une relation linéaire très évidente est présente entre les variables *sqft_above* ainsi que *sqft_living15* et le prix tel qu'illustré dans le premier et dernier graphique ci-haut. En second lieu, la relation entre la superficie du sous-sol (*sqft_basement*) et le prix, observable sur le second graphique ci-haut, n'est pas aussi évidente. Pour la visualisation, il a été nécessaire de retirer `r sum(donnees$sqft_basement==0)` observations qui n'avaient pas de sous-sol. Pour les maisons possédant un sous-sol, il est possible de conclure que plus le sous-sol est grand, plus le prix de vente sera élevé. Cependant, la relation linéaire n'est pas aussi forte qu'elle l'était pour les deux variables mentionnées plus haut. En troisième lieu, à l'aide des deux graphiques centraux, la superficie du terrain (*sqft_lot*) et la superficie des terrains du voisinage (*sqft_lot15*) ne semblent pas avoir d'impact sur le prix de vente d'une maison. Cela est très surprenant et inattendu, car règle générale, les terrains ont également des valeurs foncières. Une hypothèse pour cette absence de relation est que les maisons du jeu de données sont principalement situées dans une zone urbanisée (région de Seattle) où les terrains seraient de dimensions similaires. Lorsque ces deux variables sont observées de plus près, une grosse masse de données autour de la médiane est découverte, ce qui rend l'hypothèse plausible (se référer au tableau sommaire de l'analyse univariée). Bref, la superficie totale d'une maison et celles des maisons du voisinage ont un impact significatif sur le prix de vente tandis que la superficie du terrain de la maison et celles des terrains du voisinage ne semblent pas avoir d'impact.
 
-**graph**
+Examinons maintenant plus en détail la relation entre la superficie habitable au-dessus du sol et le prix de vente des maisons selon le nombre de salles de bain, le nombre de chambres et le nombre d'étages. 
 
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=6, fig.width=6, fig.align="center"}
 
@@ -454,28 +452,54 @@ bli <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floors)
     labs(colour = "Étages")
 
 grid.arrange(blo,bla,bli, nrow=3, ncol=1)
-
-
-
-
 ```
-Tel que mentionné précédemment, il semblait avoir une relation entre la variable *sqft_above* et
-le nombre de chambres, d'étages et salles de bain. Les graphiques ci-haut permettent d'affirmer ce constat.
-En effet, on remarque que les maisons qui ont plus de chambres, d'étages ou de salles de bain
-sont généralement les maisons dont la superficie habitable au-dessus du niveau du sol
-est la plus grande. On observe également une tendance linéaire positive. 
-Autrement dit, les maisons qui ont une plus grande superficie habitable au-dessus du niveau du sol
-ainsi qu'un grand nombre d'une des 3 variables se vendent à des prix plus élevées.
-\newline
-\newline
+
+Tel que mentionné précédemment, il semble avoir une relation entre la variable *sqft_above* et le nombre de chambres, d'étages et salles de bain. Les graphiques ci-haut permettent d'affirmer ce constat. En effet, on remarque que les maisons qui ont plus de chambres, d'étages ou de salles de bain sont généralement les maisons dont la superficie habitable au-dessus du niveau du sol est la plus grande. On observe également une tendance linéaire positive. Autrement dit, les maisons qui ont une plus grande superficie habitable au-dessus du niveau du sol ainsi qu'un grand nombre d'une des 3 variables en question ici se vendent à des prix plus élevés.
+
+
 \newpage
-**Variables *âge*, *reno* et *expensive area***
-\newline
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=4.5, fig.width=6, fig.align="center"}
+\section{Création de variables explicatives}
+D'après les données accessibles, il a semblé pertinent d'en utiliser certaines afin de créer d'autres variables explicatives qui seront plus utiles afin de déterminer le prix de vente des maisons de King County.
+
+La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci. Analyser l'âge de la maison est plus facile qu'analyser deux dates prises séparement. Combiner ensemble ces deux dates crée donc une variable numérique discrète plus utile pour en déduire le prix d'une maison. De plus, un coefficient de régression associé à l'année de construction aurait été difficile à analyser, puisque l'année la plus ancienne était 1900. Un coefficient de régression sur l'âge sera plus facile à analyser.
+
+La deuxième variable qui a été créée est celle pour savoir si la maison a été rénovée ou non depuis sa construction. Elle a été nommée *reno*. À prime abord, il a été testé si cette nouvelle variable ne devrait pas plutôt être catégorielle ordinale avec des catégories allant de *10 ans et moins* pour les maisons ayant eu une rénovation dans les $10$ années précédant leur vente, *10 ans et plus* pour les maisons ayant eu une rénovation il y a $10$ années ou plus et *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction. Par contre, après une analyse plus poussée, les catégories autres que celle *Jamais rénové* affichait une moyenne et une médiane de prix de vente similaires. De plus, la proportion de maisons rénovées était faible (4 %). Pour ces deux raisons, il a été décidé que séparer les maisons rénovées en deux catégories semblait exagéré, c'est pourquoi au final, la variable *reno* prend uniquement comme valeurs $1$ si la maison a déjà été rénovée depuis sa construction ou $0$ si elle n'a jamais été rénovée.
+
+La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). Il a déjà été déterminé à la section "Analyse bivariée" que les variables *latitude* et *longitude* devraient être remplacées par une variable plus éloquente. En examinant la carte thermique dans cette section, il est possible de voir qu'une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l'eau. Cette région semble être la zone urbaine de Seattle. Nous avons donc décidé de déterminer manuellement un rectangle délimitant cette région la plus coûteuse selon la latitude et la longitude. On peut voir ci-dessous l'ajout de la zone plus coûteuse que nous avons déterminée sur la carte thermique:
+
+```{r echo=FALSE, message=FALSE, fig.pos='H', fig.height=4, fig.width=9, fig.align="center", warning=FALSE}
+xmin <-  -122.4
+xmax <-  -122
+ymin <-  47.5
+ymax <-  47.72
+
+carte +
+  annotate("rect", xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
+  annotate("text", x= -122.2, y = 47.6, label = "Zone urbaine")
+```
+
+La variable *expensive_area* est donc une variable catégorielle qui renvoie $1$ lorsque la maison est située dans la zone coûteuse et renvoie $0$ lorsque la maison ne se situe pas dans la zone coûteuse
+
+Pour déterminer que la création de cette nouvelle variable est pertinente, examinons si la présence d'une maison dans la zone sélectionnée a effectivement une influence sur son prix:
+
+```{r, echo = F, fig.height=4, fig.align="center"}
+ggplot(donnees, aes(x=log(sqft_above), y = log(price), col = factor(expensive_area))) + 
+    geom_point(alpha=0.4) +
+    scale_color_brewer(palette = "Set1") +
+    labs(colour = "Zone urbaine") +
+    ggtitle("Prix de vente en fonction de la superficie habitable au−dessus du sol et de la localisation") +
+    xlab("Logarithme de la superficie habitable au-dessus du sol") + ylab("Logarithme du prix de vente") +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6), legend.position = "right")
+```
+
+On peut bel et bien constater que les maisons localisées dans la zone urbaine ont un prix de vente plus élevé en moyenne.
+
+Nous pouvons aussi conduire une analyse bivariée sur les deux autres nouvelles variables explicatives, soit *reno* et *age*:
+
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=6, fig.align="center"}
 library(gridExtra)
-
-
-a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.4) + 
+a <- ggplot(donnees, aes(x=age, y=log(price))) + geom_point(alpha=0.1) + 
   ggtitle("Effet de l'âge de la construction sur le prix de vente d'une maison") +
   xlab("Âge de la construction") + ylab("Logarithme du prix de vente") +
   theme_bw() +
@@ -487,65 +511,10 @@ b <- ggplot(donnees, aes(x=factor(reno), y=log(price))) + geom_boxplot() +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
-c <- ggplot(donnees, aes(x=factor(expensive_area), y=log(price))) + geom_boxplot() +
-  ggtitle("Effet de la localisation sur le prix de vente d'une maison") +
-  xlab("Localisation") + ylab("Logarithme du prix de vente") +
-  theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
-
-
-#grid.arrange(a,b,c,nrow = 2, ncol=2)
-grid.arrange(b, c, grid::nullGrob(), a, grid::nullGrob(),
-                        layout_matrix = matrix(c(1,1,2,2,3,4,4,5), byrow = TRUE, ncol = 4))
-
-```
-bla
-\newpage
-\section{Création de variables explicatives}
-D'après les données accessibles, il a semblé pertinent d'en utiliser certaines afin de créer d'autres variables explicatives qui seront plus utiles afin de déterminer le prix de vente des maisons de King County.
-
-La première qui a été créée est celle de l'âge de la maison (*age*). Initialement, le jeu de données permettait d'obtenir la date de vente de la maison grâce à la variable *date* et l'année de construction de la maison grâce à la variable *yr_built*. À l'aide de ces deux variables, il est donc facile d'obtenir l'âge de la maison, soit le nombre d'années depuis qu'elle a été construite avant la vente de celle-ci. Analyser l'âge de la maison est plus facile qu'analyser deux dates prises séparement. Combiné ensemble ces deux dates crée une variable numérique discrète plus utile pour en déduire le prix d'une maison. En d'autres mots, cette variable expliquera mieux les patrons de réponse.
-**correct Sam? besoin de ta validation**
-
-La deuxième variable qui a été créée est celle à savoir si la maison a été rénovée ou non depuis sa construction, elle a été nommée *reno*. À prime abord, il a été testé si cette nouvelle variable ne devrait pas plutôt être catégorielle ordinale avec des catégories allant de *10 ans et moins* pour les maisons ayant eu une rénovation dans les $10$ années précédant leur vente, *10 ans et plus* pour les maisons ayant eu une rénovation il y a $10$ années ou plus et *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction. Par contre, après une analyse plus poussée, les catégories autres que celle *Jamais rénové* affichait une moyenne et une médiane similaire les uns entre les autres. Les séparer en plusieurs catégories semblent donc désuet, c'est pourquoi au final, la variable *réno* prend comme valeur $1$ si la maison a déjà été rénovée depuis sa construction ou $0$ si elle n'a jamais été rénovée.
-
-La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). En effet, les variables réprésentant la latitude et la longitude de la maison sur la carte thermique ci-dessous (**comments:faire référence ex. figure 3**) indique la position de la maison sur la planète Terre. En utilisant toutes ces données de position des maisons, il est alors facile de les situées sur une carte de la région de King County, la région à l'étude dans ce rapport. Voici d'ailleurs un aperçu des positions de chaque maison vendue à King County.
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=5, fig.align="center", warning=FALSE}
-library(ggmap)
-register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
-
-map<-get_map(location = c(left = min(donnees$long), bottom = min(donnees$lat), right = max(donnees$long), top = max(donnees$lat)))
-xmin <-  -122.4
-xmax <-  -122
-ymin <-  47.5
-ymax <-  47.72
-
-ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
-                                                aes(x = long, y = lat, z = log(price)),
-                                                fun = mean, alpha = 0.6, bins = 100) + 
-    scale_fill_gradient(name = "Log(Prix)", low = "green", high = "red")+
-    annotate("rect", xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour="black", lty = 1, lwd = 1.3, alpha = 0) +
-    annotate("text", x= -122.2, y = 47.6, label = "Zone urbaine")+ ggtitle("Position des maisons vendues de King County ")
+grid.arrange(b, a, nrow = 1, ncol=2)
 ```
 
-En regardant la carte thermique affichée ci-dessus, il est possible de voir qu'une bonne partie des maisons les plus couteuses se situe au nord-ouest de la région, tout près de l'eau. Cette région semble être la zone urbaine. Il est d'ailleurs possible d'identifier la région la plus couteuse en allant chercher les coordonnées des bonnes latitudes et longitudes.
-
-La variable de la région la plus coûteuse est une variable catégorielle qui renvoie $1$ lorsque la maison est située dans la zone urbaine et renvoie $0$ lorsque la maison ne se situe pas dans la zone urbaine.
-
-Pour prouver que la création de cette nouvelle variable est pertinente, examinons si la présence d'une maison dans la zone sélectionnée a effectivement une influence sur son prix:
-
-```{r, echo = F}
-ggplot(donnees, aes(x=log(sqft_above), y = log(price), col = factor(expensive_area))) + 
-    geom_point(alpha=0.4) +
-    scale_color_brewer(palette = "Set1") +
-    labs(colour = "Zone urbaine") +
-    ggtitle("Prix de vente en fonction de la superficie habitable au−dessus du sol et de la localisation") +
-    xlab("Logarithme de la superficie habitable au-dessus du sol") + ylab("Logarithme du prix de vente") +
-    theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6), legend.position = "right")
-```
-
-On peut bel et bien constater que les maisons localisée dans la zone urbaine ont un prix de vente plus élevé en moyenne.
+On peut voir qu'une maisons ayant subi une ou plusieurs rénovations se vendra en moyenne à un prix plus élevé, ce qui est intuitif. Pour ce qui est de l'âge de la maison, aucune tendance nette n'est observée: on peut cependant affirmer que les maisons très récentes (15 ans ou moins) semblent avoir un prix de vente plus élevé que les autres en moyenne, ce qui serait également logique.
 
 \newpage
 \section{Réduction de la dimensionalité}
@@ -568,12 +537,14 @@ library(reshape2)
 cormat.long <- melt(cormat)
 ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
     theme(axis.text.x = element_text(angle = 90)) +
-    scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white') +labs(title = "Matrice de corrélation de Pearson")
+    scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white') +labs(title = "Matrice de corrélation de Pearson") +
+  xlab("")+
+  ylab("")
 ```
 
-À l'aide de cette représentation, il est possible de voir les covariances entre chaque variable du jeu de données. Encore là, il y a beaucoup de couleurs rouge et bleu qui apparaissent, signe de corrélations considérables entre les variables. Cependant, il est difficile de déterminer quelle variable peut correctement compenser pour une autre. C'est pourquoi l'ACP sera appliquée au jeu de données afin de bien résumer l’information contenue dans les `r ncol(donnees2)` variables efficacement. À partir de nos données qui occupent un certain espace \(\mathbb{R}^n\), l'analyse en composantes principales (ACP) fera une projection vers un nouvel espace \(\mathbb{R}^m\). On cherche naturellement que \(m<n\), afin de réduire les besoins en ressources de calcul. Avec cette méthode, il sera plus facile de faire de la visualisation, puisque par exemple, on pourra observer deux composantes de l'ACP à la fois dans un espace \(\mathbb{R}^2\). Comme chaque composante de l'ACP contiendra des informations venant de plusieurs des variables initiales, cette visualisation permettra donc de ressortir des tendances dans les données qui tiennent compte de plusieurs variables à la fois.
+À l'aide de cette représentation, il est possible de voir les corrélations entre chaque variable du jeu de données. Encore là, il y a beaucoup de couleurs rouge et bleu qui apparaissent, signe de corrélations considérables entre les variables. Cependant, il est difficile de déterminer quelle variable peut correctement compenser pour une autre. C'est pourquoi l'ACP sera appliquée au jeu de données afin de résumer efficacement l’information contenue dans les `r ncol(donnees2)` variables. À partir de nos données qui occupent un certain espace \(\mathbb{R}^n\), l'analyse en composantes principales (ACP) fera une projection vers un nouvel espace \(\mathbb{R}^m\). On cherche naturellement que \(m<n\), afin de réduire les besoins en ressources de calcul. Avec cette méthode, il sera plus facile de faire de la visualisation, puisque par exemple, on pourra observer deux composantes de l'ACP à la fois dans un espace \(\mathbb{R}^2\). Comme chaque composante de l'ACP contiendra des informations venant de plusieurs des variables initiales, cette visualisation permettra donc de ressortir des tendances dans les données qui tiennent compte de plusieurs variables à la fois.
 
-Ici, l'espace initial est $\mathbb{R}^{17}$. L'ACP nous permettra de réduire le nombre de variables résumant les caractéristiques de chacune d'entre elles, en minimisant la perte de variance et donc d'information. Tout d'abord, nous allons tenter de déterminer le nombre optimal de dimensions à conserver à l'aide d'un diagramme d'éboulis et de l'analyse des vecteurs propres résultant de l'ACP.
+Ici, l'espace initial est $\mathbb{R}^{16}$. L'ACP nous permettra de réduire le nombre de variables résumant les caractéristiques de chacune d'entre elles, en minimisant la perte de variance et donc d'information. Tout d'abord, nous allons tenter de déterminer le nombre optimal de dimensions à conserver à l'aide d'un diagramme d'éboulis et de l'analyse des vecteurs propres résultant de l'ACP.
 
 ```{r, echo=F, message=FALSE, warning=FALSE}
 library(factoextra)
@@ -581,7 +552,9 @@ fviz_screeplot(acp, ncp = 15, main = "Diagramme d'éboulis", ylab = "Pourcentage
 ```
 
 ```{r, echo=F,warning=FALSE}
-acp$eig
+library(kableExtra)
+kable(acp$eig, "latex") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
 En utilisant la méthode du coude en se référant au diagramme d'éboulis, des choix sensés du nombre de dimensions à garder seraient 2, 4, 8 ou 11 dimensions. Cependant, dans le contexte de l'ACP il est intéressant de garder une proportion considérable de la variance des données originales. Garder 2 ou 4 dimensions résulterait respectivement en 42 % ou 62 % de la variance originale, ce qui n'est pas considéré comme étant assez. Cependant, avec 8 dimensions, 84 % de la variance originale est expliquée, ce qui dépasse le seuil de 80 %. Nous souhaitons aussi avoir une réduction considérable du nombre de dimensions, donc le dernier choix possible de 11 nous semble trop élevé. Nous allons donc conserver 8 composantes principales pour la suite.
@@ -597,9 +570,11 @@ contrib.long <- reshape2::melt(contrib)
 ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
     geom_bar(stat="identity",position=PositionDodge)+
     facet_grid(~variable)+
-    theme(legend.position="top",axis.text.x = element_text(angle = 90))+
+    theme(legend.position="none",axis.text.x = element_text(angle = 90))+
     coord_flip()+labs(title = "Contributions des différentes variables aux 4 premières composantes") +
-  theme(plot.title = element_text(size = rel(0.8)))
+  theme(plot.title = element_text(size = rel(0.8))) +
+  ylab("Contribution") +
+  xlab("Variable")
 ```
 
 Sur le précédent graphique, il est possible de voir la contribution des variables aux $4$ premières composantes créées. Commençons par analyser les deux premières composantes.
