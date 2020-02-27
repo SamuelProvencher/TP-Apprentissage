@@ -589,9 +589,9 @@ Nous allons illustrer les valeurs de la quatrième composante sur la carte de Ki
 \newpage
 \section{Conclusion}
 
-En somme, pour tenter de modéliser le prix de vente des maisons de King County selon les caractéristiques observées des maisons, nous avons tout d'abord trouvé un jeu de données approprié contenant les prix de vente de plus de 21000 maisons entre mai 2014 et mai 2015. 
+En somme, pour tenter de modéliser le prix de vente des maisons de King County selon les caractéristiques observées des maisons, nous avons tout d'abord trouvé un jeu de données approprié contenant les prix de vente de plus de 21000 maisons entre mai 2014 et mai 2015.
 
-Ensuite, une analyse exploratoire univariée et bivariée a été conduite sur ce jeu de données pour en faire ressortir des tendances. Entre autres, nous avons observé que les caractéristiques physiques des maisons, telles que leur nombre de chambres, d'étages et de salles de bain, la qualité de la construction et les superficies de la maison et du terrain ont une forte influence positive sur le prix de vente de la maison. C'est aussi le cas de la localisation de la maison (en général, les maisons en ville, sur le bord de l'eau et/ou qui possèdent une belle vue sont plus chères). Certaines caractéristiques avaient quant à elle peu d'impact sur le prix, comme le moment de l'année où la maison a été vendue.
+Ensuite, une analyse exploratoire univariée et bivariée a été conduite sur ce jeu de données pour en faire ressortir des tendances. Entre autres, nous avons observé que les caractéristiques physiques des maisons, telles que leur nombre de chambres, d'étages et de salles de bain, la qualité de la construction et la superficie de la maison ont une forte influence positive sur le prix de vente de la maison. C'est aussi le cas de la localisation de la maison (en général, les maisons en ville, sur le bord de l'eau et/ou qui possèdent une belle vue sont plus chères). Certaines caractéristiques avaient quant à elle peu d'impact sur le prix, comme le moment de l'année où la maison a été vendue ou la superficie du terrain.
 
 L'analyse exploratoire nous a également permis de détecter des valeurs aberrantes, qui ont été corrigées. Entre autres, nous avons enlevé des maisons avec aucune chambre, avec aucune salle de bain ou avec un nombre excessif de chambres.
 
