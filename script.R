@@ -178,11 +178,11 @@ library(FactoMineR)
 
 #test log du prix dans ACP
 donnees2_test$price <- log(donnees2$price)
-acp_test <- PCA(donnees2_test[,c(-which(names(donnees2_test)=="reno"))])
+acp_test <- PCA(donnees2_test,graph = F)
 acp_test$eig
 
 #vrai ACP
-acp <- PCA(donnees2[,c(-which(names(donnees2)=="reno"))])
+acp <- PCA(donnees2,graph = F)
 acp$eig # valeurs propres, var expliquée et % var expliquée
 
 #diagramme d'éboulis
@@ -190,7 +190,7 @@ library(factoextra)
 fviz_screeplot(acp, ncp=20)
 
 #Corrélation variables
-cormat <- cor(donnees2[,c(-which(names(donnees2)=="reno"))],method = "pearson")
+cormat <- cor(donnees2,method = "pearson")
 library(reshape2)
 cormat.long <- melt(cormat)
 ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
