@@ -529,7 +529,7 @@ ggplot(data = cormat.long, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=val
 
 Ici, l'espace initial est $\mathbb{R}^{16}$. L'ACP nous permettra de réduire le nombre de variables résumant les caractéristiques de chacune d'entre elles, en minimisant la perte de variance et donc d'information. Tout d'abord, nous allons tenter de déterminer le nombre optimal de dimensions à conserver à l'aide d'un diagramme d'éboulis et de l'analyse des vecteurs propres résultant de l'ACP.
 
-```{r, echo=F}
+```{r, echo=F, message=FALSE, warning=FALSE}
 library(factoextra)
 fviz_screeplot(acp, ncp = 15, main = "Diagramme d'éboulis", ylab = "Pourcentage expliqué de la variance")
 ```
