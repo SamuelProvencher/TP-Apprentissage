@@ -171,13 +171,11 @@ Il est possible de faire ressortir quelques informations de ce tableau. Tout d'a
 
 Maintenant, analysons de plus près certaines de ces variables.
 \newline
-\newline
-
 **Date**
 \newline
 Le graphique suivant présente la densité de la variable *Date*.
 
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+```{r echo=FALSE, warning=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
 library(gridExtra)
 library(ggplot2)
 
@@ -191,8 +189,6 @@ grid.arrange(date ,nrow = 1, ncol=1)
 ```
 Il est possible de constater qu'il semble y avoir un effet de saisonnalité dans la vente de maisons. En effet, l'été semble être une période où il y a beaucoup de ventes de maisons tandis que l'hiver semble être une période où la vente de maisons est moins fréquente. C'est important d'être au fait de cette tendance dans le domaine immobilier.
 \newline
-\newline
-
 **Yr_built**
 \newline
 Le graphique suivant illustre la distribution de l'année de construction.
@@ -265,7 +261,7 @@ Il est assez difficile d'interpréter les tendances dans ces graphiques. Au nive
 
 Il a été réalisé que visualiser les prix des maisons de cette manière était peu informatif et que les variables latitude et longitude seraient peu utiles par la suite. Nous avons donc eu comme idée de plutôt visualiser les prix des maisons sous forme de carte thermique de King County:
 
-```{r echo=FALSE, message=FALSE,warning=FALSE,fig.pos='H', fig.height=4, fig.width=9, fig.align="center"}
+```{r echo=FALSE, message=FALSE,warning=FALSE,fig.pos='H', fig.height=3, fig.width=9, fig.align="center"}
 library(ggmap)
 register_google(key = "AIzaSyDR2ob6a6HSgsBhZkN -k0QNVeJT3uio4Wg") 
 
@@ -284,7 +280,7 @@ Il est beaucoup plus facile de faire ressortir des tendances de cette manière. 
 
 **Date en fonction du logarithme du prix**
 \newline
-```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=5, fig.width=8, fig.align="center"}
+```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=8, fig.align="center"}
 library(gridExtra)
 
 Lpri <- ggplot(donnees, aes(x=date, y=log(price))) + geom_point(alpha=0.1) + 
@@ -471,7 +467,7 @@ La deuxième variable qui a été créée est celle pour savoir si la maison a �
 
 La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). Il a déjà été déterminé à la section « Analyse bivariée » que les variables *latitude* et *longitude* devraient être remplacées par une variable plus éloquente. En examinant la carte thermique dans cette section, il est possible de voir qu'une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l'eau. Cette région semble être la zone urbaine de Seattle. Nous avons donc décidé de déterminer manuellement un rectangle délimitant cette région la plus coûteuse selon la latitude et la longitude. On peut voir ci-dessous l'ajout de la zone plus coûteuse que nous avons déterminée sur la carte thermique:
 
-```{r echo=FALSE, message=FALSE, fig.pos='H', fig.height=4, fig.width=9, fig.align="center", warning=FALSE}
+```{r echo=FALSE, message=FALSE, fig.pos='H', fig.height=3, fig.width=9, fig.align="center", warning=FALSE}
 xmin <-  -122.4
 xmax <-  -122
 ymin <-  47.5
@@ -486,7 +482,7 @@ La variable *expensive_area* est donc une variable catégorielle qui renvoie $1$
 
 Pour déterminer que la création de cette nouvelle variable est pertinente, examinons si la présence d'une maison dans la zone sélectionnée a effectivement une influence sur son prix:
 
-```{r, warning=F, echo = F, fig.height=4, fig.align="center"}
+```{r, warning=F, echo = F, fig.height=3, fig.align="center"}
 ggplot(donnees, aes(x=log(sqft_above), y = log(price), col = factor(expensive_area))) + 
     geom_point(alpha=0.4) +
     scale_color_brewer(palette = "Set1") +
@@ -494,7 +490,7 @@ ggplot(donnees, aes(x=log(sqft_above), y = log(price), col = factor(expensive_ar
     ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et de la localisation") +
     xlab("Logarithme de la superficie habitable au-dessus du sol") + ylab("Logarithme du prix de vente") +
     theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6), legend.position = "right")
+    theme(plot.title = element_text(hjust = 0.5, size = 8), axis.title = element_text(size=6), legend.position = "right")
 ```
 
 On peut bel et bien constater que les maisons localisées dans la zone urbaine ont un prix de vente plus élevé en moyenne.
