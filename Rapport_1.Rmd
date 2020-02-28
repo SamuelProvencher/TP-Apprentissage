@@ -101,6 +101,8 @@ Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in Ki
 Tout d'abord, afin de bien comprendre la base de données choisie, une analyse exploratoire des données est nécessaire. La présente section traite des erreurs décelées dans le jeu de données et fournit des informations pertinentes sur les variables exogènes ainsi que sur la variable réponse sous la forme d'une analyse univariée et bivariée.
 
 \subsection{Traitement des erreurs}
+À première vue le jeu de données n'a aucun doublons. En effet, aucune observation est identique en tout point. Cependant, lorsque la variable *ID* est regardée seule, il est possible de trouver 177 identifiants de maison qui se répètent à plus d'une reprise. En approfondissant notre recherche sur ces cas, il a été possible de remarquer que les maisons sont en tout point identiques, sauf pour la date de vente et le prix de vente. L'hypothèse qui a été retenue ici est que des entrepreneurs ou des spéculateurs tente de faire du profit en achetant une maison et en la revendant plus chère à une date ultérieure. Pour cette raison, il a été décidé de conserver ces 177 observations pour l'analyse.
+
 La visualisation des données à l'étude a permis de déceler quelques erreurs. Tout d'abord, $10$ observations avaient un nombre de salles de bain égal à $0$. Étant donné qu'il est impossible d'avoir une maison sans salle de bain et que ces observations ne représentent qu'un faible pourcentage du jeu de données, il a été convenu de les supprimer. Après avoir enlevé ces $10$ observations, il a été remarqué que $6$ maisons comptaient $0$ chambre. Comme ces maisons en question contenaient toutes un terrain et qu'elles représentaient une faible proportion des données, il a été décidé de les enlever. En outre, une observation avait $33$ chambres. En se fiant à l'aire habitable de la maison ainsi qu'aux nombre de salles de bain de cette maison, il a été convenu que le nombre de chambres avait subi une erreur de frappe. Puisqu'il était impossible de déterminer avec certitude le véritable nombre de chambres de la maison, il a été décidé de simplement retirer cette observation du jeu du données. 
 
 Comme nous avons un nombre considérable d'entrées dans la base de données (plus de 21000), les conséquences d'enlever 17 entrées de données fautives sont minimes. Si jamais le patron de non-réponse des données manquantes en question n'était pas MCAR, nous savons que le fait d'utiliser uniquement les cas complets comme nous avons fait amènera un certain biais. Nous avons convenu que ce biais serait minime et que nous pouvions l'ignorer. Il a été envisagé d'imputer stochastiquement les données manquantes pour éviter le biais, mais nous avons réalisé que les tests statistiques pour déterminer un patron de non-réponse ne sont pas concluants lorsqu'on a une proportion extrêmement faible de données manquantes (respectivement 10, 6 et 1 observations sur plus de 21000).
@@ -110,7 +112,7 @@ Comme nous avons un nombre considérable d'entrées dans la base de données (pl
 \subsubsection{Variables explicatives}
 La base de données initiale comptait $20$ variables explicatives. Or, certaines de ces variables n'étaient pas pertinentes dans la modélisation du prix de vente des maisons. Ainsi, 3 variables explicatives ont été retirées du jeu de données:
 
-* Le numéro d'identification de la vente (*ID*) a été retiré.
+* Le numéro d'identification de la maison (*ID*) a été retiré.
 * Le code postal (*zipcode*) a été retiré, car le jeu de données contient d'autres variables plus précises sur la localisation des différentes maisons. 
 * La variable *sqft_living* a été retirée, car il a été réalisé que cette variable était la somme directe des variables *sqft_basement* et *sqft_above*. Un problème évident de multicollinéarité était donc présent et il a été décidé de retirer complètement la variable *sqft_living*.
 
@@ -278,7 +280,7 @@ carte <- ggmap(map, extent = "device") + stat_summary_2d(data = donnees ,
 carte
 ```
 
-Il est beaucoup plus facile de faire ressortir des tendances de cette manière. En regardant la carte thermique affichée ci-dessus, il est possible de voir qu’une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l’eau. Cette région semble être la zone urbaine de Seattle. Quant à elles, les maisons situées en région rurale ou en banlieue éloignée ont des prix de vente beaucoup plus bas. Comme la localisation a un impact sur le prix que nous ne voulons pas ignorer, mais que les variables *latitude* et *longitude* ne reflètent pas par elles-mêmes cet impact, nous transformerons ces deux dernières variables en une nouvelle variable plus éloquente à la section "Création de variables explicatives".
+Il est beaucoup plus facile de faire ressortir des tendances de cette manière. En regardant la carte thermique affichée ci-dessus, il est possible de voir qu’une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l’eau. Cette région semble être la zone urbaine de Seattle. Quant à elles, les maisons situées en région rurale ou en banlieue éloignée ont des prix de vente beaucoup plus bas. Comme la localisation a un impact sur le prix que nous ne voulons pas ignorer, mais que les variables *latitude* et *longitude* ne reflètent pas par elles-mêmes cet impact, nous transformerons ces deux dernières variables en une nouvelle variable plus éloquente à la section « Création de variables explicatives ».
 
 **Date en fonction du logarithme du prix**
 \newline
@@ -356,7 +358,7 @@ con <- ggplot(donnees, aes(x=factor(condition), y=log(price))) + geom_boxplot() 
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
 
 gra <- ggplot(donnees, aes(x=factor(grade), y=log(price))) + geom_boxplot() +
-  ggtitle("Effet du grade (construction et conception) sur le prix de vente d'une maison") +
+  ggtitle("Effet du grade (construction/conception) sur le prix de vente d'une maison") +
   xlab("Qualité de la construction et conception (grade)") + ylab("Logarithme du prix de vente") +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6))
@@ -424,30 +426,30 @@ Examinons maintenant plus en détail la relation entre la superficie habitable a
 
 blo <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floor(bathrooms)))) + 
     geom_point(alpha=0.5) +
-    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre de salles de bain") +
+    ggtitle("Prix de vente selon sqft_above et bathrooms") +
     xlab("Superficie habitable au-dessus du sol (Pieds carrés)") + ylab("Logarithme du prix de vente") +
     theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5, size = 4), axis.title = element_text(size=4.5),
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
             legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 5), legend.position =     "bottom") +
     scale_color_brewer(palette = "Set1") +
     labs(colour = "Salles de bain")
 
 bla <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(bedrooms))) + 
     geom_point(alpha=0.5) +
-    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre de chambres") +
+    ggtitle("Prix de vente selon sqft_above et bedrooms") +
     xlab("Superficie habitable (Pieds carrés) au-dessus du sol") + ylab("Logarithme du prix de vente") +
     theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5, size = 4), axis.title = element_text(size=4.5),
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
           legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 5), legend.position =         "bottom") +
     scale_color_brewer(palette = "Paired") +
     labs(colour = "Chambres")
 
 bli <- ggplot(donnees, aes(x=log(sqft_above), y=log(price), col = factor(floors))) + 
     geom_point(alpha=0.5) +
-    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et du nombre d'étages") +
+    ggtitle("Prix de vente selon sqft_above et floors") +
     xlab("Superficie habitable au-dessus du sol (Pieds carrés)") + ylab("Logarithme du prix de vente") +
     theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5, size = 4), axis.title = element_text(size=4.5),
+    theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6),
           legend.key.size = unit(0, 'lines'), legend.title = element_text(size = 5), legend.position = "bottom") +
     scale_color_brewer(palette = "Set2") +
     labs(colour = "Étages")
@@ -467,7 +469,7 @@ La première qui a été créée est celle de l'âge de la maison (*age*). Initi
 
 La deuxième variable qui a été créée est celle pour savoir si la maison a été rénovée ou non depuis sa construction. Elle a été nommée *reno*. À prime abord, il a été testé si cette nouvelle variable ne devrait pas plutôt être catégorielle ordinale avec des catégories allant de *10 ans et moins* pour les maisons ayant eu une rénovation dans les $10$ années précédant leur vente, *10 ans et plus* pour les maisons ayant eu une rénovation il y a $10$ années ou plus et *Jamais rénové* pour les maisons n'ayant jamais été rénovées depuis leur construction. Par contre, après une analyse plus poussée, les catégories autres que celle *Jamais rénové* affichait une moyenne et une médiane de prix de vente similaires. De plus, la proportion de maisons rénovées était faible (4 %). Pour ces deux raisons, il a été décidé que séparer les maisons rénovées en deux catégories semblait exagéré, c'est pourquoi au final, la variable *reno* prend uniquement comme valeurs $1$ si la maison a déjà été rénovée depuis sa construction ou $0$ si elle n'a jamais été rénovée.
 
-La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). Il a déjà été déterminé à la section "Analyse bivariée" que les variables *latitude* et *longitude* devraient être remplacées par une variable plus éloquente. En examinant la carte thermique dans cette section, il est possible de voir qu'une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l'eau. Cette région semble être la zone urbaine de Seattle. Nous avons donc décidé de déterminer manuellement un rectangle délimitant cette région la plus coûteuse selon la latitude et la longitude. On peut voir ci-dessous l'ajout de la zone plus coûteuse que nous avons déterminée sur la carte thermique:
+La dernière variable créée est celle représentant la région la plus coûteuse (*expensive_area*). Il a déjà été déterminé à la section « Analyse bivariée » que les variables *latitude* et *longitude* devraient être remplacées par une variable plus éloquente. En examinant la carte thermique dans cette section, il est possible de voir qu'une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l'eau. Cette région semble être la zone urbaine de Seattle. Nous avons donc décidé de déterminer manuellement un rectangle délimitant cette région la plus coûteuse selon la latitude et la longitude. On peut voir ci-dessous l'ajout de la zone plus coûteuse que nous avons déterminée sur la carte thermique:
 
 ```{r echo=FALSE, message=FALSE, fig.pos='H', fig.height=4, fig.width=9, fig.align="center", warning=FALSE}
 xmin <-  -122.4
@@ -489,7 +491,7 @@ ggplot(donnees, aes(x=log(sqft_above), y = log(price), col = factor(expensive_ar
     geom_point(alpha=0.4) +
     scale_color_brewer(palette = "Set1") +
     labs(colour = "Zone urbaine") +
-    ggtitle("Prix de vente en fonction de la superficie habitable au−dessus du sol et de la localisation") +
+    ggtitle("Prix de vente en fonction de la superficie habitable au-dessus du sol et de la localisation") +
     xlab("Logarithme de la superficie habitable au-dessus du sol") + ylab("Logarithme du prix de vente") +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5, size = 6), axis.title = element_text(size=6), legend.position = "right")
@@ -580,7 +582,7 @@ ggplot(contrib.long, aes(x=carac, fill=variable, y=value))+
   xlab("Variable")
 ```
 
-Sur le précédent graphique, il est possible de voir la contribution des variables aux $4$ premières composantes créées. Commençons par analyser les deux premières composantes.
+Commençons par analyser les deux premières composantes.
 
 On remarque que la première composante semble indiquer la présence de grosses maisons qui viennent juste d'être construites. En effet, la première composante prendra une grande valeur positive lorsque les variables *sqft_living15*, *sqft_above*, *floors*, *bedrooms* et *bathrooms* seront élevées. Toutes ces variables sont de parfaits indicateurs quand à la grosseur de la maison. Il n'est pas rare qu'une grosse maison possède ces caractéristiques. De plus, quand la maison est grande et spacieuse, celle-ci coûte de plus en plus cher et a une tendance à être très belle, d'où les 2 variables *price* et *grade* qui apportent une bonne contribution aussi. Vu la contribution de la variable *age* vers le négatif au contraire des autres, il faudrait assumer que pour une valeur élevée de la composante 1, l'âge prendra une faible valeur et donc que la maison sera très récente.
 
@@ -607,9 +609,9 @@ En effet, le long de l'axe des abscisses, on peut voir le changement de couleur 
 
 Pour la 2e composante, il avait été dit qu'une valeur élevée représentait une vieille maison sur le bord de l'eau avec un étage tandis qu'une valeur faible représentait une maison récente à beaucoup d'étages mais non située près de l'eau. En fait, les caractéristiques positives de ces deux descriptions viennent compenser les négatives et ce, du côté des deux extrêmes. C'est pourquoi on ne peut apercevoir de distinctions précises dans le prix avec la couleur selon les maisons si on regarde à la verticale. Une maison près de l'eau, mais ayant peu d'étages et étant vieille représenterait donc le même prix qu'une maison récente avec beaucoup d'étages, mais qui perd de la valeur vu qu'elle n'est pas près de l'eau.
 
-Enchaînons avec la troisième composante. Cette dernière est particulièrement influencée par les variables *sqft_lot*, *sqft_lot15*, *expensive_area* et *floors*. Une maison ayant une troisième composante de grande valeur possède donc un grand terrain, ses voisins ont également un grand terrain, elle n'est pas située dans la zone métropolitaine et (à un moindre mesure) possède peu d'étages. Selon toute logique, cette dimension représente donc l'état urbain ou rural des maisons. En effet, une maison avec une troisième composante élevée serait une maison en campagne qui possède un très grand terrain et peu d'étages (les maisons de campagne sont souvent plus anciennes et possèdent moins d'étages que les maisons récentes). À l'inverse, une maison située en ville et possédant un petit terrain et beaucoup d'étages aura une valeur très faible pour la troisième composante.
+Enchaînons avec la troisième composante. Cette dernière est particulièrement influencée par les variables *sqft_lot*, *sqft_lot15*, *expensive_area* et *floors*. Une maison ayant une troisième composante de grande valeur possède donc un grand terrain, ses voisins ont également un grand terrain, elle n'est pas située dans la zone métropolitaine et (à une moindre mesure) possède peu d'étages. Selon toute logique, cette dimension représente donc l'état urbain ou rural des maisons. En effet, une maison avec une troisième composante élevée serait une maison en campagne qui possède un très grand terrain et peu d'étages (les maisons de campagne sont souvent plus anciennes et possèdent moins d'étages que les maisons récentes). À l'inverse, une maison située en ville et possédant un petit terrain et beaucoup d'étages aura une valeur très faible pour la troisième composante.
 
-Finalement, la quatrième composante semble représenter les petites maisons en condition moyenne situées sur le bord de mer et possédant une belle vue. En effet, les variables *waterfront* et *view* ont un impact positif sur la composante, alors que les variables *bedrooms*, *condition* et *sqft_basement* ont un impact négatif. On pourrait donc croire que ce sont des petits chalets sur le bord de l'eau qui possèdent peu de chambres, pas de sous-sol et qui sont en condition moyenne, comme des "camps de pêche". À l'inverse, une maison qui ne correspond pas à ce descriptif aura une valeur négative pour la quatrième composante.
+Finalement, la quatrième composante semble représenter les petites maisons en condition moyenne situées sur le bord de mer et possédant une belle vue. En effet, les variables *waterfront* et *view* ont un impact positif sur la composante, alors que les variables *bedrooms*, *condition* et *sqft_basement* ont un impact négatif. On pourrait donc croire que ce sont des petits chalets sur le bord de l'eau qui possèdent peu de chambres, pas de sous-sol et qui sont en condition moyenne, comme des « camps de pêche ». À l'inverse, une maison qui ne correspond pas à ce descriptif aura une valeur négative pour la quatrième composante.
 
 Nous allons illustrer les valeurs de la quatrième composante sur la carte de King County pour confirmer notre intuition:
 
@@ -645,7 +647,7 @@ D'autres modèles que nous verrons plus tard dans le cadre du cours, tels que le
 \newpage
 \section{Bibliographie}
 
-1. Kaggle (2017). House sales in King County, USA. Récupéré de https://www.kaggle.com/harlfoxem/housesalesprediction.
+1. Kaggle, harlfoxen (2017). House sales in King County, USA. Récupéré le 27 février 2020 de https://www.kaggle.com/harlfoxem/housesalesprediction.
 
 \newpage
 \section{Annexe}
