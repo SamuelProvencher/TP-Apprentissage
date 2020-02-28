@@ -232,7 +232,7 @@ Lorsqu'on regarde le graphique de gauche, où aucune transformation logarithmiqu
 
 Pour pallier cette asymétrie, la transformation logarithmique a été effectuée sur la variable réponse. Le résultat est présenté sur le graphique de droite. Il est possible de constater que la distribution dans ce graphique est symétrique et qu'elle s'approche de la forme d'une loi normale. Ainsi, il sera plus facile de modéliser le logarithme et d'analyser les résultats.
 
-\newpage
+
 \subsection{Analyse bivariée}
 
 **Variables spatiales**
@@ -277,7 +277,7 @@ carte
 ```
 
 Il est beaucoup plus facile de faire ressortir des tendances de cette manière. En regardant la carte thermique affichée ci-dessus, il est possible de voir qu’une bonne partie des maisons les plus coûteuses se situe au nord-ouest de la région, tout près de l’eau. Cette région semble être la zone urbaine de Seattle. Quant à elles, les maisons situées en région rurale ou en banlieue éloignée ont des prix de vente beaucoup plus bas. Comme la localisation a un impact sur le prix que nous ne voulons pas ignorer, mais que les variables *latitude* et *longitude* ne reflètent pas par elles-mêmes cet impact, nous transformerons ces deux dernières variables en une nouvelle variable plus éloquente à la section « Création de variables explicatives ».
-
+\newpage
 **Date en fonction du logarithme du prix**
 \newline
 ```{r echo=FALSE, message=FALSE,fig.pos='H', fig.height=3, fig.width=8, fig.align="center"}
