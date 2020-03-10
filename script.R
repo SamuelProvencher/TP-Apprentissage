@@ -259,3 +259,84 @@ leaflet(donnees_view) %>%
               opacity = 1,
               group = 'Composante 4'
     )
+
+####ACP corrigé####
+donnees3 <- donnees[,-c(which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
+                        which(colnames(donnees)=="price"), which(colnames(donnees) == "date"))]
+acp_corrige <- PCA(donnees3, graph = F)
+
+#diagramme d'éboulis
+library(factoextra)
+fviz_screeplot(acp_corrige, ncp=20)
+
+#Corrélation variables
+cormat_corrige <- cor(donnees3,method = "pearson")
+library(reshape2)
+cormat.long_corrige <- melt(cormat_corrige)
+ggplot(data = cormat.long_corrige, aes(Var2, Var1, fill = value))+geom_tile(aes(fill=value),color="grey3")+
+    theme(axis.text.x = element_text(angle = 90)) +
+    scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white')
+
+#visualisation coordonnées Dim 1 et 2
+donnees_acp_corrige <- cbind(donnees3, acp_corrige$ind$coord)
+plotly_corrige <- ggplot() +
+    geom_point(data = donnees_acp_corrige,
+               aes(Dim.1, Dim.2)) +
+    xlab("Dimension 1") +
+    ylab("Dimension 2")  +
+    theme_minimal() +
+    scale_color_gradient(low="green", high="red", trans = "log")
+library(plotly)
+ggplotly(plotly_corrige)
+
+#visualisation coordonnées Dim 3 et 4
+ggplot() +
+    geom_point(data = donnees_acp_corrige,
+               aes(Dim.3, Dim.4)) +
+    xlab("Dimension 3") +
+    ylab("Dimension 4")  +
+    theme_minimal() +
+    scale_color_gradient(low="green", high="red", trans = "log")
+
+## Autre façon de visualiser comportant la contribution pour Dims que 1 et 2
+fviz_pca_var(acp_corrige,
+             col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = T)
+
+# Visualisation contributions des 4 composantes
+contrib_corrige <- data.frame(acp_corrige$var$coord[,1:4])
+contrib_corrige$carac <- rownames(contrib_corrige)
+contrib.long_corrige <- reshape2::melt(contrib_corrige)
+
+ggplot(contrib.long_corrige, aes(x=carac, fill=variable, y=value))+
+    geom_bar(stat="identity",position=PositionDodge)+
+    facet_grid(~variable)+
+    theme(legend.position="top",axis.text.x = element_text(angle = 90))+
+    coord_flip()
+
+# map des coordonnées de la 4e dimension
+donnees_view_corrige <- cbind(donnees, acp_corrige$ind$coord)
+library(leaflet)
+pal4 <- colorNumeric(
+    palette = "RdYlBu",
+    domain = donnees_view_corrige$Dim.4,
+    reverse = TRUE)
+
+leaflet(donnees_view_corrige) %>% 
+    addTiles() %>%
+    addCircleMarkers(lng = ~long, 
+                     lat = ~lat, 
+                     color = ~pal4(Dim.4),
+                     radius = 0.75,
+                     opacity = 1, 
+                     fill = TRUE, 
+                     fillColor = ~pal4(Dim.4), 
+                     fillOpacity = 1,
+                     group = 'Composante 4'
+    ) %>%
+    addLegend("bottomleft", pal = pal4, values = ~Dim.4,
+              title = "CP4",
+              opacity = 1,
+              group = 'Composante 4'
+    )
