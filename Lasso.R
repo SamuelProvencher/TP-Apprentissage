@@ -1,16 +1,14 @@
 source("script.R")
 source("ModeleBase.R")
 
-summary(ModBase2)
-
 x.train <- model.matrix(ModBase2, data=donnees.train)[,-1]
 x.test <- model.matrix(ModBase2, data=donnees.test)[,-1]
-y.train <- donnees.train$price
-y.test <- donnees.test$price
+y.train <- log(donnees.train$price)
+y.test <- log(donnees.test$price)
 
 grid <- 10^seq(3,-2, length = 100)
 
-modele.lasso <- glmnet(x.train, y.train, family = "gaussian" ,alpha=1,lambda=grid)
+modele.lasso <- glmnet(x.train, y.train,alpha=1,lambda=grid)
 plot(modele.lasso,xvar="lambda",label=TRUE)
 
 set.seed(4355)
