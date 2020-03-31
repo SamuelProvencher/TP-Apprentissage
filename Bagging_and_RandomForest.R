@@ -13,11 +13,11 @@ varImpPlot(bag)
 bag_prev <- predict(bag, newdata=donnees.test, type="response")
 #bag.res <- roc(log(donnees.test$price), bag_prev, auc=TRUE, plot=TRUE)
 #bag.res$auc
-EQM.bag <- sum((bag_prev-log(donnees.test$price))^2)/length(donnees.test)
+(EQM.bag <- sum((bag_prev-log(donnees.test$price))^2)/length(donnees.test))
 
 #### Foret aleatoire ####
-oob.values <- vector(length=10)
 # à ne pas rouler, très long, les résultats sont en bas
+#oob.values <- vector(length=10)
 #for(i in 1:15) {
 #    temp.model <- randomForest(I(log(price)) ~ ., data=donnees.train, mtry=i, proximity=TRUE, 
 #                               ntree=50,importance=TRUE)
@@ -32,5 +32,4 @@ varImpPlot(foret)
 foret_prev <- predict(foret, newdata=donnees.test, type="response")
 #foret.res <- roc(log(donnees.test$price), foret_prev, auc=TRUE, plot=TRUE)
 #bag.res$auc
-EQM.foret <- sum((foret_prev-log(donnees.test$price))^2)/length(donnees.test)
-EQM.foret
+(EQM.foret <- sum((foret_prev-log(donnees.test$price))^2)/length(donnees.test))
