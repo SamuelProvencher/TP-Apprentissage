@@ -12,7 +12,7 @@ varImpPlot(bag)
 bag_prev <- predict(bag, newdata=donnees.test, type="response")
 #bag.res <- roc(log(donnees.test$price), bag_prev, auc=TRUE, plot=TRUE)
 #bag.res$auc
-(EQM.bag <- sum((bag_prev-log(donnees.test$price))^2)/nrow(donnees.test))
+(EQM.bag <- mean((bag_prev-log(donnees.test$price))^2))
 
 #### Foret aleatoire ####
 # à ne pas rouler, très long, les résultats sont en bas
@@ -31,5 +31,5 @@ varImpPlot(foret)
 foret_prev <- predict(foret, newdata=donnees.test, type="response")
 #foret.res <- roc(log(donnees.test$price), foret_prev, auc=TRUE, plot=TRUE)
 #bag.res$auc
-(EQM.foret <- sum((foret_prev-log(donnees.test$price))^2)/nrow(donnees.test))
+(EQM.foret <- mean((foret_prev-log(donnees.test$price))^2))
 
