@@ -24,4 +24,4 @@ rpart.plot(arbre.elague)
 
 mean(PredArbre);mean(log(donnees.test$price)) #se ressemble
 
-EQM.arbre <- sum((PredArbre-log(donnees.test$price))^2)/length(donnees.test)
+EQM.arbre <- sum((PredArbre-log(donnees.test$price))^2)/nrow(donnees.test)
