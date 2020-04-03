@@ -5,15 +5,14 @@ library(pROC)
 
 #### Bagging ####
 set.seed(69)
-bag <-randomForest(I(log(price))~., data = donnees.train, proximity=TRUE, ntree=100,importance=TRUE) 
-bag
-bag$mse
+(bag <-randomForest(I(log(price))~., data = donnees.train, proximity=TRUE, ntree=100,importance=TRUE)) 
+
 plot(1:length(bag$mse),bag$mse, type="l", xlab="B", ylab="Erreur quadratique moyenne", main="Bagging")
 varImpPlot(bag)
 bag_prev <- predict(bag, newdata=donnees.test, type="response")
 #bag.res <- roc(log(donnees.test$price), bag_prev, auc=TRUE, plot=TRUE)
 #bag.res$auc
-(EQM.bag <- sum((bag_prev-log(donnees.test$price))^2)/length(donnees.test))
+(EQM.bag <- sum((bag_prev-log(donnees.test$price))^2)/nrow(donnees.test))
 
 #### Foret aleatoire ####
 # à ne pas rouler, très long, les résultats sont en bas
@@ -32,4 +31,5 @@ varImpPlot(foret)
 foret_prev <- predict(foret, newdata=donnees.test, type="response")
 #foret.res <- roc(log(donnees.test$price), foret_prev, auc=TRUE, plot=TRUE)
 #bag.res$auc
-(EQM.foret <- sum((foret_prev-log(donnees.test$price))^2)/length(donnees.test))
+(EQM.foret <- sum((foret_prev-log(donnees.test$price))^2)/nrow(donnees.test))
+
