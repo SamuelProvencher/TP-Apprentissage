@@ -5,7 +5,11 @@ library(pROC)
 
 #### Bagging ####
 set.seed(69)
-(bag <-randomForest(I(log(price))~., data = donnees.train, proximity=TRUE, ntree=100,importance=TRUE)) 
+(bag <-randomForest(I(log(price))~., data = donnees.train, 
+                    mtry=17, # on prend toutes les colonnes à chaque noeud
+                    sampsize= nrow(donnees.train), # on prend un échantillon de taille n pour bâtir chaque arbre
+                    ntree=100,
+                    importance=TRUE)) 
 
 plot(1:length(bag$mse),bag$mse, type="l", xlab="B", ylab="Erreur quadratique moyenne", main="Bagging")
 varImpPlot(bag)
@@ -25,8 +29,11 @@ bag_prev <- predict(bag, newdata=donnees.test, type="response")
 # 0.06343711 0.03733935 0.03405029 0.03368466 0.03330120 0.03255624 0.03279187 0.03249364 0.03297875
 #[10] 0.03265353 0.03280722 0.03251453 0.03262090 0.03302811 0.03298384
 # mse minimale à m=8
-foret <-randomForest(I(log(price))~., data = donnees.train, proximity=TRUE, ntree=100,
-                     importance=TRUE, mtry=8) 
+foret <-randomForest(I(log(price))~., data = donnees.train, 
+                     sampsize= floor(0.6*nrow(donnees.train)),
+                     ntree=100,
+                     importance=TRUE, 
+                     mtry=8) 
 varImpPlot(foret)
 foret_prev <- predict(foret, newdata=donnees.test, type="response")
 #foret.res <- roc(log(donnees.test$price), foret_prev, auc=TRUE, plot=TRUE)
