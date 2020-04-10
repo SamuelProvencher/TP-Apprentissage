@@ -14,23 +14,24 @@ fit <- train(log(price) ~ .,
              preProcess = "scale",
              tuneGrid   = expand.grid(k = 2:20),
              trControl  = controles,
-             metric     = "rmse",
-             data       = donnees4)
+             metric     = "ROC",
+             data       = donnees.train)
 fit #k=9
 
-data <- cbind(donnees4[,1],sapply(donnees4[,-1], scale))
-ind.train <- sample(1:nrow(data), 0.8*nrow(data), replace = F)
-train <- data[ind.train,-1]#Donnees d'entrainement
-test <- data[-ind.train,-1]#Donnees test
+data.train <- cbind(donnees.train[,1],sapply(donnees.train[,-1], scale))
+data.test <- cbind(donnees.test[,1],sapply(donnees.test[,-1], scale))
 
-etiq_train <- log(data[ind.train,1])
-etiq_test <- log(data[-ind.train,1])
+train <- data.train[,-1]#Donnees d'entrainement
+test <- data.test[,-1]#Donnees test
+
+etiq_train <- log(data.train[,1])
+etiq_test <- log(data.test[,1])
 
 k <- 9
 
 predictions <- knn.reg(train, test, y=etiq_train, k)
 
-ttest <- unique(predictions$pred)
 
 v <- predictions$pred
 
+EQM.Kvoisins <- mean((predictions$pred-etiq_test)^2)
