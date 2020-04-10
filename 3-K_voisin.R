@@ -7,6 +7,7 @@ library(FNN)
 
 #Optimisation de K
 
+set.seed(69)
 controles <- trainControl(method  = "cv", # validation croisée
                           number  = 10) # 5 plis
 fit <- train(log(price) ~ .,
@@ -14,7 +15,7 @@ fit <- train(log(price) ~ .,
              preProcess = "scale",
              tuneGrid   = expand.grid(k = 2:20),
              trControl  = controles,
-             metric     = "ROC",
+             metric     = "RMSE",
              data       = donnees.train)
 fit #k=9
 
