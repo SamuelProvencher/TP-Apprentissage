@@ -22,12 +22,15 @@ plot(cv.out)
 
 predict(modele.lasso,type="coefficients",s=meilleur.lam.lasso)
 
-ModLasso <- glm(I(log(price)) ~ sqft_lot + waterfront + sqft_above +sqft_basement+
-                    lat + reno + bathrooms:lat + waterfront:lat + 
-                    sqft_above:lat + sqft_basement:lat, data = donnees.train)
-#Pas parfait encore, c'est juste un premier test
-PredLasso <-  predict(ModLasso, newdata = donnees.test, type = "response")
-
-pred <- cbind(log(donnees.test$price), PredLasso)
-
+## Ca avait été fait pour enlever les variables avec coefficient = 0, mais selon message dans le forum
+## On garde le modèle ci-haut
+# ModLasso <- glm(I(log(price)) ~ sqft_lot + waterfront + sqft_above +sqft_basement+
+#                     lat + reno + bathrooms:lat + waterfront:lat + 
+#                     sqft_above:lat + sqft_basement:lat, data = donnees.train)
+# #Pas parfait encore, c'est juste un premier test
+# PredLasso <-  predict(ModLasso, newdata = donnees.test, type = "response")
+# 
+# pred <- cbind(log(donnees.test$price), PredLasso)
+# 
+# (EQM.ModLasso <- mean((pred[,1]-pred[,2])^2))
 
