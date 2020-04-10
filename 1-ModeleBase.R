@@ -1,4 +1,4 @@
-source("script2.R")
+source("script.R")
 
 ModBase <- lm(I(log(price))~., data = donnees.train)
 summary(ModBase)

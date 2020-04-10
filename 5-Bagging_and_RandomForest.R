@@ -1,4 +1,4 @@
-source("script2.R")
+source("script.R")
 
 library(randomForest)
 library(pROC)

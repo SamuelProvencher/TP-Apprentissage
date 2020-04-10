@@ -81,6 +81,7 @@ summary(donnees)
 donnees4 <- donnees[,-c(which(colnames(donnees)=="yr_built"), which(colnames(donnees)=="yr_renovated"), 
                         which(colnames(donnees) == "date"))] #Même chose que donnees pour l'acp corrigé, mais on enlève pas price ici
 
+set.seed(69)
 ind.train <- sample(1:nrow(donnees4), 0.8*nrow(donnees4), replace = F)
 donnees.train <- donnees4[ind.train,]#Donnees d'entrainement
 donnees.test <- donnees4[-ind.train,]#Donnees test

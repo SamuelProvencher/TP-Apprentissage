@@ -1,6 +1,6 @@
 #Arbre de décisions
 
-source("script2.R")
+source("script.R")
 
 library(rpart)
 library(rpart.plot)
