@@ -8,7 +8,7 @@ set.seed(69)
 (bag <-randomForest(I(log(price))~., data = donnees.train, 
                     mtry=17, # on prend toutes les colonnes à chaque noeud
                     sampsize= nrow(donnees.train), # on prend un échantillon de taille n pour bâtir chaque arbre
-                    ntree=100,
+                    ntree=150,
                     importance=TRUE)) 
 
 plot(1:length(bag$mse),bag$mse, type="l", xlab="B", ylab="Erreur quadratique moyenne", main="Bagging")
