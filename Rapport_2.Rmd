@@ -1,0 +1,94 @@
+---
+output: pdf_document
+header-includes:
+- \usepackage[french]{babel}
+- \usepackage{float}
+- \usepackage{titling}
+- \DeclareUnicodeCharacter{2212}{-}
+---
+\begin{titlingpage}
+  \rightline{Équipe 2}
+  \centering
+  \Large
+  Travail fait par \\
+  \vspace{1cm}
+  \text{Matis Brassard-Verrier (111 182 740) }\\
+  \text{Alyson Marquis (111 183 605)}\\
+  \text{Alexis Picard (111 182 200)}\\
+  \text{Samuel Provencher (111 181 794)}\\
+  \vfill
+  \Large
+  Apprentissage statistique en actuariat \\
+  \vspace{0.5cm}
+  \text{ACT-3114}
+  \vfill
+  \Large
+  Rapport 1\\
+  \vfill
+  \Large
+  Présenté à\\
+  \vspace{0.5cm}
+  \text{Marie-Pier Côté}
+  \vfill
+  \Large
+  École d'actuariat\\
+  \text{Université Laval}\\
+  \text{27 février 2020}
+\end{titlingpage}
+
+\pagenumbering{gobble}
+
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+
+
+
+\section{Introduction}
+
+
+
+
+\newpage
+\section{Modèle de base}
+
+
+\newpage
+\section{Ajustement des modèles}
+
+
+\newpage
+\section{Comparaison des modèles}
+
+\newpage
+\section{Interprétation des meilleurs modèles}
+
+\newpage
+\section{Conclusion}
+
+\newpage
+\section{Bibliographie}
+
+1. Kaggle, harlfoxen (2017). House sales in King County, USA. Récupéré le 27 février 2020 de https://www.kaggle.com/harlfoxem/housesalesprediction.
+\newline
+2. Max Kuhn (2020). caret: Classification and Regression Training. R package version 6.0-85.
+  https://CRAN.R-project.org/package=caret
+\newline
+3. Terry Therneau and Beth Atkinson (2019). rpart: Recursive Partitioning and Regression Trees. R package
+  version 4.1-15. https://CRAN.R-project.org/package=rpart
+\newline
+4. Stephen Milborrow (2019). rpart.plot: Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'. R
+  package version 3.0.8. https://CRAN.R-project.org/package=rpart.plot
+\newline
+5. A. Liaw and M. Wiener (2002). Classification and Regression by randomForest. R News 2(3), 18--22.
+\newline
+6. Brandon Greenwell, Bradley Boehmke, Jay Cunningham and GBM Developers (2019). gbm: Generalized Boosted
+  Regression Models. R package version 2.1.5. https://CRAN.R-project.org/package=gbm
+  \newline
+7. Jerome Friedman, Trevor Hastie, Robert Tibshirani (2010). Regularization Paths for Generalized Linear
+  Models via Coordinate Descent. Journal of Statistical Software, 33(1), 1-22. URL
+  http://www.jstatsoft.org/v33/i01/.
+  
+
+
