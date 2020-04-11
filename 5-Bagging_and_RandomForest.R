@@ -12,7 +12,7 @@ bag <-randomForest(I(log(price))~., data = donnees.train,
                     ntree=150,
                     importance=TRUE) 
 
-plot(1:length(bag$mse),bag$mse, type="l", xlab="B", ylab="Erreur quadratique moyenne", main="Bagging")
+plot(1:length(bag$mse),bag$mse, type="l", xlab="ntree", ylab="Erreur quadratique moyenne", main="Bagging")
 importance_var_bag <- varImpPlot(bag)
 bag_prev <- predict(bag, newdata=donnees.test, type="response")
 EQM.bag <- mean((bag_prev-log(donnees.test$price))^2)
