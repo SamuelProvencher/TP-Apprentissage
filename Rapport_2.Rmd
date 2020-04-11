@@ -23,7 +23,7 @@ header-includes:
   \text{ACT-3114}
   \vfill
   \Large
-  Rapport 1\\
+  Rapport 2\\
   \vfill
   \Large
   Présenté à\\
@@ -33,7 +33,7 @@ header-includes:
   \Large
   École d'actuariat\\
   \text{Université Laval}\\
-  \text{27 février 2020}
+  \text{22 avril 2020}
 \end{titlingpage}
 
 \pagenumbering{gobble}
@@ -45,19 +45,48 @@ header-includes:
 
 
 
+
 \section{Introduction}
 
 Dans le cadre du travail, nous allons tenter de modéliser le prix de vente des maisons dans la région de Seattle (King County, USA) en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. La variable réponse à prédire, soit le prix de vente d'une maison, est une valeur positive évaluée en dollars américains. La modélisation de cette variable pourrait être utile pour différentes raisons dans un contexte actuariel. Comme la somme assurée d'une maison a un lien très fortement proportionnel à son prix de vente, une compagnie d'assurance pourrait être intéressée de modéliser le prix de vente de maisons dans des nouveaux développements immobiliers afin de tenter de prédire les futures soumissions d'assurance habitation et d'offrir des offres personnalisées aux acheteurs de ces nouvelles maisons. Dans un autre contexte, au niveau de la gestion des risques, certains assureurs ont un portefeuille de prêts hypothécaires ou utilisent des produits dérivés sur prêts hypothécaires pour se couvrir du risque (*hedging*). Ainsi, il pourrait être intéressant d'avoir une estimation des montants de prêts hypothécaires dans une région donnée en se basant sur le prix de vente des maisons afin de mieux gérer le risque de la compagnie. La pertinence de trouver cette variable qu'est le prix de vente des maisons devient alors fort intéressante. 
 
-Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Il contient de nombreuses variables explicatives qui seront analysées dans la prochaine section.
+Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Dans les prochaines sections, sept modèles seront étudiés, dont deux qui le seront plus en profondeur. Pour ce faire, 80 % des données seront utilisées pour effectuer l'entraînement des modèles et 20 % seront réservées pour tester ainsi que comparer les modèles entre eux.
 
 
-\newpage
+
 \section{Modèle de base}
+
+```{r ModBas, echo=FALSE}
+
+source("1-ModeleBase.R")
+
+```
+
+Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu, qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seulement l'échantillon d'entrainement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. Cependant, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement intrprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables augmentaient le temps de calculs et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variable formelle n'a pas été effectuée contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
 
 
 \newpage
 \section{Ajustement des modèles}
+
+
+
+\subsection{Modèle linéaire généralisé avec une régularisation Lasso}
+
+
+
+\subsection{Modèle des k plus proches voisins}
+
+
+
+\subsection{Arbre de décision}
+
+
+\subsection{Ensemble d'arbres de décisions aggrégées par \textit{bagging}}
+
+\subsection{Forêt aléatoire}
+
+
+\subsection{Modèle de \textit{gradient boosting}}
 
 
 \newpage
