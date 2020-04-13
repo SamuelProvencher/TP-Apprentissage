@@ -64,15 +64,22 @@ source("1-ModeleBase.R")
 
 Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu, qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seulement l'échantillon d'entrainement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. Cependant, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement intrprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables augmentaient le temps de calculs et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variable formelle n'a pas été effectuée contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
 
-
 \newpage
 \section{Ajustement des modèles}
 
 
 
 \subsection{Modèle linéaire généralisé avec une régularisation Lasso}
+```{r echo=FALSE, eval=T, message=FALSE}
+source("2-Lasso.R")
+```
+Dans le cadre du travail, il a été choisi d'effectuer un modèle linéaire généralisé avec une régularisation de type Lasso. Notre choix s'est arrêté sur ce type de régularisation, puisque la régularisation Lasso permet d'effectuer la sélection de variables. Pour se faire, il suffit de minimiser l'équation de score suivante :
+$$
+S^{Lasso} = \sum_{i=1}^{p}(Y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \lambda \sum_{j=1}^{p} \lvert{\beta_j} \rvert,
+$$
+où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle.
 
-
+Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entraînement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Sa valeur est de $\lambda=$`r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives. Le modèle est aussi constitué de 22 termes d'interaction.  
 
 \subsection{Modèle des k plus proches voisins}
 
