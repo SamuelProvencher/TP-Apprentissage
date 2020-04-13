@@ -1,3 +1,6 @@
+## Toute la mémoire est dans la ligne de code suivante
+load("save.Rdata")
+
 source("script2.R")
 
 library(randomForest)
@@ -19,23 +22,22 @@ EQM.bag <- mean((bag_prev-log(donnees.test$price))^2)
 
 #### Foret aleatoire ####
 control <- trainControl(method = "cv", number = 5)
-
-rf.train <- train(log(price)~.,
-                  data = donnees.train,
-                  method = "rf",
-                  metric = "RMSE",
-                  tuneGrid = expand.grid(mtry = 2:15),
-                  trControl = control,
-                  sampsize = floor(0.75*nrow(donnees.train)),
-                  ntree = 150,
-                  nodesize=2)
+#très long, ne pas rouler
+# rf.train <- train(log(price)~.,
+#                    data = donnees.train,
+#                    method = "rf",
+#                    metric = "RMSE",
+#                    tuneGrid = expand.grid(mtry = 6:12),
+#                    trControl = control,
+#                    sampsize = floor(0.75*nrow(donnees.train)),
+#                    ntree = 150,
+#                    nodesize=2)
 
 foret <-randomForest(I(log(price))~., data = donnees.train, 
                      sampsize= floor(0.6*nrow(donnees.train)),
                      ntree=150,
                      importance=TRUE, 
-                     mtry=9) 
+                     mtry=8) 
 importance_var_foret <- varImpPlot(foret)
 foret_prev <- predict(foret, newdata=donnees.test, type="response")
 EQM.foret <- mean((foret_prev-log(donnees.test$price))^2)
-
