@@ -4,7 +4,6 @@ header-includes:
 - \usepackage[french]{babel}
 - \usepackage{float}
 - \usepackage{titling}
-- \usepackage{blindtext}
 - \usepackage{color}
 - \DeclareUnicodeCharacter{2212}{-}
 ---
@@ -80,7 +79,7 @@ Dans le cadre du travail, il a été choisi d'effectuer un modèle linéaire gé
 $$
 S^{Lasso} = \sum_{i=1}^{p}(Y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \lambda \sum_{j=1}^{p} \lvert{\beta_j} \rvert,
 $$
-où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle.
+où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle. Nous avons utilisé la méthode implantée dans le paquetage \hyperlink{target2}{{\color{blue}\textbf{glmnet}}} pour choisir le paramètre $\lambda$ ainsi que pour bâtir le modèle.
 
 Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entraînement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Sa valeur est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives. Le modèle est aussi constitué de 22 termes d'interaction.  
 
@@ -137,8 +136,8 @@ Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il 
 \newline
 6. Brandon Greenwell, Bradley Boehmke, Jay Cunningham and GBM Developers (2019). gbm: Generalized Boosted
   Regression Models. R package version 2.1.5. https://CRAN.R-project.org/package=gbm
-  \newline
-7. Jerome Friedman, Trevor Hastie, Robert Tibshirani (2010). Regularization Paths for Generalized Linear
+\newline
+\hypertarget{target2}{7.} Jerome Friedman, Trevor Hastie, Robert Tibshirani (2010). Regularization Paths for Generalized Linear
   Models via Coordinate Descent. Journal of Statistical Software, 33(1), 1-22. URL
   http://www.jstatsoft.org/v33/i01/.
   
