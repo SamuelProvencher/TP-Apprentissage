@@ -79,12 +79,16 @@ Dans le cadre du travail, il a été choisi d'effectuer un modèle linéaire gé
 $$
 S^{Lasso} = \sum_{i=1}^{p}(Y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \lambda \sum_{j=1}^{p} \lvert{\beta_j} \rvert,
 $$
-où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle. Nous avons utilisé la méthode implantée dans le paquetage \hyperlink{target2}{{\color{blue}\textbf{glmnet}}} pour choisir le paramètre $\lambda$ ainsi que pour bâtir le modèle.
+où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle. Nous avons utilisé la méthode implantée dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{glmnet}}} pour choisir le paramètre $\lambda$ ainsi que pour bâtir le modèle.
 
-Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entraînement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Sa valeur est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives. Le modèle est aussi constitué de 22 termes d'interaction.  
+Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entraînement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Cette validation croisée est intégrée dans la fonction `cv.glmnet`. Ainsi, la valeur optimale de ce paramètre est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives. Le modèle est aussi constitué de 22 termes d'interaction.  
 
 \subsection{Modèle des \textit{k} plus proches voisins}
+Un modèle qui a été testé est celui des *k* plus proches voisins. Étant donné que nous avons un problème de régression, la fonction `knn.reg` du paquetage \hyperlink{target1}{{\color{blue}\textbf{FNN}}} a été utilisée pour construire ce modèle. 
 
+Le modèle des *k* plus proches voisins est simpliste. Afin de prédire la valeur d'un point $x_0$, il faut regarder l'ensemble des *k* plus proche voisins de $x_0$, c'est-à-dire les observations qui minimisent la distance Euclidienne. Puis, la prévision du point $x_0$ est la moyenne de la valeur des observations comprises dans l'ensemble des *k* plus proches voisins.
+
+Il faut d'abord déterminer la valeur optimale de *k*, soit le nombre de voisins à considérer. Pour se faire, une validation croisée à 10 plis a été utlisée. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. Étant donnée que le modèle des *k* plus proches voisins est fondé sur la distance Euclidienne, les données ont été standardisées avant de procéder à la validation croisée. La métrique sélectionnée pour sélectionner la valeur de *k* est l'erreur quadratique moyenne. Ainsi, la valeur de *k* qui minisait l'erreur quadratique moyenne est $k=9$. 
 
 
 \subsection{Arbre de décision}
@@ -119,27 +123,28 @@ Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il 
 \section{Conclusion}
 
 \newpage
-\section{Bibliographie}
+\hypertarget{target1}{\section{Bibliographie}}
 
 1. Kaggle, harlfoxen (2017). House sales in King County, USA. Récupéré le 27 février 2020 de https://www.kaggle.com/harlfoxem/housesalesprediction.
 \newline
-\hypertarget{target1}{2.} Max Kuhn (2020). caret: Classification and Regression Training. R package version 6.0-85.
-  https://CRAN.R-project.org/package=caret
+2. Max Kuhn (2020). caret: Classification and Regression Training. R package version 6.0-85. https://CRAN.R-project.org/package=caret
 \newline
-3. Terry Therneau and Beth Atkinson (2019). rpart: Recursive Partitioning and Regression Trees. R package
-  version 4.1-15. https://CRAN.R-project.org/package=rpart
+3. Terry Therneau and Beth Atkinson (2019). rpart: Recursive Partitioning and Regression Trees. R package version 4.1-15. https://CRAN.R-project.org/package=rpart
 \newline
-4. Stephen Milborrow (2019). rpart.plot: Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'. R
-  package version 3.0.8. https://CRAN.R-project.org/package=rpart.plot
+4. Stephen Milborrow (2019). rpart.plot: Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'. R package version 3.0.8. https://CRAN.R-project.org/package=rpart.plot
 \newline
 5. A. Liaw and M. Wiener (2002). Classification and Regression by randomForest. R News 2(3), 18--22.
 \newline
-6. Brandon Greenwell, Bradley Boehmke, Jay Cunningham and GBM Developers (2019). gbm: Generalized Boosted
-  Regression Models. R package version 2.1.5. https://CRAN.R-project.org/package=gbm
+6. Brandon Greenwell, Bradley Boehmke, Jay Cunningham and GBM Developers (2019). gbm: Generalized Boosted Regression Models. R package version 2.1.5. https://CRAN.R-project.org/package=gbm
 \newline
-\hypertarget{target2}{7.} Jerome Friedman, Trevor Hastie, Robert Tibshirani (2010). Regularization Paths for Generalized Linear
-  Models via Coordinate Descent. Journal of Statistical Software, 33(1), 1-22. URL
-  http://www.jstatsoft.org/v33/i01/.
+7. Jerome Friedman, Trevor Hastie, Robert Tibshirani (2010). Regularization Paths for Generalized Linear Models via Coordinate Descent. Journal of Statistical Software, 33(1), 1-22. URL http://www.jstatsoft.org/v33/i01/.
+\newline
+8. Alina Beygelzimer, Sham Kakadet, John Langford, Sunil Arya, David Mount and Shengqiao Li (2019). FNN: Fast Nearest Neighbor Search Algorithms and Applications. R package
+version 1.1.3.  https://CRAN.R-project.org/package=FNN
+  
+  
+  
+  
   
 
 
