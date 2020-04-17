@@ -108,26 +108,26 @@ Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il 
 ```{r echo=FALSE, eval=T, message=FALSE}
 load("save.Rdata")
 ```
-Un autre modèle qui a été testé est celui du bagging avec des arbres de régression. Étant donné le type de la valeur réponse recherchée soit le prix d'une maison, cette valeur est numérique continue et donc les arbres de régression sont ceux compatibles pour prédir cette dite valeur. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
+Un autre modèle qui a été testé est celui du bagging avec des arbres de régression. Étant donné le type de la variable réponse recherchée, soit le prix d'une maison, cette valeur est numérique continue et donc les arbres de régression sont ceux compatibles pour prédir cette dite valeur. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
 
-Un échantillon bootstrap avec remise de la même taille que l'échantillon d'entrainement a été sélectionné par l'algorithme \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} (`sampsize= nrow(donnees.train)`). Le nombre de variables échantillonnées aléatoirement a donc été déterminé à 17 (`mtry=17`) étant donné que notre base de données d'entrainement comportait 18 variables avec la variable réponse incluse. La seule paramètres qui était à déterminer était selui du nombre d'arbres de régression créés avec le bagging. Pour ce faire un graphique de l'erreur quadratique moyenne (EQM) des observations OOB en fonction du nombre d'arbres composant le bagging a été tracé afin de déterminer quand l'EQM des OOB se stabilisait à son minimum. Sur le graphique suivant, on voit d'ailleurs que 150 arbres étaient suffisants et c'est donc le nombre qui a été retenu (`ntree=150`).
+Un échantillon bootstrap avec remise de la même taille que l'échantillon d'entrainement a été sélectionné par l'algorithme `randomForest` (`sampsize= nrow(donnees.train)`). Le nombre de variables échantillonnées aléatoirement a donc été déterminé à 17 (`mtry=17`) étant donné que notre base de données d'entrainement comportait 18 variables avec la variable réponse incluse. Le seul paramètre qui était à déterminer était celui du nombre d'arbres de régression créés avec le bagging. Pour ce faire, un graphique de l'erreur quadratique moyenne (EQM) des observations OOB en fonction du nombre d'arbres composant le bagging a été tracé afin de déterminer quand l'EQM des OOB se stabilisait. Sur le graphique suivant, on voit d'ailleurs que 150 arbres étaient suffisants et c'est donc le nombre qui a été retenu (`ntree=150`).
 
 ```{r echo=F,eval=T, message=FALSE}
 plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bagging", ylab="EQM des OOB", main="Graphique X: EQM des observations OOB en fonction du nombre d'arbres")
 ```
 
-À noter qu'aucun élagage n'a été fait sur les arbres de régression créé par le bagging et donc ceux-ci avaient un paramètre `cp=0`.
+À noter qu'aucun élagage n'a été fait sur les arbres de régression créé par le bagging et donc ceux-ci avaient un paramètre de complexité `cp=0`.
 
 \subsection{Forêt aléatoire}
 Un autre modèle qui a été testé est celui de la forêt aléatoire. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
 
 Le bagging et la forêt aléatoire sont très similaires à la différence que la forêt aléatoire permet de décorreler les arbres à l'aide de deux manières. 
 
-De 1, on choisit un échantillon bootstrap plus petit que le bagging, c'est pourquoi dans notre cas un `sampsize= 0.75*nrow(donnees.train)` a été choisi ce qui équivaut à utiliser 75% des données de l'échantillon d'entrainement. 
+Tout d'abord, on choisit un échantillon bootstrap plus petit que le bagging, c'est pourquoi dans notre cas un `sampsize= 0.75*nrow(donnees.train)` a été choisi, ce qui équivaut à utiliser 75% des données de l'échantillon d'entrainement. 
 
-De 2, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry)`. Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minisait l'erreur quadratique moyenne est $m=8$. 
+Puis, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry`). Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minimisait l'erreur quadratique moyenne est $m=8$. 
 
-Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardé pour le bagging et la forêt aléatoire.
+Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardées pour le bagging et la forêt aléatoire.
 
 
 \subsection{Modèle de \textit{gradient boosting}}
