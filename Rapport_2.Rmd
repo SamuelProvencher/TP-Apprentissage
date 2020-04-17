@@ -84,6 +84,9 @@ où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre d
 Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entraînement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Cette validation croisée est intégrée dans la fonction `cv.glmnet`. Ainsi, la valeur optimale de ce paramètre est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives. Le modèle est aussi constitué de 22 termes d'interaction.  
 
 \subsection{Modèle des \textit{k} plus proches voisins}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+source("3-K_voisin.R")
+```
 Un modèle qui a été testé est celui des *k* plus proches voisins. Étant donné que nous avons un problème de régression, la fonction `knn.reg` du paquetage \hyperlink{target1}{{\color{blue}\textbf{FNN}}} a été utilisée pour construire ce modèle. 
 
 Le modèle des *k* plus proches voisins est simpliste. Afin de prédire une observation dont les valeurs des variables explicatives sont comprises dans le vecteur $\textbf{x}_0$, il faut regarder l'ensemble des *k* plus proche voisins de $\textbf{x}_0$, c'est-à-dire les observations qui minimisent la distance Euclidienne. Puis, la prévision du point $\textbf{x}_0$ est la moyenne des variables réponses des observations comprises dans l'ensemble des *k* plus proches voisins.
@@ -135,6 +138,16 @@ Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardées po
 
 \newpage
 \section{Comparaison des modèles}
+
+```{r echo=FALSE}
+
+library(knitr)
+
+dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "K voisins","Arbre","Bagging","Forêt aléatoire", "GBM"), c(EQM.ModBase,msep.lasso, EQM.Kvoisins, EQM.arbre, EQM.bag,EQM.foret,3))
+
+kable(dataframe, caption = "Titre", col.names = c("Modèles","EQM"), digits = 5)
+
+```
 
 \newpage
 \section{Interprétation des meilleurs modèles}
