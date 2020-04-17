@@ -34,7 +34,7 @@ control <- trainControl(method = "cv", number = 5)
 #                    nodesize=2)
 
 foret <-randomForest(I(log(price))~., data = donnees.train, 
-                     sampsize= floor(0.6*nrow(donnees.train)),
+                     sampsize= floor(0.75*nrow(donnees.train)),
                      ntree=150,
                      importance=TRUE, 
                      mtry=8) 
