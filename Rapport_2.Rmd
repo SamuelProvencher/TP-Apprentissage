@@ -123,7 +123,7 @@ Un autre modèle qui a été testé est celui de la forêt aléatoire. Pour ce f
 
 Le bagging et la forêt aléatoire sont très similaires à la différence que la forêt aléatoire permet de décorreler les arbres à l'aide de deux manières. 
 
-De 1, on choisit un échantillon bootstrap plus petit que le bagging, c'est pourquoi dans notre cas un `sampsize= 0.6*nrow(donnees.train)` a été choisi ce qui équivaut à utiliser 60% des données de l'échantillon d'entrainement. 
+De 1, on choisit un échantillon bootstrap plus petit que le bagging, c'est pourquoi dans notre cas un `sampsize= 0.75*nrow(donnees.train)` a été choisi ce qui équivaut à utiliser 60% des données de l'échantillon d'entrainement. 
 
 De 2, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry)`. Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minisait l'erreur quadratique moyenne est $m=8$. 
 
