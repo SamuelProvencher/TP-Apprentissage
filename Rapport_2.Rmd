@@ -95,7 +95,7 @@ Il faut d'abord déterminer la valeur optimale de *k*, soit le nombre de voisins
 ```{r echo=FALSE, eval=T, message=FALSE}
 source("4-Arbre.R")
 ```
-Un modèle qui a été décidé de tester est un arbre de décision. Pour ce faire, l'algorithme \textit{classification and regression tree} (CART) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{rpart}}}} a été utilisé. 
+Un modèle qui a été décidé de tester est un arbre de décision, mais plus précisement dans le cas présent, des arbres de régression. Pour ce faire, l'algorithme \textit{classification and regression tree} (CART) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{rpart}}}} a été utilisé. 
 
 Il a tout d'abord été décidé d'optimiser l'hyperparamètre `minbucket`, soit le nombre minimal d'observations dans une feuille de l'arbre. Une méthode manuelle a du être utilisée parce qu'on ne peut pas optimiser cet hyperparamètre à l'aide des méthodes habituelles. Plusieurs valeurs ont été testées entre `minbucket` $=1$ et `minbucket` $=200$ afin de se donner une idée. Par la suite, la recherche a été raffinée et la valeur qui a ainsi été trouvée est de `minbucket` $=9$.
 
@@ -104,10 +104,30 @@ Avec cet hyperparamètre défini, un arbre de régression a été construit en u
 Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il s'agit d'une façon de bien comprendre ce type de modèle. Cependant, il n'a pas été possible de présenter ce modèle sous forme de graphique. En effet, malgré le fait que l'arbre a été élagué, il était trop complexe pour être agréable à regarder pour l'oeil. Ceci est du au fait que le modèle a été entrainé avec `r nrow(donnees.train)` observations, ce qui est un nombre assez important.
 
 
-
 \subsection{Ensemble d'arbres de décisions aggrégées par \textit{bagging}}
+```{r echo=FALSE, eval=T, message=FALSE}
+load("save.Rdata")
+```
+Un autre modèle qui a été testé est celui du bagging avec des arbres de régression. Étant donné le type de la valeur réponse recherchée soit le prix d'une maison, cette valeur est numérique continue et donc les arbres de régression sont ceux compatibles pour prédir cette dite valeur. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
+
+Un échantillon bootstrap avec remise de la même taille que l'échantillon d'entrainement a été sélectionné par l'algorithme \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} (`sampsize= nrow(donnees.train)`). Le nombre de variables échantillonnées aléatoirement a donc été déterminé à 17 (`mtry=17`) étant donné que notre base de données d'entrainement comportait 18 variables avec la variable réponse incluse. La seule paramètres qui était à déterminer était selui du nombre d'arbres de régression créés avec le bagging. Pour ce faire un graphique de l'erreur quadratique moyenne (EQM) des observations OOB en fonction du nombre d'arbres composant le bagging a été tracé afin de déterminer quand l'EQM des OOB se stabilisait à son minimum. Sur le graphique suivant, on voit d'ailleurs que 150 arbres étaient suffisants et c'est donc le nombre qui a été retenu (`ntree=150`).
+
+```{r echo=F,eval=T, message=FALSE}
+plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bagging", ylab="EQM des OOB", main="Graphique X: EQM des observations OOB en fonction du nombre d'arbres")
+```
+
+À noter qu'aucun élagage n'a été fait sur les arbres de régression créé par le bagging et donc ceux-ci avaient un paramètre `cp=0`.
 
 \subsection{Forêt aléatoire}
+Un autre modèle qui a été testé est celui de la forêt aléatoire. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
+
+Le bagging et la forêt aléatoire sont très similaires à la différence que la forêt aléatoire permet de décorreler les arbres à l'aide de deux manières. 
+
+De 1, on choisit un échantillon bootstrap plus petit que le bagging, c'est pourquoi dans notre cas un `sampsize= 0.6*nrow(donnees.train)` a été choisi ce qui équivaut à utiliser 60% des données de l'échantillon d'entrainement. 
+
+De 2, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry)`. Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minisait l'erreur quadratique moyenne est $m=8$. 
+
+Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardé pour le bagging et la forêt aléatoire.
 
 
 \subsection{Modèle de \textit{gradient boosting}}
