@@ -23,7 +23,7 @@ EQM.bag <- mean((bag_prev-log(donnees.test$price))^2)
 #### Foret aleatoire ####
 control <- trainControl(method = "cv", number = 5)
 #très long, ne pas rouler
-# rf.train <- train(log(price)~.,
+# rf.train2 <- train(log(price)~.,
 #                    data = donnees.train,
 #                    method = "rf",
 #                    metric = "RMSE",
@@ -33,6 +33,23 @@ control <- trainControl(method = "cv", number = 5)
 #                    ntree = 150,
 #                    nodesize=2)
 
+#interprétation 
+foret.iml <- Predictor$new(rf.train)
+imp_foret <- FeatureImp$new(foret.iml, loss="mse", compare="difference")
+pdp.lat <- FeatureEffect$new(foret.iml, "lat", method = "pdp",
+                               grid.size = 50)
+pdp.long <- FeatureEffect$new(foret.iml, "long", method = "pdp",
+                             grid.size = 50)
+pdp.grade <- FeatureEffect$new(foret.iml, "grade", method = "pdp",
+                             grid.size = 50)
+pdp.sqft_lot <- FeatureEffect$new(foret.iml, "sqft_lot", method = "pdp",
+                             grid.size = 50)
+pdp.sqft_lot15 <- FeatureEffect$new(foret.iml, "sqft_lot15", method = "pdp",
+                             grid.size = 50)
+pdp.sqft_basement <- FeatureEffect$new(foret.iml, "sqft_basement", method = "pdp",
+                             grid.size = 50)
+
+#vrai modèle
 foret <-randomForest(I(log(price))~., data = donnees.train, 
                      sampsize= floor(0.75*nrow(donnees.train)),
                      ntree=150,
