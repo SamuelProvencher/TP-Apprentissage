@@ -128,7 +128,11 @@ Le bagging et la forêt aléatoire sont très similaires à la différence que l
 
 Tout d'abord, on choisit un échantillon bootstrap plus petit que le bagging, c'est pourquoi dans notre cas un `sampsize= 0.75*nrow(donnees.train)` a été choisi, ce qui équivaut à utiliser 75% des données de l'échantillon d'entrainement. 
 
-Puis, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry`). Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minimisait l'erreur quadratique moyenne est $m=8$. 
+Puis, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry`). Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minimisait l'erreur quadratique moyenne est $m=8$, comme le montre le graphique suivant:
+
+```{r echo=F,eval=T, message=FALSE}
+plot(rf.train, main="Graphique X: EQM des observations OOB en fonction du mtry")
+```
 
 Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardées pour le bagging et la forêt aléatoire.
 
@@ -174,9 +178,13 @@ library(randomForest)
 varImpPlot(foret, main="Graphique X: Importance des variables composant la forêt aléatoire")
 ```
 
-Si on permute de façon aléatoire les valeurs de la variable à analyser voulue, on calcule de nouvelles prévisions sur nos données et ensuite on compare la nouvelle erreur quadratique moyenne avec celle du jeu de données initial, on obtient la *mean decrease in accuracy*. Pour notre jeu de données, on voit donc que les variables de la *latitude*(lat) et la *longitude*(long) sont celles qui ont le plus d'impact sur nos prévisions si on applique cette permutation. Suit juste après de la superficie du terrain en pieds carrés. En effet, autant la superficie du terrain de la maison ainsi que celle moyenne des 15 autres maisons autour on une bonne importance sur les prévisions du logarithme de prix d'achat de la maison.
+Si on permute de façon aléatoire les valeurs de la variable à analyser voulue, on calcule de nouvelles prévisions sur nos données et ensuite on compare la nouvelle erreur quadratique moyenne avec celle du jeu de données initial, on obtient la *mean decrease in accuracy*. Pour notre jeu de données, on voit donc que les variables de la *latitude*(lat) et la *longitude*(long) sont celles qui ont le plus d'impact sur nos prévisions du logarithme de prix d'achat de la maison si on applique cette permutation.
 
-Si on calcule la diminution totale dans l'erreur quadratique moyenne due à une séparation sur la variable à analyser voulue, on obtient la *mean decrease in node impurity*. Avec cette mesure, ce n'est pas les mêmes variables qui sont dites importantes pour notre modèle. Non, en fait, hormis la latitude qui figure toujours dans le top 4 des variables les plus importantes, la qualité de la construction et de la conception (grade) apparait comme étant celle qui se démarque le plus. La superficie habitable moyenne des 15 plus proches voisins (sqft_living15) et la superficie habitable du sous-sol de la maison sont celles qui viennent compléter le top 4.
+Si on calcule la diminution totale dans l'erreur quadratique moyenne due à une séparation sur la variable à analyser voulue, on obtient la *mean decrease in node impurity*. Avec cette mesure, ce n'est pas les mêmes 2 variables qui sont dites importantes pour notre modèle. Non, en fait, la latitude qui figure toujours dans le top 2 des variables les plus importantes, mais la qualité de la construction et de la conception (grade) apparait comme étant celle qui se démarque aussi.
+
+Pour mieux comprendre l’effet marginal de ces trois variables explicatives sur la prévision, on peut regarder leurs graphiques de dépendance partielle:
+
+
 
 L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé d'arbres, en allant chercher les points points positifs de chaque prévision parmi ceux-ci, la forêt arrive à prédire une bonne prévision pour notre variable réponse. Cependant, d'un point de vue technique, ces arbres sont lourds et sont nombreux dans la méthode. Le calcul de la forêt aléatoire malgré le fait qu'il nécessite peu de réglages en comparaison aux autres modèles, est très long à calculer. Surtout lorsque la base de données d'entrainement est composée de $17 276$ observations de $18$ variables, variable réponse incluse.
 
