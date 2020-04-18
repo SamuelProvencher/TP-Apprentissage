@@ -1,6 +1,7 @@
 source("1-ModeleBase.R")
 
 library(glmnet)
+
 x.train <- model.matrix(ModBase2, data=donnees.train)[,-1]
 x.test <- model.matrix(ModBase2, data=donnees.test)[,-1]
 y.train <- log(donnees.train$price)

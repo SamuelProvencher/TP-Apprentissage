@@ -4,7 +4,6 @@ library(caret)
 library(FNN)
 
 
-
 #Optimisation de K
 
 set.seed(69)

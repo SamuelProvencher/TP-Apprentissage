@@ -1,4 +1,5 @@
-source("script.r")
+source("script2.r")
+
 library(caret)
 library(gbm)
 
