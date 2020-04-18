@@ -8,31 +8,75 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+source("1-ModeleBase.R")
+source("2-Lasso.R")
+source("3-K_voisin.R")
+source("4-Arbre.R")
+load("save.Rdata")
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+## Plan de la présentation
 
-## Slide with Bullets
+- Base de données à l'étude
+- Prétraitement des données
+- Analyse exploratoire
+- Modèles testés
+- Comparaison des modèles
+- Forêt aléatoire
+- GBM
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+## Base de données à l'étude
 
-## Slide with R Output
 
-```{r cars, echo = TRUE}
-summary(cars)
-```
-
-## Slide with Plot
+## Prétraitement des données
 
 ```{r pressure}
 plot(pressure)
 ```
+
+## Analyse exploratoire
+
+## Modèles testés
+
+- Modèle de base
+- Modèle linéaire généralisé avec régression Lasso
+- Modèle des *k* plus proches voisins
+- Arbre de décision
+- Ensemble d'arbres de décision agrégées par *bagging*
+- Forêt aléatoire
+- Modèle de *gradient boosting*
+
+## Modèles testés - Modèle de base
+
+## Modèles testés - Modèle linéaire généralisé avec régression Lasso
+
+## Modèles testés - Modèle des *k* plus proches voisins
+
+## Modèles testés - Arbre de décision
+
+## Modèles testés - Ensemble d'arbres de décision agrégées par *bagging*
+
+## Modèle testés - Forêt aléatoire
+
+## Modèles testés - Modèle de *gradient boosting*
+
+## Comparaison des modèles
+
+```{r echo=FALSE}
+library(knitr)
+
+dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "K plus proches voisins","Arbre de décision","Bagging","Forêt aléatoire", "Gradient boosting (GBM)"), c(EQM.ModBase,msep.lasso, EQM.Kvoisins, EQM.arbre, EQM.bag,EQM.foret,3))
+
+kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Modèles","EQM"), digits = 5)
+```
+
+## Forêt aléatoire
+
+## Modèle de *gradient boosting*
+
 
 ## Bibliographie
 
