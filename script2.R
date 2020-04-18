@@ -1,4 +1,7 @@
-#### Truc important du script ####
+#### Prétraitement des données ####
+
+# Après ce script, les données sont prêtes à être utilisées dans les différents modèles.
+
 
 donnees <- read.csv("kc_house_data.csv")
 
