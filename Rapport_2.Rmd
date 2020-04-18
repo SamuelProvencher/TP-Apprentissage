@@ -139,15 +139,28 @@ Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardées po
 \newpage
 \section{Comparaison des modèles}
 
+La métrique utilisée pour comparer la puissance prédictive des différents modèles est l'erreur quadratique moyenne (EQM). Cette métrique a été choisie puisque le type de modélisation est la régression. Les autres métriques vues dans le cadre du cours ACT-3114 Apprentissage statistique en actuariat sont utilisées pour les problèmes de classification ou lorsque la distribution de la variable réponse est poisson. Ainsi, l'EQM est la métrique la plus appropriée pour ce problème. Pour chacun des modèles, l'EQM a été calculée avec les données de test afin d'éviter d'utiliser les mêmes données qui ont été utilisées pour entrainer les modèles.
+
 ```{r echo=FALSE}
 
 library(knitr)
 
-dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "K voisins","Arbre","Bagging","Forêt aléatoire", "GBM"), c(EQM.ModBase,msep.lasso, EQM.Kvoisins, EQM.arbre, EQM.bag,EQM.foret,3))
+dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "K plus proches voisins","Arbre de décision","Bagging","Forêt aléatoire", "Gradient boosting (GBM)"), c(EQM.ModBase,msep.lasso, EQM.Kvoisins, EQM.arbre, EQM.bag,EQM.foret,3))
 
-kable(dataframe, caption = "Titre", col.names = c("Modèles","EQM"), digits = 5)
+kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Modèles","EQM"), digits = 5)
 
 ```
+
+
+|Modèles      | EQM        |
+|:------------:|:------------:|
+|Base         | `r EQM.ModBase`|
+Table: L'EQM des sept modèles testés
+
+
+Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle A et le modèle B. En effet, leur EQM est de x et y respectivement. 
+
+**Faudrait essayer de remplacer Table par Tableau dans les titres (pour francais). Table 2, c'est juste une autre façon de faire un tableau**
 
 \newpage
 \section{Interprétation des meilleurs modèles}
