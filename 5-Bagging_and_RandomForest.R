@@ -1,6 +1,7 @@
 ## Toute la mémoire est dans les 2 lignes de code suivantes
 load("save.Rdata")
 load("save2.Rdata")
+load("interactions_bivariées_foret")
 
 source("script2.R")
 
@@ -49,6 +50,10 @@ pdp.long <- FeatureEffect$new(foret.iml, "long", method = "pdp",
                               grid.size = 50)
 pdp.grade <- FeatureEffect$new(foret.iml, "grade", method = "pdp",
                                grid.size = 50)
+int.lat <- Interaction$new(foret.iml, "lat")
+
+pdp.lat.long <- FeatureEffect$new(foret.iml, feature = c("long","lat"),
+                                 method = "pdp", grid.size=20)
 
 importance_var_foret <- varImpPlot(foret)
 foret_prev <- predict(foret, newdata=donnees.test, type="response")
