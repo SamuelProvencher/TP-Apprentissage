@@ -110,6 +110,7 @@ Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il 
 \subsection{Ensemble d'arbres de décisions aggrégées par \textit{bagging}}
 ```{r echo=FALSE, eval=T, message=FALSE}
 load("save.Rdata")
+load("save2.Rdata")
 ```
 Un autre modèle qui a été testé est celui du bagging avec des arbres de régression. Étant donné le type de la variable réponse recherchée, soit le prix d'une maison, cette valeur est numérique continue et donc les arbres de régression sont ceux compatibles pour prédir cette dite valeur. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
 
@@ -137,7 +138,27 @@ plot(rf.train, main="Graphique X: EQM des observations OOB en fonction du mtry")
 Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardées pour le bagging et la forêt aléatoire.
 
 
-\subsection{Modèle de \textit{gradient boosting}}
+\subsection{Modèle de boosting de gradient stochastique}
+
+Enfin, le dernier modèle ajusté aux données en est un de boosting de gradient stochastique. Nous allons encore une fois supposer que la variable réponse suit une distribution gaussienne, ce qui nous permet d'utiliser l'erreur quadratique moyenne (EQM) comme fonction de perte pour construire le modèle. 
+
+En quelques mots, le modèle de boosting de gradient stochastique est une procédure itérative: à chaque itération, un arbre de régression est ajusté aux gradients négatifs de la fonction de perte de l'itération précédente. La prévision de chaque itération est prise en compte dans le modèle proportionnellement à un paramètre $\lambda$ appelé paramètre de régularisation. Plus ce $\lambda$ est petit, plus le modèle apprend petit à petit en n'accordant pas trop d'importance à chaque prévision et plus la performance finale du modèle sera bonne, mais il faudra cependant plus d'itérations pour obtenir un modèle final optimal. Il faut également faire attention de ne pas construire un modèle avec trop d'arbres, car les modèles de boosting de gradient stochastique ont un risque de surajustement.
+
+Nous avons choisi un taux d'apprentissage $\lambda$ de 1\%. Ce taux nous a permis d'obtenir un compromis efficace entre temps de calcul et précision du modèle.
+
+Nous avons utilisé les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{gbm}}}} pour procéder à l'optimisation et à la construction du modèle. En utilisant une validation croisée à cinq ensembles, nous avons optimisé les paramètres $d$ (la profondeur maximale de l'arbre ajusté à chaque itération) et $T$ (le nombre d'itérations du modèle). Des valeurs de trois, cinq et sept ont été testées pour la profondeur des arbres $d$. 
+
+Pour ce qui est des autres hyperparamètres, soit le pourcentage de sous-échantillonnage $\delta$ et le nombre minimal d'observations dans chaque noeud pour les arbres, nous avons gardé leurs valeurs par défaut, soit respectivement 50\% de sous-échantillonnage et dix observations. En effet, nous avons déterminé qu'optimiser ces hyperparamètres nécessiterait un temps de calcul excessif pour les avantages qu'il serait possible d'en retirer. 
+
+Les résultats sont les suivants:
+
+* Graphiques d=3,5,7
+
+Nous obtenons que le nombre d'itérations optimal pour les modèles avec des arbres de profondeur trois, cinq et sept est respectivement de xx, xx et xx itérations. Pour déterminer lequel de ces modèles est le meilleur, nous allons les comparer selon le critère de l'erreur quadratique minimale de validation croisée à cinq ensembles.
+
+* Tableau d=3,5,7
+
+Selon ce critère, le meilleur modèle est donc celui obtenu avec $d=X$ et $XXX$ itérations. C'est avec ce modèle que nous procéderons pour effectuer les prédictions sur l'échantillon de test.
 
 
 \newpage
@@ -188,7 +209,31 @@ Pour mieux comprendre l’effet marginal de ces trois variables explicatives sur
 
 L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé d'arbres, en allant chercher les points points positifs de chaque prévision parmi ceux-ci, la forêt arrive à prédire une bonne prévision pour notre variable réponse. Cependant, d'un point de vue technique, ces arbres sont lourds et sont nombreux dans la méthode. Le calcul de la forêt aléatoire malgré le fait qu'il nécessite peu de réglages en comparaison aux autres modèles, est très long à calculer. Surtout lorsque la base de données d'entrainement est composée de $17 276$ observations de $18$ variables, variable réponse incluse.
 
-\subsection{Gradient boosting}
+\subsection{Boosting de gradient stochastique}
+
+Enchaînons avec l'interprétation du modèle de boosting de gradient stochastique. Ce type de modèle est reconnu comme étant difficilement interprétable intuitivement, mais divers outils permettent d'ouvrir la boîte noire du modèle et d'y voir plus clair. Nous utiliserons les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{iml}}}} pour interpréter le modèle.
+
+Tout d'abord, nous pouvons déterminer l'importance des différentes variables dans le modèle selon le critère de diminution moyenne de l'EQM causée par chaque variable dans les arbres.
+
+* Graphique importance des variables
+
+Nous observons que les valeurs les plus utiles dans le modèle de boosting sont XX, XX, et XX... 
+
+Une bonne manière d'examiner l'impact de chaque variable dans le modèle plus en détail est d'utiliser des graphiques de dépendance partielle (PDP). Voilà les PDP des variables les plus importantes du modèle.
+
+* PDP
+
+Nous observons que...
+
+Cependant, les PDP ne permettent pas de visualiser les éventuelles interactions entre les variables. Une manière de quantifier ces interactions est de déterminer les statistiques \textit{H} de Friedman: plus cette dernière est grande, plus l'interaction est forte. Nous pouvons examiner les statistiques \textit{H} entre la variable XX et toutes les autres variables:
+
+* Statistique H
+
+Nous voyons une forte interaction entre la variable XX et les variables XXX, XXX... Nous pouvons donc examiner les PDP bivariés de ces variables afin d'examiner plus en détail ces interactions:
+
+* PDP bivariés
+
+Nous observons que...
 
 \newpage
 \section{Conclusion}
@@ -212,6 +257,8 @@ L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé 
 \newline
 8. Alina Beygelzimer, Sham Kakadet, John Langford, Sunil Arya, David Mount and Shengqiao Li (2019). FNN: Fast Nearest Neighbor Search Algorithms and Applications. R package
 version 1.1.3.  https://CRAN.R-project.org/package=FNN
+\newline
+9. Molnar C, Bischl B, Casalicchio G (2018). iml: An R package for Interpretable Machine Learning. R package version 0.10.0.  https://CRAN.R-project.org/package=iml
   
   
   
