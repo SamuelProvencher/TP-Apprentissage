@@ -3,16 +3,19 @@ title: "Prix de vente de maisons à King County"
 author: "Matis Brassard-Verrier, Alyson Marquis, Alexis Picard et Samuel Provencher"
 output:
      powerpoint_presentation:
-        reference_doc : Présentation1.pptx
+        reference_doc : Presentation1.pptx
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+source("script.R")
 source("1-ModeleBase.R")
 source("2-Lasso.R")
 source("3-K_voisin.R")
 source("4-Arbre.R")
 load("save.Rdata")
+load("save2.Rdata")
+load("save3.Rdata")
 ```
 
 ## Introduction
@@ -35,6 +38,25 @@ load("save.Rdata")
 
 ```{r pressure}
 plot(pressure)
+```
+
+## Analyse en composantes principales
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Visualisation contributions des 4 composantes
+contrib_corrige <- data.frame(acp_corrige$var$coord[,1:4])
+contrib_corrige$carac <- rownames(contrib_corrige)
+contrib.long_corrige <- reshape2::melt(contrib_corrige)
+
+ggplot(contrib.long_corrige, aes(x=carac, fill=variable, y=value))+
+    geom_bar(stat="identity",position=PositionDodge)+
+    facet_grid(~variable)+
+    theme(legend.position="none",axis.text.x = element_text(angle = 90))+
+    coord_flip()+labs(title = "Contributions des variables aux 4 premières composantes") +
+  theme(plot.title = element_text(size = rel(0.8))) +
+  ylab("Contribution") +
+  xlab("Variable")
+
 ```
 
 ## Analyse exploratoire
@@ -74,6 +96,18 @@ kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Mod
 ```
 
 ## Forêt aléatoire
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(randomForest)
+varImpPlot(foret, main="Graphique X: Importance des variables composant la forêt aléatoire")
+```
+
+## Forêt aléatoire (suite)
+
+## Forêt aléatoire (suite)
+
+## Forêt aléatoire (suite)
+
 
 ## Modèle de *gradient boosting*
 
