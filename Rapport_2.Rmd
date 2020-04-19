@@ -114,7 +114,7 @@ load("save2.Rdata")
 ```
 Un autre modèle qui a été testé est celui du bagging avec des arbres de régression. Étant donné le type de la variable réponse recherchée, soit le prix d'une maison, cette valeur est numérique continue et donc les arbres de régression sont ceux compatibles pour prédir cette dite valeur. Pour ce faire, l'algorithme \textit{classification and regression with Random Forest} (randomForest) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{randomForest}}}} a été utilisé.
 
-Un échantillon bootstrap avec remise de la même taille que l'échantillon d'entrainement a été sélectionné par l'algorithme `randomForest` (`sampsize= nrow(donnees.train)`). Le nombre de variables échantillonnées aléatoirement a donc été déterminé à 17 (`mtry=17`) étant donné que notre base de données d'entrainement comportait 18 variables avec la variable réponse incluse. Le seul paramètre qui était à déterminer était celui du nombre d'arbres de régression créés avec le bagging. Pour ce faire, un graphique de l'erreur quadratique moyenne (EQM) des observations OOB en fonction du nombre d'arbres composant le bagging a été tracé afin de déterminer quand l'EQM des OOB se stabilisait. Sur le graphique suivant, on voit d'ailleurs que 150 arbres étaient suffisants et c'est donc le nombre qui a été retenu (`ntree=150`).
+Un échantillon bootstrap avec remise de la même taille que l'échantillon d'entrainement a été sélectionné par l'algorithme `randomForest` (`sampsize= nrow(donnees.train)`). Le nombre de variables échantillonnées aléatoirement a donc été déterminé à 17 (`mtry=17`) étant donné que notre base de données d'entrainement comportait 18 variables avec la variable réponse incluse. Le seul paramètre qui était à déterminer était celui du nombre d'arbres de régression créés avec le bagging. Pour ce faire, un graphique de l'erreur quadratique moyenne (EQM) des observations OOB en fonction du nombre d'arbres composant le bagging a été tracé afin de déterminer quand l'EQM des OOB se stabilisait. Sur le graphique suivant, on voit d'ailleurs que 500 arbres étaient suffisants et c'est donc le nombre qui a été retenu (`ntree=500`).
 
 ```{r echo=F,eval=T, message=FALSE}
 plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bagging", ylab="EQM des OOB", main="Graphique X: EQM des observations OOB en fonction du nombre d'arbres")
@@ -135,7 +135,7 @@ Puis, à chaque itération dans la construction de l’arbre, on choisit aléato
 plot(rf.train, main="Graphique X: EQM des observations OOB en fonction du mtry")
 ```
 
-Pour ce qui est des autres paramètres, les mêmes valeurs ont été gardées pour le bagging et la forêt aléatoire.
+Pour ce qui est des autres paramètres, hormis le nombre d'arbres (ntree) qui a été abaissé à 150 à des fins d'otimisation et de vitesse de calculs, les mêmes valeurs ont été gardées pour le bagging et la forêt aléatoire.
 
 
 \subsection{Modèle de boosting de gradient stochastique}
