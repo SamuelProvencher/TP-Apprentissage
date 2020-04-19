@@ -3,56 +3,57 @@ source("script2.r")
 library(caret)
 library(gbm)
 library(iml)
+library(ggplot2)
 
 
 #### Construction du modèle ####
 
 
-# {
-# set.seed(69)
-# temp <- proc.time()
-# gbm.modele3 <- gbm(log(price)~.,
-#                   distribution = "gaussian",
-#                   data = donnees.train,
-#                   n.trees = 30000,
-#                   interaction.depth = 3,
-#                   n.minobsinnode = 10,
-#                   shrinkage = 0.01,
-#                   bag.fraction = 0.5,
-#                   verbose = F,
-#                   cv.folds = 5)
-# gbm.modele5 <- gbm(log(price)~.,
-#                   distribution = "gaussian",
-#                   data = donnees.train,
-#                   n.trees = 25000,
-#                   interaction.depth = 5,
-#                   n.minobsinnode = 10,
-#                   shrinkage = 0.01,
-#                   bag.fraction = 0.5,
-#                   verbose = F,
-#                   cv.folds = 5)
-# gbm.modele7 <- gbm(log(price)~.,
-#                   distribution = "gaussian",
-#                   data = donnees.train,
-#                   n.trees = 25000,
-#                   interaction.depth = 7,
-#                   n.minobsinnode = 10,
-#                   shrinkage = 0.01,
-#                   bag.fraction = 0.5,
-#                   verbose = F,
-#                   cv.folds = 5)
-# gbm.modele9 <- gbm(log(price)~.,
-#                    distribution = "gaussian",
-#                    data = donnees.train,
-#                    n.trees = 13000,
-#                    interaction.depth = 9,
-#                    n.minobsinnode = 10,
-#                    shrinkage = 0.01,
-#                    bag.fraction = 0.5,
-#                    verbose = F,
-#                    cv.folds = 5)
-# proc.time() - temp
-# }
+{
+set.seed(69)
+temp <- proc.time()
+gbm.modele3 <- gbm(log(price)~.,
+                  distribution = "gaussian",
+                  data = donnees.train,
+                  n.trees = 30000,
+                  interaction.depth = 3,
+                  n.minobsinnode = 10,
+                  shrinkage = 0.01,
+                  bag.fraction = 0.5,
+                  verbose = F,
+                  cv.folds = 5)
+gbm.modele5 <- gbm(log(price)~.,
+                  distribution = "gaussian",
+                  data = donnees.train,
+                  n.trees = 25000,
+                  interaction.depth = 5,
+                  n.minobsinnode = 10,
+                  shrinkage = 0.01,
+                  bag.fraction = 0.5,
+                  verbose = F,
+                  cv.folds = 5)
+gbm.modele7 <- gbm(log(price)~.,
+                  distribution = "gaussian",
+                  data = donnees.train,
+                  n.trees = 25000,
+                  interaction.depth = 7,
+                  n.minobsinnode = 10,
+                  shrinkage = 0.01,
+                  bag.fraction = 0.5,
+                  verbose = F,
+                  cv.folds = 5)
+gbm.modele9 <- gbm(log(price)~.,
+                   distribution = "gaussian",
+                   data = donnees.train,
+                   n.trees = 13000,
+                   interaction.depth = 9,
+                   n.minobsinnode = 10,
+                   shrinkage = 0.01,
+                   bag.fraction = 0.5,
+                   verbose = F,
+                   cv.folds = 5)
+proc.time() - temp
+}
 
 # très long: résultats ici
 load("gbm_modeles.Rdata")
@@ -112,14 +113,24 @@ plot(gbm.modele9, i.var = "long", n.trees = n.iter9)
 plot(gbm.modele9, i.var = "sqft_lot", n.trees = n.iter9)
 
 
-# hstat.vec <- sapply(colnames(donnees.train)[-1], function(i) 
+# hstat.vec <- sapply(colnames(donnees.train)[-1], function(i)
 #   interact.gbm(gbm.modele9, data = donnees.train, i.var = c("lat", i), n.trees = n.iter9))
-# hstat.lat <- cbind(paste("lat", "+", colnames(donnees.train)[-1]), hstat.vec)
+# hstat.lat <- data.frame(Variables = paste("lat", "+", colnames(donnees.train)[-1]), HStat = hstat.vec)
 # rownames(hstat.lat) <- NULL
 
 # assez long: résultats ici
 load("gbm_hstat_lat.Rdata")
 hstat.lat
+ggplot(hstat.lat, aes(x = Variables, y = HStat)) + 
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Interactions")
 
-plot(gbm.modele9, i.var = c("lat", "long"), n.trees = n.iter9)
-plot(gbm.modele9, i.var = c("lat", "grade"), n.trees = n.iter9)
+# pdp.lat.long <- plot(gbm.modele9, i.var = c("long", "lat"), n.trees = n.iter9)
+# pdp.lat.grade <- plot(gbm.modele9, i.var = c("lat", "grade"), n.trees = n.iter9)
+
+# assez long: résultats ici
+load("gbm_pdp_bivaries.Rdata")
+plot(pdp.lat.long)
+plot(pdp.lat.grade)
