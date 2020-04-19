@@ -230,9 +230,22 @@ plot(pdp.grade) + ggtitle("Graphique X : Graphique de dépendance partielle de l
 
 Sur le graphique suivant, on voit clairement que lorsque la qualité de la construction et de la conception (grade) augmente, le logarithme du prix de la maison augmente aussi. En fait, de manière logique si une maison à une meilleure qualité de construction et de conception, elle aura tendance à valoir plus chère. On peut déduire qu'une maison avec un grade élevé est plus dispendieuse qu'une maison avec un grade faible. À noter que l'augmentation dans le logarithme du prix de la maison apparait uniquement à partir d'un grade 5 ou supérieur.
 
-**Rajouter interactions et bivariées, mais tellement long à calculer en R...**
+La variable étant la plus importante selon les deux méthodes de mesure d'importance, il est donc intéressant d'aller voir si elle intéragit avec d'autres variables. Si on se fit au graphique des statistiques H de Friedman suivant:
 
-L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé d'arbres, en allant chercher les points points positifs de chaque prévision parmi ceux-ci, la forêt arrive à prédire une bonne prévision pour notre variable réponse. Cependant, d'un point de vue technique, ces arbres sont lourds et sont nombreux dans la méthode. Le calcul de la forêt aléatoire malgré le fait qu'il nécessite peu de réglages en comparaison aux autres modèles, est très long à calculer. Surtout lorsque la base de données d'entrainement est composée de $17 276$ observations de $18$ variables, variable réponse incluse.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+load("save3.Rdata")
+plot(int.lat) + ggtitle("Graphique X : Graphique des statistiques H avec la latitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+Mention spéciale à l'interaction entre la latitude et la variable *expensive_area* qui prouve que ceux-ci sont liées et le tout est très logique puisque la 2e à été créé en majeur partie d'après la première. Toutefois, les variables de la latitude et la longitude sont celles qui intéragissent le plus ensemble en comparaison aux autres possibles. C'est d'ailleurs les deux variables les plus importantes selon la méthode *mean decrease in accuracy*. Le graphique de dépendance partielle bivarié entre c'est deux variables serait donc fort intéressant. Le voici d'ailleurs:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.lat.long) + ggtitle("Graphique X : Graphique de dépendance partielle bivarié entre la latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
+```
+
+Ce graphique est très intéressant puisqu'il ressemble fortement à la heatmap (**mettre lien où elle apparaitrait dans le rapport**) de tous les prix des maisons dans la région de King County. En effet, la majorité des maisons plus dispendieuses se situent au Nord-Ouest de la région et c'est d'ailleurs pour des valeurs petites de la longitude et grandes de la latitude que ces variables interagissent ensembles comme le montre le coin bleu pâle sur le graphique ci-dessus.
+
+L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé d'arbres, en allant chercher les points points positifs de chaque prévision parmi ceux-ci, la forêt arrive à prédire une excellente prévision pour notre variable réponse. Cependant, d'un point de vue technique, ces arbres sont lourds et sont nombreux dans la méthode. Le calcul de la forêt aléatoire malgré le fait qu'il nécessite peu de réglages en comparaison aux autres modèles, est très long à calculer. Surtout lorsque la base de données d'entrainement est composée de $17 276$ observations de $18$ variables, variable réponse incluse.
 
 \hypertarget{target2}{\subsection{Boosting de gradient stochastique}}
 
