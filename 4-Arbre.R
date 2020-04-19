@@ -5,6 +5,12 @@ source("script2.R")
 library(rpart)
 library(rpart.plot)
 
+set.seed(2)
+
+ind.valid <- sample(1:nrow(donnees.train), floor(0.2*nrow(donnees.train)), replace = F)
+donnees.train.arbre <- donnees.train[-ind.valid,]
+donnees.valid <- donnees.train[ind.valid,]
+
 ##### Optimisation de l'argument minbucket (ou minsplit??? Un des deux je sais pas)
 #### L'optimisation doit se faire manuellement https://stackoverflow.com/questions/36781755/how-to-specify-minbucket-in-caret-train-for?rq=1
 #### Je sais pas si c'est bon
@@ -15,7 +21,7 @@ library(rpart.plot)
 #     
 #     tree.control <- rpart.control(cp = 0, minbucket = x) 
 #     
-#     arbre <- rpart(I(log(price))~., data=donnees.train, control = tree.control, method = "anova")
+#     arbre <- rpart(I(log(price))~., data=donnees.train.arbre, control = tree.control, method = "anova")
 #     
 #     cp.choix <- arbre$cptable[which.min(arbre$cptable[,4]),1]
 #     
@@ -23,7 +29,7 @@ library(rpart.plot)
 #     
 #     PredArbre <- predict(arbre.elague, type = "vector")
 #     
-#     EQM.arbre <- sum((PredArbre-log(donnees.train$price))^2)/nrow(donnees.train)
+#     EQM.arbre <- sum((PredArbre-log(donnees.valid$price))^2)/nrow(donnees.valid)
 #     
 #     data.frame(cp = cp.choix, EQM = EQM.arbre)
 #     
@@ -32,23 +38,23 @@ library(rpart.plot)
 # 
 # minbucket <- c(1,5,10, 15, 20, 25, 30, 40, 50, 100, 200)
 # 
-# EQM.test <- sapply(minbucket, function(i) fonction_arbre(x=i)$EQM) #minbucket = 10 amène le plus petit EQM
+# EQM.test <- sapply(minbucket, function(i) fonction_arbre(x=i)$EQM) 
 # 
-# minbu <- minbucket[which.min(EQM.test)] #10
+# minbu <- minbucket[which.min(EQM.test)] #15
 # 
-# minbucket2 <- 1:15
+# minbucket2 <- 1:40
 # 
 # EQM.test2 <- sapply(minbucket2, function(i) fonction_arbre(x=i)$EQM)
 # 
-# minbucket.choix <- minbucket2[which.min(EQM.test2)] #9
+# minbucket.choix <- minbucket2[which.min(EQM.test2)] #7
 
 #### Modèle arbre de régression
 
 set.seed(1)
 
-tree.control <- rpart.control(cp = 0, minbucket = 9)
+tree.control <- rpart.control(cp = 0, minbucket = 7)
 
-arbre1 <- rpart(I(log(price))~., data=donnees.train, control = tree.control, method = "anova")
+arbre1 <- rpart(I(log(price))~., data=donnees.train.arbre, control = tree.control, method = "anova")
 
 #plotcp(arbre1) #cross validation en 10 plis
 #On pourrait aussi utiliser le package caret pour avoir le cp optimal, mais ca semble plus complexe
@@ -67,7 +73,7 @@ PredArbre <- predict(arbre.elague, newdata = donnees.test, type = "vector") #typ
 
 #mean(PredArbre);mean(log(donnees.test$price)) #se ressemble
 
-(EQM.arbre <- sum((PredArbre-log(donnees.test$price))^2)/nrow(donnees.test)) #0.0477653
+(EQM.arbre <- sum((PredArbre-log(donnees.test$price))^2)/nrow(donnees.test)) #0.04961685188
 
 
 
