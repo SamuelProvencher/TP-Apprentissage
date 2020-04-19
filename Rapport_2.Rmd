@@ -205,7 +205,32 @@ Si on calcule la diminution totale dans l'erreur quadratique moyenne due à une 
 
 Pour mieux comprendre l’effet marginal de ces trois variables explicatives sur la prévision, on peut regarder leurs graphiques de dépendance partielle:
 
+**Ajouter titre graphique, ne fonctionne pas dans le plot???**
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(iml)
+plot(pdp.lat)
+```
+
+Sur le graphique suivant, on voit clairement que lorsque la latitude augmente le logarithme du prix de la maison augmente aussi. En fait, puisque que la latitude exprime la position d'une maison à la verticale, on peut déduire qu'une maison situé au nord de la région évaluée est plus dispendieuse qu'une maison au Sud. Le graphique de la latitude concorde d'ailleurs avec la heatmap de toutes les maisons vendues à King County où l'on voit que Seatle, la capitale est situé environ entre les parrallèles $47,6$ et $47,7$.
+
+**Ajouter titre graphique, ne fonctionne pas dans le plot???**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.long)
+```
+
+Sur le graphique suivant, on voit clairement que lorsque la longitude augmente le logarithme du prix de la maison diminue. En fait, puisque que la longitude exprime la position d'une maison à l'horizontal, on peut déduire qu'une maison situé à l'Ouest de la région évaluée est plus dispendieuse qu'une maison à l'Est. Le graphique de la longitude concorde d'ailleurs avec la heatmap de toutes les maisons vendues à King County où l'on voit que la majorité des maisons vendues dont celles situées à Seatle, la capitale, sont à l'Ouest.
+
+**Ajouter titre graphique, ne fonctionne pas dans le plot???**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.grade)
+```
+
+Sur le graphique suivant, on voit clairement que lorsque la qualité de la construction et de la conception (grade) augmente, le logarithme du prix de la maison augmente aussi. En fait, de manière logique si une maison à une meilleure qualité de construction et de conception, elle aura tendance à valoir plus chère. On peut déduire qu'une maison avec un grade élevé est plus dispendieuse qu'une maison avec un grade faible. À noter que l'augmentation dans le logarithme du prix de la maison apparait uniquement à partir d'un grade 5 ou supérieur.
+
+**Rajouter interactions et bivariées, mais tellement long à calculer en R...**
 
 L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé d'arbres, en allant chercher les points points positifs de chaque prévision parmi ceux-ci, la forêt arrive à prédire une bonne prévision pour notre variable réponse. Cependant, d'un point de vue technique, ces arbres sont lourds et sont nombreux dans la méthode. Le calcul de la forêt aléatoire malgré le fait qu'il nécessite peu de réglages en comparaison aux autres modèles, est très long à calculer. Surtout lorsque la base de données d'entrainement est composée de $17 276$ observations de $18$ variables, variable réponse incluse.
 
