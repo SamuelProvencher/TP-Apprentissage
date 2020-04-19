@@ -87,20 +87,39 @@ EQM.gbm <- mean((PredGbm - log(donnees.test$price))^2)
 # pdp.sqft_lot <- FeatureEffect$new(mod.gbm.iml, "sqft_lot", method = "pdp", grid.size = 40)
 
 # très long: résultats ici
-load("gbm_iml.Rdata")
-load("gbm_imp.Rdata")
-load("gbm_pdp.Rdata")
+# load("gbm_iml.Rdata")
+# load("gbm_imp.Rdata")
+# load("gbm_pdp.Rdata")
+# 
+# plot(imp)
+# plot(pdp.lat)
+# plot(pdp.sqft_above)
+# plot(pdp.grade)
+# plot(pdp.long)
+# plot(pdp.sqft_lot)
+# 
+# int.lat <- Interaction$new(mod.gbm.iml, "lat")
+# plot(int.lat)
+# 
+# pdp.XXX.YYY <- FeatureEffect$new(mod.gbm.iml, feature = c("XXX", "YYY"),
+#                                  method = "pdp", grid.size = 40)
+# plot(pdp.XXX.YYY)
 
-plot(imp)
-plot(pdp.lat)
-plot(pdp.sqft_above)
-plot(pdp.grade)
-plot(pdp.long)
-plot(pdp.sqft_lot)
+plot(gbm.modele9, i.var = "lat", n.trees = n.iter9)
+plot(gbm.modele9, i.var = "sqft_above", n.trees = n.iter9)
+plot(gbm.modele9, i.var = "grade", n.trees = n.iter9)
+plot(gbm.modele9, i.var = "long", n.trees = n.iter9)
+plot(gbm.modele9, i.var = "sqft_lot", n.trees = n.iter9)
 
-int.lat <- Interaction$new(mod.gbm.iml, "lat")
-plot(int.lat)
 
-pdp.XXX.YYY <- FeatureEffect$new(mod.gbm.iml, feature = c("XXX", "YYY"),
-                                 method = "pdp", grid.size = 40)
-plot(pdp.XXX.YYY)
+# hstat.vec <- sapply(colnames(donnees.train)[-1], function(i) 
+#   interact.gbm(gbm.modele9, data = donnees.train, i.var = c("lat", i), n.trees = n.iter9))
+# hstat.lat <- cbind(paste("lat", "+", colnames(donnees.train)[-1]), hstat.vec)
+# rownames(hstat.lat) <- NULL
+
+# assez long: résultats ici
+load("gbm_hstat_lat.Rdata")
+hstat.lat
+
+plot(gbm.modele9, i.var = c("lat", "long"), n.trees = n.iter9)
+plot(gbm.modele9, i.var = c("lat", "grade"), n.trees = n.iter9)
