@@ -1,10 +1,11 @@
-## Toute la mémoire est dans la ligne de code suivante
+## Toute la mémoire est dans les 2 lignes de code suivantes
 load("save.Rdata")
+load("save2.Rdata")
 
 source("script2.R")
 
 library(randomForest)
-library(pROC)
+library(iml)
 library(caret)
 
 #### Bagging ####
@@ -21,8 +22,9 @@ bag_prev <- predict(bag, newdata=donnees.test, type="response")
 EQM.bag <- mean((bag_prev-log(donnees.test$price))^2)
 
 #### Foret aleatoire ####
-# control <- trainControl(method = "cv", number = 5)
-# #très long, ne pas rouler
+set.seed(69)
+control <- trainControl(method = "cv", number = 5)
+#très long, ne pas rouler
 # rf.train <- train(log(price)~.,
 #                     data = donnees.train,
 #                     method = "rf",
@@ -31,14 +33,14 @@ EQM.bag <- mean((bag_prev-log(donnees.test$price))^2)
 #                     trControl = control,
 #                     sampsize = floor(0.75*nrow(donnees.train)),
 #                     ntree = 150)
-## mtry=10 is the best one
+## mtry=8 is the best one
 
 #vrai modèle
- foret <-randomForest(I(log(price))~., data = donnees.train,
+foret <-randomForest(I(log(price))~., data = donnees.train,
                       sampsize= floor(0.75*nrow(donnees.train)),
                       ntree=150,
                       importance=TRUE,
-                      mtry=10)
+                      mtry=8)
 #interprétation
 foret.iml <- Predictor$new(rf.train)
 pdp.lat <- FeatureEffect$new(foret.iml, "lat", method = "pdp",
