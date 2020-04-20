@@ -54,16 +54,23 @@ Dans le cadre du travail, nous allons tenter de modéliser le prix de vente des 
 Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Dans les prochaines sections, sept modèles seront étudiés et comparés. Les deux modèles les plus performants seront également interprétés plus en profondeur. Pour construire nos modèles, nous utiliserons les données modifiées selon la méthodologie décrite dans la première partie du travail. 80 % des données seront utilisées pour effectuer l'entraînement des modèles et 20 % seront réservées pour tester ainsi que comparer les modèles entre eux.
 
 
-\section{Modèle de base}
+\hypertarget{alyson}{\section{Modèle de base}}
 
 ```{r ModBas, echo=FALSE}
 source("1-ModeleBase.R")
 ```
 
-Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu, qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seulement l'échantillon d'entrainement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. Cependant, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement interprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables augmentaient le temps de calcul et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variable formelle n'a pas été effectuée contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
+Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu, qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seulement l'échantillon d'entrainement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. L'équation du modèle est la suivante : 
+$$
+log(\hat{Y_i}) = \hat{\beta_0} + \sum_{k=1}^{17} \hat{\beta_k} x_{i,k} 
+$$
+
+Ainsi, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement interprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables augmentaient le temps de calcul et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variable formelle n'a pas été effectuée contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
 
 \newpage
 \section{Ajustement des modèles}
+
+La présente section présentera les six modèles testés. Il est à noter que, pour tous ces modèles, une transformation logarithmique a été effectuée sur la variable réponse *price*, tel qu'expliqué dans la section \hyperlink{alyson}{{\color{black}\textbf{Modèle de base}}}.
 
 
 
@@ -78,7 +85,11 @@ S^{Lasso} = \sum_{i=1}^{p}(Y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \l
 $$
 où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle. Nous avons utilisé la méthode implantée dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{glmnet}}} pour choisir le paramètre $\lambda$ ainsi que pour bâtir le modèle.
 
-Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entrainement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Cette validation croisée est intégrée dans la fonction `cv.glmnet`. Ainsi, la valeur optimale de ce paramètre est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives. Le modèle est aussi constitué de 22 termes d'interaction.  
+Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entrainement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Cette validation croisée est intégrée dans la fonction `cv.glmnet`. Ainsi, la valeur optimale de ce paramètre est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives, soient *sqft_lot*, *waterfront*, *view*, *sqft_above*, *sqft_basement*, *lat* et *reno*. Le modèle est aussi constitué de 22 termes d'interaction. L'équation du modèle est la suivante :
+$$
+log(\hat{Y_i}) = \hat{\beta_0} + \sum_{k=1}^{7} \hat{\beta_k} x_{i,k} + \sum_{j=1}^{22} \hat{\alpha_j} z_{i,j} \quad,
+$$
+où $z_{i,j}$ est le $j^{ième}$ terme d'interaction.
 
 \subsection{Modèle des \textit{k} plus proches voisins}
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
