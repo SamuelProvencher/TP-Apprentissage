@@ -33,6 +33,12 @@ load("save3.Rdata")
 
 ## Base de données à l'étude
 
+- Prix de vente des maisons dans le conté de King County (Washington, USA)
+- Maisons vendues entre mai 2014 et mai 2015
+- 21 613 lignes pour 21 colonnes (variables)
+- Quelques utilités actuariels...
++ Futures soumissions d'assurance habitation
++ Prêts hypothécaire à des fins de hedging
 
 ## Prétraitement des données
 
@@ -81,7 +87,27 @@ ggplot(contrib.long_corrige, aes(x=carac, fill=variable, y=value))+
 
 ## Modèles testés - Ensemble d'arbres de décision agrégées par *bagging*
 
+- `sampsize= nrow(donnees.train)`
+- `mtry=17`
+- `cp=0`
+- `nodesize=5`
+- `ntree=500`
+
+```{r echo=F,eval=T, message=FALSE}
+plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bagging", ylab="EQM des OOB", main="Graphique X: EQM des observations OOB \nen fonction du nombre d'arbres")
+```
+
 ## Modèle testés - Forêt aléatoire
+
+- `sampsize= 0.75*nrow(donnees.train)`
+- `cp=0`
+- `nodesize=5`
+- `ntree=150`
+- `mtry=8`
+
+```{r echo=F,eval=T, message=FALSE}
+plot(rf.train, main="Graphique X: EQM des observations OOB \nen fonction du mtry", xlab = "Nombre de prédicteurs choisis aléatoirement (m)", ylab = "L'erreur de validation croisée")
+```
 
 ## Modèles testés - Modèle de *gradient boosting*
 
@@ -99,15 +125,27 @@ kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Mod
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(randomForest)
-varImpPlot(foret, main="Graphique X: Importance des variables composant la forêt aléatoire")
+varImpPlot(foret, main="Graphique X: Importance des variables composant \nla forêt aléatoire")
 ```
 
 ## Forêt aléatoire (suite)
 
-## Forêt aléatoire (suite)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(iml)
+plot(pdp.lat) + ggtitle("Graphique de dépendance partielle de la latitude") + xlab("Latitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+plot(pdp.long) + ggtitle("Graphique de dépendance partielle de la longitude") + xlab("Longitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+plot(pdp.grade) + ggtitle("Graphique de dépendance partielle de la variable grade") + xlab("Grade") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```
 
 ## Forêt aléatoire (suite)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(int.lat) + ggtitle(" des statistiques H avec la latitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```
 
+## Forêt aléatoire (suite)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.lat.long) + ggtitle("Graphique de dépendance partielle bivarié entre \nla latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
+```
 
 ## Modèle de *gradient boosting*
 
