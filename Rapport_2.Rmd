@@ -51,16 +51,13 @@ header-includes:
 
 Dans le cadre du travail, nous allons tenter de modéliser le prix de vente des maisons dans la région de Seattle (King County, USA) en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. La variable réponse à prédire, soit le prix de vente d'une maison, est une valeur positive évaluée en dollars américains. La modélisation de cette variable pourrait être utile pour différentes raisons dans un contexte actuariel. Comme la somme assurée d'une maison a un lien très fortement proportionnel à son prix de vente, une compagnie d'assurance pourrait être intéressée de modéliser le prix de vente de maisons dans des nouveaux développements immobiliers afin de tenter de prédire les futures soumissions d'assurance habitation et d'offrir des offres personnalisées aux acheteurs de ces nouvelles maisons. Dans un autre contexte, au niveau de la gestion des risques, certains assureurs ont un portefeuille de prêts hypothécaires ou utilisent des produits dérivés sur prêts hypothécaires pour se couvrir du risque (*hedging*). Ainsi, il pourrait être intéressant d'avoir une estimation des montants de prêts hypothécaires dans une région donnée en se basant sur le prix de vente des maisons afin de mieux gérer le risque de la compagnie. La pertinence de trouver cette variable qu'est le prix de vente des maisons devient alors fort intéressante. 
 
-Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Dans les prochaines sections, sept modèles seront étudiés, dont deux qui le seront plus en profondeur. Pour ce faire, 80 % des données seront utilisées pour effectuer l'entraînement des modèles et 20 % seront réservées pour tester ainsi que comparer les modèles entre eux.
-
+Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Dans les prochaines sections, sept modèles seront étudiés et comparés. Les deux modèles les plus performants seront également interprétés plus en profondeur. Pour construire nos modèles, nous utiliserons les données modifiées selon la méthodologie décrite dans la première partie du travail. 80 % des données seront utilisées pour effectuer l'entraînement des modèles et 20 % seront réservées pour tester ainsi que comparer les modèles entre eux.
 
 
 \section{Modèle de base}
 
 ```{r ModBas, echo=FALSE}
-
 source("1-ModeleBase.R")
-
 ```
 
 Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu, qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seulement l'échantillon d'entrainement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. Cependant, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement intrprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables augmentaient le temps de calculs et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variable formelle n'a pas été effectuée contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
@@ -107,7 +104,7 @@ Avec cet hyperparamètre défini, un arbre de régression a été construit en u
 Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il s'agit d'une façon de bien comprendre ce type de modèle. Cependant, il n'a pas été possible de présenter ce modèle sous forme de graphique. En effet, malgré le fait que l'arbre a été élagué, il était trop complexe pour être agréable à regarder pour l'oeil. Ceci est du au fait que le modèle a été entrainé avec `r nrow(donnees.train)` observations, ce qui est un nombre assez important.
 
 
-\subsection{Ensemble d'arbres de décisions aggrégées par \textit{bagging}}
+\subsection{Ensemble d'arbres de décisions aggrégés par \textit{bagging}}
 ```{r echo=FALSE, eval=T, message=FALSE}
 load("save.Rdata")
 load("save2.Rdata")
@@ -140,26 +137,55 @@ Pour ce qui est des autres paramètres, hormis le nombre d'arbres (ntree) qui a 
 
 \subsection{Modèle de boosting de gradient stochastique}
 
+```{r gbmload, echo=FALSE, message=FALSE, warning=FALSE}
+library(gbm)
+load("gbm_modeles.Rdata")
+```
+
 Enfin, le dernier modèle ajusté aux données en est un de boosting de gradient stochastique. Nous allons encore une fois supposer que la variable réponse suit une distribution gaussienne, ce qui nous permet d'utiliser l'erreur quadratique moyenne (EQM) comme fonction de perte pour construire le modèle. 
 
 En quelques mots, le modèle de boosting de gradient stochastique est une procédure itérative: à chaque itération, un arbre de régression est ajusté aux gradients négatifs de la fonction de perte de l'itération précédente. La prévision de chaque itération est prise en compte dans le modèle proportionnellement à un paramètre $\lambda$ appelé paramètre de régularisation. Plus ce $\lambda$ est petit, plus le modèle apprend petit à petit en n'accordant pas trop d'importance à chaque prévision et plus la performance finale du modèle sera bonne, mais il faudra cependant plus d'itérations pour obtenir un modèle final optimal. Il faut également faire attention de ne pas construire un modèle avec trop d'arbres, car les modèles de boosting de gradient stochastique ont un risque de surajustement.
 
-Nous avons choisi un taux d'apprentissage $\lambda$ de 1\%. Ce taux nous a permis d'obtenir un compromis efficace entre temps de calcul et précision du modèle.
+Nous avons choisi un paramètre de régularisation $\lambda$ de 1\%. Ce paramètre nous a permis d'obtenir un compromis efficace entre temps de calcul et précision du modèle.
 
-Nous avons utilisé les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{gbm}}}} pour procéder à l'optimisation et à la construction du modèle. En utilisant une validation croisée à cinq ensembles, nous avons optimisé les paramètres $d$ (la profondeur maximale de l'arbre ajusté à chaque itération) et $T$ (le nombre d'itérations du modèle). Des valeurs de trois, cinq et sept ont été testées pour la profondeur des arbres $d$. 
+Nous avons utilisé les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{gbm}}}} pour procéder à l'optimisation et à la construction du modèle. En utilisant une validation croisée à cinq ensembles, nous avons optimisé les paramètres $d$ (la profondeur maximale de l'arbre ajusté à chaque itération) et $T$ (le nombre d'itérations du modèle). Des valeurs de trois, cinq et sept et neuf ont été testées pour la profondeur des arbres $d$.
 
-Pour ce qui est des autres hyperparamètres, soit le pourcentage de sous-échantillonnage $\delta$ et le nombre minimal d'observations dans chaque noeud pour les arbres, nous avons gardé leurs valeurs par défaut, soit respectivement 50\% de sous-échantillonnage et dix observations. En effet, nous avons déterminé qu'optimiser ces hyperparamètres nécessiterait un temps de calcul excessif pour les avantages qu'il serait possible d'en retirer. 
+Pour ce qui est des autres hyperparamètres, soit le pourcentage de sous-échantillonnage $\delta$ et le nombre minimal d'observations dans chaque noeud pour les arbres, nous avons gardé leurs valeurs par défaut, soit respectivement 50\% de sous-échantillonnage et dix observations. En effet, étant donné le $\lambda$ choisi et la taille de notre jeu de données, nous avons déterminé qu'optimiser ces hyperparamètres nécessiterait un temps de calcul excessif pour les avantages qu'il serait possible d'en retirer. 
 
-Les résultats sont les suivants:
+À titre d'exemple, voici le graphique d'optimisation permettant de déterminer le nombre d'itérations optimal pour le modèle utilisant des arbres de profondeur sept:
 
-* Graphiques d=3,5,7
+```{r gbmperf, echo=FALSE, message=FALSE, warning=FALSE}
+body(gbm.perf)[[4]][[3]][[4]] <- substitute(plot(object$train.error, ylim = ylim, type = "l", xlab = "", 
+                                                 ylab = ""))
+n.iter3 <- gbm.perf(gbm.modele3, method = "cv", plot.it = F)
+n.iter5 <- gbm.perf(gbm.modele5, method = "cv", plot.it = F)
+n.iter7 <- gbm.perf(gbm.modele7, method = "cv")
+title(main="EQM selon le nombre d'itérations (d=7)", 
+      ylab = "EQM", xlab = "Nombre d'itérations")
+legend(x=14000,y=0.2,c("EQM de validation croisée","EQM d'entraînement", "Nombre d'itérations optimal"),
+       cex=.8,col=c("green","black", "blue"), lty=c(1,1,2))
+n.iter9 <- gbm.perf(gbm.modele9, method = "cv", plot.it = F)
+```
 
-Nous obtenons que le nombre d'itérations optimal pour les modèles avec des arbres de profondeur trois, cinq et sept est respectivement de xx, xx et xx itérations. Pour déterminer lequel de ces modèles est le meilleur, nous allons les comparer selon le critère de l'erreur quadratique minimale de validation croisée à cinq ensembles.
+La même méthode a été utilisée pour déterminer le nombre d'itérations optimal pour chaque paramètre $d$ testé.
 
-* Tableau d=3,5,7
+Pour déterminer lequel de ces modèles est le meilleur, nous allons les comparer selon le critère de l'erreur quadratique moyenne minimale de validation croisée à cinq ensembles.
 
-Selon ce critère, le meilleur modèle est donc celui obtenu avec $d=X$ et $XXX$ itérations. C'est avec ce modèle que nous procéderons pour effectuer les prédictions sur l'échantillon de test.
+```{r gbmcompare, echo = F}
+library(knitr)
+compare <- data.frame(Profondeur = c(3,5,7,9), n.tree = c(n.iter3, n.iter5, n.iter7, n.iter9), EQM_CV = c(gbm.modele3$cv.error[n.iter3],
+                                               gbm.modele5$cv.error[n.iter5],
+                                               gbm.modele7$cv.error[n.iter7],
+                                               gbm.modele9$cv.error[n.iter9]))
+kable(compare, caption = "L'EQM des modèles testés", col.names = c("Profondeur d", "Nombre d'itérations optimal", "EQM de validation croisée"), digits = 6)
+```
 
+Selon ce critère, le meilleur modèle est celui obtenu avec $d=9$ et `r n.iter9` itérations. C'est donc avec ce modèle que nous procéderons pour effectuer les prédictions sur l'échantillon de test.
+
+```{r gbmpred, echo = F}
+PredGbm <- predict(gbm.modele9, newdata = donnees.test, n.trees = n.iter9)
+EQM.gbm <- mean((PredGbm - log(donnees.test$price))^2)
+```
 
 \newpage
 \section{Comparaison des modèles}
@@ -167,23 +193,14 @@ Selon ce critère, le meilleur modèle est donc celui obtenu avec $d=X$ et $XXX$
 La métrique utilisée pour comparer la puissance prédictive des différents modèles est l'erreur quadratique moyenne (EQM). Cette métrique a été choisie puisque le type de modélisation est la régression. Les autres métriques vues dans le cadre du cours ACT-3114 Apprentissage statistique en actuariat sont utilisées pour les problèmes de classification ou lorsque la distribution de la variable réponse est poisson. Ainsi, l'EQM est la métrique la plus appropriée pour ce problème. Pour chacun des modèles, l'EQM a été calculée avec les données de test afin d'éviter d'utiliser les mêmes données qui ont été utilisées pour entrainer les modèles.
 
 ```{r echo=FALSE}
-
 library(knitr)
 
-dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "K plus proches voisins","Arbre de décision","Bagging","Forêt aléatoire", "Gradient boosting (GBM)"), c(EQM.ModBase,msep.lasso, EQM.Kvoisins, EQM.arbre, EQM.bag,EQM.foret,3))
+dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "K plus proches voisins","Arbre de décision","Bagging","Forêt aléatoire", "Boosting de gradient stochastique"), c(EQM.ModBase, msep.lasso, EQM.Kvoisins, EQM.arbre, EQM.bag, EQM.foret, EQM.gbm))
 
-kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Modèles","EQM"), digits = 5)
-
+kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Modèle","EQM"), digits = 5)
 ```
 
-
-|Modèles      | EQM        |
-|:------------:|:------------:|
-|Base         | `r EQM.ModBase`|
-Table: L'EQM des sept modèles testés
-
-
-Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle A et le modèle B. En effet, leur EQM est de x et y respectivement. 
+Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle de forêt aléatoire et le modèle de boosting de gradient stochastique. En effet, leur EQM est respectivement de 0.03253 et de 0.02717. 
 
 **Faudrait essayer de remplacer Table par Tableau dans les titres (pour francais). Table 2, c'est juste une autre façon de faire un tableau**
 
@@ -205,16 +222,12 @@ Si on calcule la diminution totale dans l'erreur quadratique moyenne due à une 
 
 Pour mieux comprendre l’effet marginal de ces trois variables explicatives sur la prévision, on peut regarder leurs graphiques de dépendance partielle:
 
-
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(iml)
 plot(pdp.lat) + ggtitle("Graphique X : Graphique de dépendance partielle de la latitude") + xlab("Latitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Sur le graphique suivant, on voit clairement que lorsque la latitude augmente le logarithme du prix de la maison augmente aussi. En fait, puisque que la latitude exprime la position d'une maison à la verticale, on peut déduire qu'une maison situé au nord de la région évaluée est plus dispendieuse qu'une maison au Sud. Le graphique de la latitude concorde d'ailleurs avec la heatmap de toutes les maisons vendues à King County où l'on voit que Seatle, la capitale est situé environ entre les parrallèles $47,6$ et $47,7$.
-
-
+Sur le graphique suivant, on voit clairement que lorsque la latitude augmente le logarithme du prix de la maison augmente aussi. En fait, puisque que la latitude exprime la position d'une maison à la verticale, on peut déduire qu'une maison situé au nord de la région évaluée est plus dispendieuse qu'une maison au Sud. Le graphique de la latitude concorde d'ailleurs avec la heatmap de toutes les maisons vendues à King County où l'on voit que Seattle, la capitale est situé environ entre les parrallèles $47,6$ et $47,7$.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 plot(pdp.long) + ggtitle("Graphique X : Graphique de dépendance partielle de la longitude") + xlab("Longitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
@@ -222,15 +235,13 @@ plot(pdp.long) + ggtitle("Graphique X : Graphique de dépendance partielle de la
 
 Sur le graphique suivant, on voit clairement que lorsque la longitude augmente le logarithme du prix de la maison diminue. En fait, puisque que la longitude exprime la position d'une maison à l'horizontal, on peut déduire qu'une maison situé à l'Ouest de la région évaluée est plus dispendieuse qu'une maison à l'Est. Le graphique de la longitude concorde d'ailleurs avec la heatmap de toutes les maisons vendues à King County où l'on voit que la majorité des maisons vendues dont celles situées à Seatle, la capitale, sont à l'Ouest.
 
-
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 plot(pdp.grade) + ggtitle("Graphique X : Graphique de dépendance partielle de la variable grade") + xlab("Grade") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Sur le graphique suivant, on voit clairement que lorsque la qualité de la construction et de la conception (grade) augmente, le logarithme du prix de la maison augmente aussi. En fait, de manière logique si une maison à une meilleure qualité de construction et de conception, elle aura tendance à valoir plus chère. On peut déduire qu'une maison avec un grade élevé est plus dispendieuse qu'une maison avec un grade faible. À noter que l'augmentation dans le logarithme du prix de la maison apparait uniquement à partir d'un grade 5 ou supérieur.
 
-La variable étant la plus importante selon les deux méthodes de mesure d'importance, il est donc intéressant d'aller voir si elle intéragit avec d'autres variables. Si on se fit au graphique des statistiques H de Friedman suivant:
+La variable *lat* étant la plus importante selon les deux méthodes de mesure d'importance, il est donc intéressant d'aller voir si elle interagit avec d'autres variables. Une manière de quantifier ces interactions est de déterminer les statistiques \textit{H} de Friedman: plus ces dernières sont grandes, plus l'interaction est forte. Ces statistiques *H* ont été déterminées à l'aide du paquetage \hyperlink{target1}{{\color{blue}\textbf{{iml}}}}. Si on se fie au graphique des statistiques *H* de Friedman suivant:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 load("save3.Rdata")
@@ -247,40 +258,104 @@ Ce graphique est très intéressant puisqu'il ressemble fortement à la heatmap 
 
 L'avantage de la forêt aléatoire est que vu l'utilisation d'un nombre élevé d'arbres, en allant chercher les points points positifs de chaque prévision parmi ceux-ci, la forêt arrive à prédire une excellente prévision pour notre variable réponse. Cependant, d'un point de vue technique, ces arbres sont lourds et sont nombreux dans la méthode. Le calcul de la forêt aléatoire malgré le fait qu'il nécessite peu de réglages en comparaison aux autres modèles, est très long à calculer. Surtout lorsque la base de données d'entrainement est composée de $17 276$ observations de $18$ variables, variable réponse incluse.
 
+\newpage
 \hypertarget{target2}{\subsection{Boosting de gradient stochastique}}
 
-Enchaînons avec l'interprétation du modèle de boosting de gradient stochastique. Ce type de modèle est reconnu comme étant difficilement interprétable intuitivement, mais divers outils permettent d'ouvrir la boîte noire du modèle et d'y voir plus clair. Nous utiliserons les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{iml}}}} pour interpréter le modèle.
+```{r gbmload2, echo=F}
+load("gbm_hstat_grade.Rdata")
+load("gbm_pdp_bivaries.Rdata")
+```
+
+Enchaînons avec l'interprétation du modèle de boosting de gradient stochastique. Ce type de modèle est reconnu comme étant difficilement interprétable intuitivement, mais divers outils permettent d'ouvrir la boîte noire du modèle et d'y voir plus clair. Nous utiliserons les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{gbm}}}} pour interpréter le modèle.
 
 Tout d'abord, nous pouvons déterminer l'importance des différentes variables dans le modèle selon le critère de diminution moyenne de l'EQM causée par chaque variable dans les arbres.
 
-* Graphique importance des variables
+```{r gbmimportance, echo = F}
+fun <- summary(gbm.modele9, n.trees = n.iter9, las = 1, cex.names = 0.5)
+```
 
-Nous observons que les valeurs les plus utiles dans le modèle de boosting sont XX, XX, et XX... 
+Nous observons que les valeurs les plus utiles dans le modèle de boosting sont *grade*, *lat*, *sqft_above*, *sqft_living15* et *long*. De plus, ces 5 variables les plus importantes sont les mêmes que celles du modèle de forêt aléatoire selon le même critère.
 
-Une bonne manière d'examiner l'impact de chaque variable dans le modèle plus en détail est d'utiliser des graphiques de dépendance partielle (PDP). Voilà les PDP des variables les plus importantes du modèle.
+Une bonne manière d'examiner plus en détail l'impact de chaque variable dans le modèle est de tracer des graphiques de dépendance partielle (PDP). Nous allons présenter les PDP des trois variables les plus importantes du modèle.
 
-* PDP
+Commençons avec le PDP de la variable *grade*, soit l'indice de qualité de la construction et de la conception des maisons.
 
-Nous observons que...
+```{r gbmpdp_grade, echo=F}
+plot(gbm.modele9, n.trees = n.iter9, i.var = "grade")
+```
 
-Cependant, les PDP ne permettent pas de visualiser les éventuelles interactions entre les variables. Une manière de quantifier ces interactions est de déterminer les statistiques \textit{H} de Friedman: plus cette dernière est grande, plus l'interaction est forte. Nous pouvons examiner les statistiques \textit{H} entre la variable XX et toutes les autres variables:
+L'effet marginal de la variable *grade* est très semblable à celui observé plus tôt avec le modèle de forêt aléatoire: le logarithme du prix des maisons prédit est une fonction monotone croissante en fonction de la qualité de construction des maisons. Encore une fois, il est logique qu'une maison bien construite et conçue vale plus cher qu'une autre maison moins bien construite, *ceteris paribus*. La différence entre les logarithmes des prix moyens des maisons les mieux construites et les moins bien construites est d'environ 0,7. Si on quitte l'échelle logarithmique, cela correspond à une augmentation d'environ 101,38 % du prix moyen entre les maisons les moins bien construites et les mieux construites. Autrement dit, on peut s'attendre en moyenne à ce que le prix d'une maison extrêmement bien construite soit environ le double de celui d'une maison extrêmement mal construite. On voit donc que la variable *grade* a un caractère très important sur le prix des maisons, en plus de suivre une relation proportionnelle bien définie avec le prix, ce qui explique la grande force de prédiction de cette variable.
 
-* Statistique H
+Enchaînons avec le PDP de la variable *lat*, soit la latitude des maisons.
 
-Nous voyons une forte interaction entre la variable XX et les variables XXX, XXX... Nous pouvons donc examiner les PDP bivariés de ces variables afin d'examiner plus en détail ces interactions:
+```{r gbmpdp_lat, echo=F}
+plot(gbm.modele9, n.trees = n.iter9, i.var = "lat")
+```
 
-* PDP bivariés
+Encore une fois, le PDP est très similaire à celui obtenu en utilisant le modèle de forêt aléatoire. Le PDP obtenu avec le modèle de boosting de gradient stochastique semble cependant osciller plus, donc il a plus de variance et est plus ajusté aux données utilisées. Comme précédemment, on voit que le logarithme moyen du prix prédit est plus faible dans les zones de latitude faible (zone rurale au sud du comté), puis monte beaucoup à l'approche de la zone urbaine de Seattle pour enfin redescendre lorsqu'on atteint une nouvelle zone moins urbaine au nord du comté.
 
-Nous observons que...
+Terminons avec le PDP de la variable *sqft_above*, soit la superficie habitable au-dessus du niveau du sol des maisons.
+
+```{r gbmpdp_sqftabove, echo=F}
+plot(gbm.modele9, n.trees = n.iter9, i.var = "sqft_above")
+```
+
+Cette variable n'avait pas été examinée en détail lors de l'interprétation du modèle de forêt aléatoire. On observe que le logarithme moyen du prix prédit est proportionnel à *sqft_above*: plus la superficie habitable de la maison augmente, plus son prix prédit augmentera, toutes choses étant égales par ailleurs. Cette relation est logique, puisque les maisons de grande superficie sont intuitivement plus dispendieuses que les petites maisons. On voit cependant une baisse marquée du logarithme du prix de la maison autour de 5000 pieds carrés de superficie qui semble contredire la tendance observée: cette baisse est probablement causée par un surajustement du modèle aux données d'entraînement. Nous croyons que si plus de données étaient disponibles et/ou que le problème de surajustement était réglé, la relation observée serait monotone.
+
+Cependant, les PDP ne permettent pas de visualiser les éventuelles interactions entre les variables. Une manière de quantifier ces interactions est de déterminer les statistiques \textit{H} de Friedman: plus ces dernières sont grandes, plus l'interaction est forte. Nous allons examiner les statistiques \textit{H} entre la variable *grade*, soit la variable la plus importante du modèle, et toutes les autres variables:
+
+```{r gbmhstat, echo=F}
+ggplot(hstat.grade, aes(x = Variables, y = HStat)) + 
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Interactions")
+```
+
+Nous remarquons qu'une seule interaction semble très forte (statistique *H* plus élevée que 0,1). Il y a également quelques interactions moyennes (statistique *H* entre 0,05 et 0,1), et nous allons considérer les autres interactions comme assez faibles.
+
+Les deux plus fortes interactions observées sont celles entre la variable *grade* et les variables *lat* et *age*. Nous pouvons donc tracer les PDP bivariés de ces combinaisons de variables afin d'examiner plus en détail ces interactions.
+
+Commençons par le PDP bivarié des variables *grade* et *lat*.
+
+```{r gbmpdp_gradelat, echo=F}
+plot(pdp.grade.lat)
+```
+
+Il semble en effet y avoir une certaine interaction entre ces variables: la variation du logarithme du prix prédit avec la latitude semble plus prononcée pour les mauvaises qualités de construction que pour les bonnes. Cet effet semble logique, puisque qu'une maison très mal construite pourrait être extrêmement plus chère si elle est située en plein centre-ville que si elle est au milieu de la campagne, en raison de sa position prisée et de la valeur de son terrain. Des gens fortunés seraient prêts à payer très cher pour acquérir cette maison de mauvaise qualité et en construire une nouvelle sur le même terrain. En comparaison, une maison extrêmement bien construite vaudra aussi beaucoup plus cher si elle est bien située, mais intuitivement, cet écart serait moindre que pour une maison de basse qualité. On constate également avec le PDP bivarié que les maisons aux prix prédits les plus élevés sont celles de bonne qualité de construction et situées à la latitude du centre-ville de Seattle. En effet, ces maisons peuvent atteindre un prix prédit de pas moins de 1,2 M $, ce qui est logique.
+
+Enchaînons avec le PDP bivarié des variables *grade* et *age*.
+
+```{r gbmpdp_gradeage, echo=F}
+plot(pdp.grade.age)
+```
+
+L'interaction entre ces deux variables n'est pas extrêmement prononcée. Nous pouvons cependant constater que pour une qualité de construction donnée, la variation du logarithme du prix prédit avec l'âge de la maison ne suit pas exactement la même tendance que pour une autre qualité de construction. En particulier, le prix prédit des maisons de qualité de construction moyenne semble varier moins intensément avec l'âge que pour les maisons de qualité mauvaise ou bonne. On constate également avec le PDP bivarié que les maisons aux prix prédits les plus élevés sont celles de bonne qualité de construction et peu âgées, ce qui semble logique.
+
+Enfin, par curiosité, examinons le PDP bivarié des variables *lat* et *long*. Nous savons que les données spatiales ont eu un fort impact prédictif dans notre modèle. De plus, nous avons déjà concentré une partie de notre travail à examiner cet effet prédictif (création d'une *heatmap* dans l'analyse exploratoire et dans l'interprétation du modèle de forêt aléatoire), mais nous ne l'avons pas encore fait pour notre modèle le plus puissant, le *GBM*. Pour ces deux raisons, nous croyons donc qu'il est intéressant de jeter un oeil à ce PDP bivarié pour examiner plus en détail l'effet des données spatiales dans notre *GBM*.
+
+```{r gbmpdp_latlong, echo=F}
+plot(pdp.long.lat)
+```
+
+Nous observons de nouveau une *heatmap* du logarithme des prix des maisons, mais elle est mieux définie que celle obtenue avec le modèle de forêt aléatoire. En effet, les variations de prix prédit sont très graduelles et lisses par rapport à cette dernière. Nous pouvons voir très facilement la zone urbaine de Seattle et ses prix plus élevés en haut à gauche du PDP. Nous pouvons également constater une forte interaction entre les variables *lat* et *long*: pour les latitudes faibles, le logarithme du prix prédit ne varie pas beaucoup avec la longitude, alors qu'il varie beaucoup avec la longitude pour les latitudes élevées. La statistique *H* entre ces variables *lat* et *long* est en effet de 0,234, ce qui dénote une forte interaction entre les deux variables et confirme ce constat. 
+
+Au final, nous avons vu que le modèle de boosting de gradient stochastique est, de loin, le meilleur modèle prédictif dans notre cas. Son EQM sur les données de test est largement inférieure que pour les autres modèles, ce qui témoigne de son efficacité. Le modèle possède donc l'avantage d'être celui qui possède le plus grand pouvoir prédictif pour notre problème.
+
+Ce modèle n'est pourtant pas sans désavantages:
+
+* Son temps de calcul est très long: l'optimisation du modèle a été difficile en raison des ressources de calcul disponibles limitées. De plus, seuls les deux hyperparamètres du modèle jugés les plus importants ont été optimisés, et ce pour la même raison. 
+* Il est difficile d'interprétation: il est difficile d'utiliser des procédés statistiques classiques pour interpréter le modèle, et des méthodes de calcul intensif doivent être utilisées. 
+* Nous n'avons pas obtenu d'intervalles de confiance pour les prédictions avec le présent modèle, ce qui est un fort désavantage dans une situation de gestion des risques.
 
 \newpage
 \section{Conclusion}
 
-Pour conclure, le meilleur modèle pour résoudre le problème est \hyperlink{target2}{{\color{blue}\textbf{{le modèle de boosting de gradient stochastique}}}}. En effet, il s'agit du modèle possédant la meilleur puissance prédictive parmi les sept modèles testés. ...
+Pour conclure, le meilleur modèle pour résoudre le problème est \hyperlink{target2}{{\color{blue}\textbf{{le modèle de boosting de gradient stochastique}}}}. En effet, il s'agit du modèle possédant la meilleure puissance prédictive parmi les sept modèles testés. Des améliorations à ce modèle sont cependant toujours possibles: si de plus grandes ressources de calcul étaient disponibles, un plus petit paramètre de régularisation $\lambda$ pourrait être choisi, ce qui permettrait d'obtenir un modèle encore plus performant. Il serait également possible d'optimiser tous les hyperparamètres du modèle, ce qui résulterait sans doute en un meilleur modèle final.
 
-Avec les sept modèles étudiés, il a été possible de résoudre la problématique actuarielle, c'est-à-dire de développer un modèle pouvant prédire la valeur des maisons dans la région de Seattle. Ainsi, ce modèle pourra aider les assureurs de la région à avoir un meilleur portrait de la situation afin de mieux gérer leurs risques. Cependant, une des limitations du modèle est qu'il prédit le prix des maisons sur l'échelle logarithmique. Ce choix d'échelle avait pour but de faciliter la modélisation, mais cause problème lors de l'interprétation. Une piste d'amélioration serait donc de trouver une façon de ramener les prédictions à l'échelle monétaire. Pour ce faire, il faudrait estimer un paramètre de volatilité. Cette estimation, pour le modèle de boosting de gradient stochastique, dépasse les cadres du cours.
+Nous sommes cependant d'avis qu'avec les sept modèles étudiés, il a été possible de résoudre la problématique actuarielle, c'est-à-dire de développer un modèle performant pouvant prédire la valeur des maisons dans la région de Seattle. Ainsi, ce modèle pourra aider les assureurs de la région à avoir un meilleur portrait de la situation afin de mieux gérer leurs risques. Cependant, une des limitations du modèle est qu'il prédit le prix des maisons sur l'échelle logarithmique. Ce choix d'échelle avait pour but de faciliter la modélisation, mais cause problème lors de l'interprétation. Une piste d'amélioration serait donc de trouver une façon de ramener les prédictions à l'échelle monétaire. Pour ce faire, il faudrait estimer un paramètre de volatilité. Cette estimation, pour le modèle de boosting de gradient stochastique, dépasse les cadres du cours.
 
-En somme, cette modélisation a permis de dresser un très bon portrait du marché immobilier de King County. Elle a, entre autre, permis, à l'aide d'une carte, de bien cibler les endroits plus dispendieux. Il serait intéressant d'utiliser notre modèle sur une autre région du monde, par exemple le Québec, afin de voir si le modèle s'adapte bien aux caractéristiques d'autres régions. 
+En somme, cette modélisation a permis de dresser un très bon portrait du marché immobilier de King County et l'effet des différentes caractéristiques d'une maison sur son prix de vente. Elle a, entre autres, permis, à l'aide d'une carte, de bien cibler les endroits plus dispendieux. Il serait intéressant d'utiliser notre modèle sur une autre région du monde, par exemple le Québec, afin de voir si le modèle s'adapte bien aux caractéristiques d'autres régions.
 
 \newpage
 \hypertarget{target1}{\section{Bibliographie}}
@@ -303,10 +378,5 @@ En somme, cette modélisation a permis de dresser un très bon portrait du march
 version 1.1.3.  https://CRAN.R-project.org/package=FNN
 \newline
 9. Molnar C, Bischl B, Casalicchio G (2018). iml: An R package for Interpretable Machine Learning. R package version 0.10.0.  https://CRAN.R-project.org/package=iml
-  
-  
-  
-  
-  
 
 
