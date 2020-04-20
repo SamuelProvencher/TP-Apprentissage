@@ -262,7 +262,7 @@ plot(int.lat) + ggtitle("Graphique X : Graphique des statistiques H avec la lati
 Il est intéressant de noter l'interaction entre la latitude et la variable *expensive_area*. En effet, la variable *expensive_area* a été créée dans la première partie du présent travail. Cela prouve la pertinence d'avoir créée cette variable. De plus, l'interaction est logique, car la variable *expensive_area* dépend de la latitude. Toutefois, les variables de la latitude et de la longitude sont celles qui intéragissent le plus ensemble en comparaison aux autres interactions possibles. C'est d'ailleurs les deux variables les plus importantes selon la méthode *mean decrease in accuracy*. Le graphique de dépendance partielle bivarié entre c'est deux variables serait donc fort intéressant. Il est présenté ci-dessous:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-plot(pdp.lat.long) + ggtitle("Graphique X : Graphique de dépendance partielle bivarié entre la latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
+plot(pdp.lat.long) + ggtitle("Graphique X : Graphique de dépendance partielle bivarié \nentre la latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
 ```
 
 Ce graphique est très intéressant puisqu'il ressemble fortement à la carte thermique de tous les prix des maisons dans la région de King County présentée dans la première partie du travail. En effet, la majorité des maisons plus dispendieuses se situent au Nord-Ouest de la région et c'est d'ailleurs pour des valeurs petites de la longitude et grandes de la latitude que ces variables interagissent ensembles comme le montre le coin bleu pâle sur le graphique ci-dessus.
