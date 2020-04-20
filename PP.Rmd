@@ -23,6 +23,7 @@ load("save3.Rdata")
 
 ## Plan de la présentation
 
+- Description du problème
 - Base de données à l'étude
 - Prétraitement des données
 - Analyse exploratoire
@@ -30,6 +31,11 @@ load("save3.Rdata")
 - Comparaison des modèles
 - Forêt aléatoire
 - GBM
+
+## Description du problème
+
++ Futures soumissions d'assurance habitation
++ Prêts hypothécaire à des fins de hedging
 
 ## Base de données à l'étude
 
@@ -79,11 +85,20 @@ ggplot(contrib.long_corrige, aes(x=carac, fill=variable, y=value))+
 
 ## Modèles testés - Modèle de base
 
+- Régression linéaire multiple avec transformation logarithmique
+- Aucune interaction
+- Aucune sélection formelle de variables
+
 ## Modèles testés - Modèle linéaire généralisé avec régression Lasso
 
 ## Modèles testés - Modèle des *k* plus proches voisins
 
 ## Modèles testés - Arbre de décision
+
+- Optimisation de `minbucket`
+- Optimisation du paramètre de compléxité (`cp`)
+- `method="anova"`, donc la fonction de perte est l'EQM
+- Arbre élagué trop gros pour être représenté graphiquement
 
 ## Modèles testés - Ensemble d'arbres de décision agrégées par *bagging*
 
@@ -149,6 +164,12 @@ plot(pdp.lat.long) + ggtitle("Graphique de dépendance partielle bivarié entre 
 
 ## Modèle de *gradient boosting*
 
+## Conclusion
+
+- Modèle GBM retenu
+- Limitations
+- Possibilité d'utilisation dans d'autres zones géographiques
+
 
 ## Bibliographie
 
@@ -159,9 +180,7 @@ plot(pdp.lat.long) + ggtitle("Graphique de dépendance partielle bivarié entre 
 3. Terry Therneau and Beth Atkinson (2019). rpart: Recursive Partitioning and Regression Trees. R package version 4.1-15. https://CRAN.R-project.org/package=rpart
 \newline
 4. Stephen Milborrow (2019). rpart.plot: Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'. R package version 3.0.8. https://CRAN.R-project.org/package=rpart.plot
-
-## Bibliographie
-
+\newline
 5. A. Liaw and M. Wiener (2002). Classification and Regression by randomForest. R News 2(3), 18--22.
 \newline
 6. Brandon Greenwell, Bradley Boehmke, Jay Cunningham and GBM Developers (2019). gbm: Generalized Boosted Regression Models. R package version 2.1.5. https://CRAN.R-project.org/package=gbm
@@ -170,3 +189,5 @@ plot(pdp.lat.long) + ggtitle("Graphique de dépendance partielle bivarié entre 
 \newline
 8. Alina Beygelzimer, Sham Kakadet, John Langford, Sunil Arya, David Mount and Shengqiao Li (2019). FNN: Fast Nearest Neighbor Search Algorithms and Applications. R package
 version 1.1.3.  https://CRAN.R-project.org/package=FNN
+
+
