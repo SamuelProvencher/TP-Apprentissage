@@ -134,7 +134,15 @@ ggplot(contrib.long_corrige, aes(x=carac, fill=variable, y=value))+
 
 ## Modèles testés - Modèle linéaire généralisé avec régression Lasso
 
+- Sélection des variables
+- Optimisation du paramètre de régularisation $\lambda$
+- Sept variables explicatives et 22 interactions
+
 ## Modèles testés - Modèle des *k* plus proches voisins
+
+- Optimisation de $k$
+- Standardisation des données
+- `metric = "RMSE"`
 
 ## Modèles testés - Arbre de décision
 
