@@ -2,6 +2,7 @@ source("script2.R")
 
 library(caret)
 library(FNN)
+library(ggplot2)
 
 
 #Optimisation de K
@@ -20,7 +21,7 @@ fit <- caret::train(log(price) ~ .,
 
 gras <- ggplot(fit) + theme_classic() + geom_hline(yintercept =0.2130311146, col="red",linetype="dotdash")+
     xlab("#K voisins") + ylab("EQM") + ggtitle("Graphique X : EQM en fonction du nombre de voisins")+
-    theme(plot.title = element_text(size = rel(2), h=0.5), axis.title = element_text(size = rel(1)))
+    theme(plot.title = element_text(size = rel(1.4), h=0.5), axis.title = element_text(size = rel(1)))
 
 
 data.train <- cbind(donnees.train[,1],sapply(donnees.train[,-1], scale))
@@ -40,3 +41,5 @@ predictions <- knn.reg(train, test, y=etiq_train, k)
 v <- predictions$pred
 
 EQM.Kvoisins <- mean((predictions$pred-etiq_test)^2)
+
+

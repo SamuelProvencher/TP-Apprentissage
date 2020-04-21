@@ -99,7 +99,11 @@ Un modèle qui a été testé est celui des *k* plus proches voisins. Étant don
 
 Le modèle des *k* plus proches voisins est simpliste. Afin de prédire une observation dont les valeurs des variables explicatives sont comprises dans le vecteur $\textbf{x}_0$, il faut regarder l'ensemble des *k* plus proche voisins de $\textbf{x}_0$, c'est-à-dire les observations qui minimisent la distance Euclidienne. Puis, la prévision du point $\textbf{x}_0$ est la moyenne des variables réponses des observations comprises dans l'ensemble des *k* plus proches voisins.
 
-Il faut d'abord déterminer la valeur optimale de *k*, soit le nombre de voisins à considérer. Pour ce faire, une validation croisée à 10 plis a été utlisée. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. Étant donné que le modèle des *k* plus proches voisins est fondé sur la distance Euclidienne, les données ont été standardisées avant de procéder à la validation croisée. La métrique choisie pour sélectionner la valeur de *k* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *k* qui minimisait l'erreur quadratique moyenne est $k=9$. 
+Il faut d'abord déterminer la valeur optimale de *k*, soit le nombre de voisins à considérer. Pour ce faire, une validation croisée à 10 plis a été utlisée. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. Étant donné que le modèle des *k* plus proches voisins est fondé sur la distance Euclidienne, les données ont été standardisées avant de procéder à la validation croisée. La métrique choisie pour sélectionner la valeur de *k* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *k* qui minimisait l'erreur quadratique moyenne est $k=9$, tel qu'illustré sur le graphique X.
+
+```{r echo=FALSE, message=FALSE,warning=FALSE}
+gras
+```
 
 
 \subsection{Arbre de décision}
