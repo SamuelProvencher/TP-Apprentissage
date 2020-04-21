@@ -124,8 +124,8 @@ Un autre modèle qui a été testé est celui du bagging avec des arbres de rég
 
 Un échantillon *bootstrap* avec remise de la même taille que l'échantillon d'entrainement a été sélectionné par l'algorithme `randomForest` (`sampsize= nrow(donnees.train)`). Le nombre de variables échantillonnées aléatoirement a donc été déterminé à 17 (`mtry=17`) étant donné que la base de données d'entrainement comportait 18 variables, dont la variable réponse. Le seul hyperparamètre qui était à déterminer était celui du nombre d'arbres de régression créés avec le bagging. Pour ce faire, un graphique de l'erreur quadratique moyenne (EQM) des observations *out-of-bag* (OOB) en fonction du nombre d'arbres composant le bagging a été tracé afin de déterminer quand l'EQM des OOB se stabilisait. Sur le graphique suivant, on voit d'ailleurs que 500 arbres étaient suffisants et c'est donc le nombre qui a été retenu (`ntree=500`).
 
-```{r echo=F,eval=T, message=FALSE}
-plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bagging", ylab="EQM des OOB", main="Graphique X: EQM des observations OOB en fonction du nombre d'arbres")
+```{r echo=F,eval=T, message=FALSE,fig.pos='H', fig.height=4, fig.width=5, fig.align="center"}
+plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bagging", ylab="EQM des OOB", main="Graphique X: EQM des observations OOB \nen fonction du nombre d'arbres")
 ```
 
 À noter qu'aucun élagage n'a été fait sur les arbres de régression créés par le bagging, donc ceux-ci avaient un paramètre de complexité `cp=0`.
@@ -139,8 +139,8 @@ Tout d'abord, on choisit un échantillon *bootstrap* plus petit que le *bagging*
 
 Puis, à chaque itération dans la construction de l’arbre, on choisit aléatoirement *m* prédicteurs qui seront les candidats pour la séparation (`mtry`). Ce choix de *m* optimal a été fait à l'aide d'une validation croisée à 5 plis. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. La métrique choisie pour sélectionner la valeur de *m* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *m* qui minimisait l'erreur quadratique moyenne de validation croisée est $m=8$, comme le montre le graphique suivant:
 
-```{r echo=F,eval=T, message=FALSE}
-plot(rf.train, main="Graphique X: EQM des observations OOB en fonction du mtry", xlab = "Nombre de prédicteurs choisis aléatoirement (m)", ylab = "L'erreur de validation croisée")
+```{r echo=F,eval=T, message=FALSE,fig.pos='H', fig.height=4, fig.width=5, fig.align="center"}
+plot(rf.train, main="Graphique X: EQM des observations OOB \nen fonction du mtry", xlab = "Nombre de prédicteurs choisis aléatoirement (m)", ylab = "L'erreur de validation croisée")
 ```
 
 Pour ce qui est des autres hyperparamètres, hormis le nombre d'arbres (`ntree`) qui a été abaissé à 150 pour des fins d'otimisation et de vitesse de calcul, les mêmes valeurs ont été gardées pour le *bagging* et la forêt aléatoire.
@@ -171,7 +171,7 @@ body(gbm.perf)[[4]][[3]][[4]] <- substitute(plot(object$train.error, ylim = ylim
 n.iter3 <- gbm.perf(gbm.modele3, method = "cv", plot.it = F)
 n.iter5 <- gbm.perf(gbm.modele5, method = "cv", plot.it = F)
 n.iter7 <- gbm.perf(gbm.modele7, method = "cv")
-title(main="EQM selon le nombre d'itérations (d=7)", 
+title(main="Graphique X: EQM selon le nombre d'itérations (d=7)", 
       ylab = "EQM", xlab = "Nombre d'itérations")
 legend(x=14000,y=0.2,c("EQM de validation croisée","EQM d'entraînement", "Nombre d'itérations optimal"),
        cex=.8,col=c("green","black", "blue"), lty=c(1,1,2))
@@ -233,36 +233,36 @@ Si on calcule la diminution totale dans l'erreur quadratique moyenne due à une 
 
 Pour mieux comprendre l’effet marginal de ces trois variables explicatives sur la prévision, on peut regarder leurs graphiques de dépendance partielle:
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
 library(iml)
-plot(pdp.lat) + ggtitle("Graphique X : Graphique de dépendance partielle de la latitude") + xlab("Latitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+plot(pdp.lat) + ggtitle("Graphique X : Graphique de dépendance \npartielle de la latitude") + xlab("Latitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Sur le graphique suivant, on voit clairement que lorsque la latitude augmente, le logarithme du prix de la maison augmente aussi. Cette tendance est véridique jusqu'à une latitute d'environ $47,7$. Le sommet de la courbe est atteint entre les latitudes de $47,6$ et de $47,7$, ce qui est attendu puisqu'il s'agit de l'endroit approximatif du centre-ville. En fait, puisque la latitude exprime la position d'une maison à la verticale, on peut déduire qu'une maison située plus au nord de la région est plus dispendieuse qu'une maison située au Sud. Le graphique de la latitude concorde d'ailleurs avec la carte thermique de toutes les maisons vendues à King County où l'on voit que Seattle, la capitale, est située environ entre les parrallèles $47,6$ et $47,7$.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-plot(pdp.long) + ggtitle("Graphique X : Graphique de dépendance partielle de la longitude") + xlab("Longitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+plot(pdp.long) + ggtitle("Graphique X : Graphique de dépendance \npartielle de la longitude") + xlab("Longitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Sur le graphique suivant, on voit clairement que lorsque la longitude augmente, le logarithme du prix de la maison diminue. En fait, puisque que la longitude exprime la position d'une maison à l'horizontal, on peut déduire qu'une maison située à l'ouest de la région évaluée est plus dispendieuse qu'une maison située à l'Est. Le graphique de la longitude concorde d'ailleurs avec la carte thermique de toutes les maisons vendues à King County où l'on voit que les maisons dispendieuses, dont ceux près du centre-ville, sont situées à l'ouest.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-plot(pdp.grade) + ggtitle("Graphique X : Graphique de dépendance partielle de la variable grade") + xlab("Grade") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.pos='H', fig.height=3, fig.width=4, fig.align="center"}
+plot(pdp.grade) + ggtitle("Graphique X : Graphique de dépendance \npartielle de la variable grade") + xlab("Grade") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Sur le graphique suivant, on voit clairement que lorsque la qualité de la construction et de la conception (*grade*) augmente, le logarithme du prix de la maison augmente aussi. En fait, de manière logique, si une maison à une meilleure qualité de construction et de conception, elle aura tendance à valoir plus chère. On peut déduire qu'une maison avec un *grade* élevé est plus dispendieuse qu'une maison avec un *grade* faible. À noter que l'augmentation dans le logarithme du prix de la maison apparait uniquement à partir d'un *grade* de 5 ou supérieur.
 
 La variable *lat* étant importante selon les deux méthodes de mesure d'importance, il est donc intéressant d'aller voir si elle interagit avec d'autres variables. Une manière de quantifier ces interactions est de déterminer les statistiques \textit{H} de Friedman: plus ces dernières sont grandes, plus l'interaction est forte. Ces statistiques *H* ont été déterminées à l'aide du paquetage \hyperlink{target1}{{\color{blue}\textbf{{iml}}}}. Le graphique des statistiques *H* de Friedman est présenté ci-dessous:
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.pos='H', fig.height=3.5, fig.width=4.5, fig.align="center"}
 load("save3.Rdata")
-plot(int.lat) + ggtitle("Graphique X : Graphique des statistiques H avec la latitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+plot(int.lat) + ggtitle("Graphique X : Graphique des statistiques H \navec la latitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Il est intéressant de noter l'interaction entre la latitude et la variable *expensive_area*. En effet, la variable *expensive_area* a été créée dans la première partie du présent travail. Cela prouve la pertinence d'avoir créée cette variable. De plus, l'interaction est logique, car la variable *expensive_area* dépend de la latitude. Toutefois, les variables de la latitude et de la longitude sont celles qui intéragissent le plus ensemble en comparaison aux autres interactions possibles. C'est d'ailleurs les deux variables les plus importantes selon la méthode *mean decrease in accuracy*. Le graphique de dépendance partielle bivarié entre c'est deux variables serait donc fort intéressant. Il est présenté ci-dessous:
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-plot(pdp.lat.long) + ggtitle("Graphique X : Graphique de dépendance partielle bivarié \nentre la latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.pos='H', fig.height=4, fig.width=5, fig.align="center"}
+plot(pdp.lat.long) + ggtitle("Graphique X : Graphique de dépendance \npartielle bivarié entre la latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
 ```
 
 Ce graphique est très intéressant puisqu'il ressemble fortement à la carte thermique de tous les prix des maisons dans la région de King County présentée dans la première partie du travail. En effet, la majorité des maisons plus dispendieuses se situent au Nord-Ouest de la région et c'est d'ailleurs pour des valeurs petites de la longitude et grandes de la latitude que ces variables interagissent ensembles comme le montre le coin bleu pâle sur le graphique ci-dessus.
