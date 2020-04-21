@@ -188,7 +188,17 @@ varImpPlot(foret, main="Importance des variables composant \nla forêt aléatoir
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(iml)
 plot(pdp.lat) + ggtitle("Graphique de dépendance partielle de la latitude") + xlab("Latitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Forêt aléatoire (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 plot(pdp.long) + ggtitle("Graphique de dépendance partielle de la longitude") + xlab("Longitude") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Forêt aléatoire (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 plot(pdp.grade) + ggtitle("Graphique de dépendance partielle de la variable grade") + xlab("Grade") + scale_y_continuous(name="Prédiction du logarithme du prix") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
