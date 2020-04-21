@@ -1,7 +1,7 @@
 ## Toute la mémoire est dans les 2 lignes de code suivantes
 load("save.Rdata")
 load("save2.Rdata")
-load("interactions_bivariées_foret")
+load("save3.Rdata")
 
 source("script2.R")
 
