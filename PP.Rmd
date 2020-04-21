@@ -41,7 +41,7 @@ load("save3.Rdata")
 
 ## Base de données à l'étude
 
-- Prix de vente des maisons dans le conté de King County (Washington, USA)
+- Prix de vente des maisons dans le comté de King County (Washington, USA)
 - Maisons vendues entre mai 2014 et mai 2015
 - 21 613 lignes pour 21 colonnes (variables)
 
