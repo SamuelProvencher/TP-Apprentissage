@@ -7,20 +7,21 @@ library(ggplot2)
 
 #Optimisation de K
 
-#  set.seed(69)
-#  controles <- caret::trainControl(method  = "cv", # validation croisée
-#                            number  = 10) # 10 plis
-#  fit <- caret::train(log(price) ~ .,
-#               method     = "knn",
-#               preProcess = "scale",
-#               tuneGrid   = expand.grid(k = 5:13),
-#               trControl  = controles,
-#               metric     = "RMSE",
-#               data       = donnees.train)
-#  # fit #k=9
-# 
+ # set.seed(69)
+ # controles <- caret::trainControl(method  = "cv", # validation croisée
+ #                           number  = 10) # 10 plis
+ # fit <- caret::train(log(price) ~ .,
+ #              method     = "knn",
+ #              preProcess = "scale",
+ #              tuneGrid   = expand.grid(k = 5:13),
+ #              trControl  = controles,
+ #              metric     = "RMSE",
+ #              data       = donnees.train)
+ # # fit #k=9
+
 # gras <- ggplot(fit) + theme_classic() + geom_hline(yintercept =0.2130311146, col="red",linetype="dotdash")+
-#     xlab("#K voisins") + ylab("EQM")
+#     xlab("#K voisins") + ylab("EQM") + labs(title = "Graphique 1 : EQM en fonction du nombre de voisins") +
+#     theme(plot.title = element_text(size = rel(1.4), h=0.5), axis.title = element_text(size = rel(1)))
 
 
 data.train <- cbind(donnees.train[,1],sapply(donnees.train[,-1], scale))
