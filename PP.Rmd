@@ -16,6 +16,9 @@ source("4-Arbre.R")
 load("save.Rdata")
 load("save2.Rdata")
 load("save3.Rdata")
+load("gbm_modeles.Rdata")
+load("gbm_hstat_grade.Rdata")
+load("gbm_pdp_bivaries.Rdata")
 ```
 
 ## Introduction
@@ -35,7 +38,7 @@ load("save3.Rdata")
 
 ## Description du problème
 
-- Quelques utilités actuariels
+- Quelques utilités actuarielles
   + Futures soumissions d'assurance habitation
   + Prêts hypothécaire à des fins de hedging
 
@@ -121,7 +124,7 @@ ggplot(contrib.long_corrige, aes(x=carac, fill=variable, y=value))+
 - Arbre de décision
 - Ensemble d'arbres de décision agrégées par *bagging*
 - Forêt aléatoire
-- Modèle de *gradient boosting*
+- Modèle de boosting de gradient stochastique (*GBM*)
 
 ## Modèles testés - Modèle de base
 
@@ -164,7 +167,40 @@ plot(1:length(bag$mse),bag$mse, type="l", xlab="Nombre d'arbres composant le bag
 plot(rf.train, main="Graphique X: EQM des observations OOB \nen fonction du mtry", xlab = "Nombre de prédicteurs choisis aléatoirement (m)", ylab = "L'erreur de validation croisée")
 ```
 
-## Modèles testés - Modèle de *gradient boosting*
+## Modèles testés - Modèle de boosting de gradient stochastique (*GBM*)
+
+- Sélection des hyparamètres à optimiser
+
+```{r echo=F,eval=T, message=FALSE}
+library(gbm)
+body(gbm.perf)[[4]][[3]][[4]] <- substitute(plot(object$train.error, ylim = ylim, type = "l", xlab = "", 
+                                                 ylab = ""))
+n.iter3 <- gbm.perf(gbm.modele3, method = "cv", plot.it = F)
+n.iter5 <- gbm.perf(gbm.modele5, method = "cv", plot.it = F)
+n.iter7 <- gbm.perf(gbm.modele7, method = "cv")
+title(main="Graphique X: EQM selon le nombre d'itérations (d=7)", 
+      ylab = "EQM", xlab = "Nombre d'itérations")
+legend(x=14000,y=0.2,c("EQM de validation croisée","EQM d'entraînement", "Nombre d'itérations optimal"),
+       cex=.8,col=c("green","black", "blue"), lty=c(1,1,2))
+n.iter9 <- gbm.perf(gbm.modele9, method = "cv", plot.it = F)
+```
+
+## Modèles testés - Modèle de boosting de gradient stochastique (*GBM*) (suite)
+
+```{r echo=F}
+library(knitr)
+compare <- data.frame(Profondeur = c(3,5,7,9), n.tree = c(n.iter3, n.iter5, n.iter7, n.iter9), EQM_CV = c(gbm.modele3$cv.error[n.iter3],
+                                               gbm.modele5$cv.error[n.iter5],
+                                               gbm.modele7$cv.error[n.iter7],
+                                               gbm.modele9$cv.error[n.iter9]))
+kable(compare, caption = "L'EQM des modèles testés", col.names = c("Profondeur d", "Nombre d'itérations optimal", "EQM de validation croisée"), digits = 6)
+```
+
+- Comparaison selon l'EQM de validation croisée
+- Modèle final:
+  + `d=9`
+  + `T=10515`
+
 
 ## Comparaison des modèles
 
@@ -212,11 +248,61 @@ plot(int.lat) + ggtitle("Graphique des statistiques H avec la latitude")+ theme_
 plot(pdp.lat.long) + ggtitle("Graphique de dépendance partielle bivarié entre \nla latitude et la longitude")+ theme_classic() + theme(plot.title = element_text(hjust = 0.35))
 ```
 
-## Modèle de *gradient boosting*
+## Modèle de boosting de gradient stochastique
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+fun <- summary(gbm.modele9, n.trees = n.iter9, las = 1, cex.names = 0.5)
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(gbm.modele9, n.trees = n.iter9, i.var = "grade")
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(gbm.modele9, n.trees = n.iter9, i.var = "lat")
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(gbm.modele9, n.trees = n.iter9, i.var = "sqft_above")
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(hstat.grade, aes(x = Variables, y = HStat)) + 
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Interactions")
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.grade.lat)
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.grade.age)
+```
+
+## Modèle de boosting de gradient stochastique (suite)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(pdp.long.lat)
+```
 
 ## Conclusion
 
-- Modèle GBM retenu
+- Modèle *GBM* retenu
 - Limitations
   + Échelle logarithmique
   + Effet de l'inflation
