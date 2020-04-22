@@ -69,12 +69,21 @@ data.frame(Profondeur = c(3,5,7,9), EQM_CV = c(gbm.modele3$cv.error[n.iter3],
                                                gbm.modele5$cv.error[n.iter5],
                                                gbm.modele7$cv.error[n.iter7],
                                                gbm.modele9$cv.error[n.iter9]))
-# Meilleur modèle: d=7, n.trees = 12676
+# Meilleur modèle: d=9, n.trees = 10515
 
 PredGbm <- predict(gbm.modele9, newdata = donnees.test, n.trees = n.iter9)
 
 EQM.gbm <- mean((PredGbm - log(donnees.test$price))^2)
 
+
+ggplot(mapping = aes(x = PredGbm)) +
+  geom_histogram() +
+  theme_bw() +
+  xlim(11, 16)
+ggplot(mapping = aes(x = log(donnees.test$price))) +
+  geom_histogram() +
+  theme_bw() +
+  xlim(11, 16)
 
 
 #### Interprétation du modèle ####

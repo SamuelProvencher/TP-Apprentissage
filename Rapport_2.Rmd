@@ -1,5 +1,7 @@
 ---
-output: pdf_document
+output:
+  pdf_document:
+    number_sections: true
 header-includes:
 - \usepackage[french]{babel}
 - \usepackage{float}
@@ -49,9 +51,9 @@ header-includes:
 
 \section{Introduction}
 
-Dans le cadre du travail, nous allons tenter de modéliser le prix de vente des maisons dans la région de Seattle (King County, USA) en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. La variable réponse à prédire, soit le prix de vente d'une maison, est une valeur positive évaluée en dollars américains. La modélisation de cette variable pourrait être utile pour différentes raisons dans un contexte actuariel. Comme la somme assurée d'une maison a un lien très fortement proportionnel à son prix de vente, une compagnie d'assurance pourrait être intéressée de modéliser le prix de vente de maisons dans des nouveaux développements immobiliers afin de tenter de prédire les futures soumissions d'assurance habitation et d'offrir des offres personnalisées aux acheteurs de ces nouvelles maisons. Dans le contexte de la gestion des risques, certains assureurs ont un portefeuille de prêts hypothécaires ou utilisent des produits dérivés sur prêts hypothécaires pour se couvrir du risque (*hedging*). Ainsi, il pourrait être intéressant d'avoir une estimation des montants de prêts hypothécaires dans une région donnée en se basant sur le prix de vente des maisons afin de mieux gérer le risque de la compagnie. La pertinence de trouver cette variable qu'est le prix de vente des maisons devient alors fort intéressante. 
+Dans le cadre du travail, nous allons tenter de modéliser le prix de vente des maisons dans la région de Seattle (King County, USA) en utilisant de nombreuses caractéristiques ayant une incidence sur la valeur d'une maison. La variable réponse à prédire, soit le prix de vente d'une maison, est une valeur positive évaluée en dollars américains. La modélisation de cette variable pourrait être utile pour différentes raisons dans un contexte actuariel. Comme la somme assurée d'une maison a un lien très fortement proportionnel à son prix de vente, une compagnie d'assurance pourrait être intéressée de modéliser le prix de vente de maisons dans des nouveaux développements immobiliers afin de tenter de prédire les futures soumissions d'assurance habitation et d'offrir des offres personnalisées aux acheteurs de ces nouvelles maisons. De plus, dans un contexte de gestion des risques, certains assureurs ont un portefeuille de prêts hypothécaires ou utilisent des produits dérivés sur prêts hypothécaires pour se couvrir du risque (*hedging*). Ainsi, il pourrait être intéressant pour ces compagnies d'avoir une estimation des montants de prêts hypothécaires dans une région donnée en se basant sur le prix de vente des maisons afin de mieux gérer leur risque. La pertinence de tenter de prédire cette variable qu'est le prix de vente des maisons devient alors évidente. 
 
-Le jeu de données utilisé sera le suivant : [kc_house_sales (House sales in King County, USA)](https://www.kaggle.com/harlfoxem/housesalesprediction). Dans les prochaines sections, sept modèles seront étudiés et comparés. Les deux modèles les plus performants seront également interprétés plus en profondeur. Pour construire nos modèles, nous utiliserons les données modifiées selon la méthodologie décrite dans la première partie du travail. 80 % des données seront utilisées pour effectuer l'entraînement des modèles et 20 % seront réservées pour tester ainsi que comparer les modèles entre eux.
+Le jeu de données utilisé sera le suivant : \hyperlink{target1}{{\color{blue}\textbf{kc\_house\_sales (House sales in King County, USA)}}}. Dans les prochaines sections, sept modèles différents seront étudiés et comparés. Les deux modèles les plus performants seront également interprétés plus en profondeur. Pour construire nos modèles, nous utiliserons les données modifiées selon la méthodologie décrite dans la première partie du travail. Rappelons rapidement que certaines observations ont été supprimées du jeu de données et que nous avons créé manuellement trois nouvelles variables explicatives; pour plus de détails, vous pouvez consulter la première partie du travail. 80 % des données seront utilisées pour effectuer l'entraînement des modèles et 20 % seront réservées pour tester les modèles et les comparer entre eux.
 
 
 \hypertarget{alyson}{\section{Modèle de base}}
@@ -218,8 +220,6 @@ kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Mod
 
 Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle de forêt aléatoire et le modèle de boosting de gradient stochastique. En effet, leur EQM est respectivement de 0.03253 et de 0.02717. 
 
-**Faudrait essayer de remplacer Table par Tableau dans les titres (pour francais). Table 2, c'est juste une autre façon de faire un tableau**
-
 \newpage
 \section{Interprétation des meilleurs modèles}
 \subsection{Forêt aléatoire}
@@ -279,7 +279,6 @@ L'avantage de la forêt aléatoire est que l'utilisation d'un nombre élevé d'a
 
 ```{r gbmload2, echo=F}
 load("gbm_hstat_grade.Rdata")
-load("gbm_pdp_bivaries.Rdata")
 ```
 
 Enchaînons avec l'interprétation du modèle de boosting de gradient stochastique. Ce type de modèle est reconnu comme étant difficilement interprétable intuitivement, mais divers outils permettent d'ouvrir la boîte noire du modèle et d'y voir plus clair. Nous utiliserons les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{gbm}}}} pour interpréter le modèle.
@@ -338,7 +337,7 @@ Les deux plus fortes interactions observées sont celles entre la variable *grad
 Commençons par le PDP bivarié des variables *grade* et *lat*.
 
 ```{r gbmpdp_gradelat, echo=F}
-plot(pdp.grade.lat)
+plot(gbm.modele9, i.var = c("grade", "lat"), n.trees = n.iter9, main = "Graphique X : Graphique de dépendance \npartielle bivarié entre les variables grade et lat")
 ```
 
 Il semble en effet y avoir une certaine interaction entre ces variables: la variation du logarithme du prix prédit avec la latitude semble plus prononcée pour les mauvaises qualités de construction que pour les bonnes. Cet effet semble logique, puisqu'une maison très mal construite pourrait être extrêmement plus chère si elle est située en plein centre-ville que si elle est au milieu de la campagne, en raison de sa position prisée et de la valeur de son terrain. Des gens fortunés seraient prêts à payer très cher pour acquérir cette maison de mauvaise qualité et en construire une nouvelle sur le même terrain. En comparaison, une maison extrêmement bien construite vaudra aussi beaucoup plus cher si elle est bien située, mais intuitivement, cet écart serait moindre que pour une maison de basse qualité. On constate également avec le PDP bivarié que les maisons aux prix prédits les plus élevés sont celles de bonne qualité de construction et située à la latitude du centre-ville de Seattle. En effet, ces maisons peuvent atteindre un prix prédit de pas moins de 1,2 M $, ce qui est logique.
@@ -346,7 +345,7 @@ Il semble en effet y avoir une certaine interaction entre ces variables: la vari
 Enchaînons avec le PDP bivarié des variables *grade* et *age*.
 
 ```{r gbmpdp_gradeage, echo=F}
-plot(pdp.grade.age)
+plot(gbm.modele9, i.var = c("grade", "age"), n.trees = n.iter9, main = "Graphique X : Graphique de dépendance \npartielle bivarié entre les variables grade et age")
 ```
 
 L'interaction entre ces deux variables n'est pas extrêmement prononcée. Nous pouvons cependant constater que pour une qualité de construction donnée, la variation du logarithme du prix prédit avec l'âge de la maison ne suit pas exactement la même tendance que pour une autre qualité de construction. En particulier, le prix prédit des maisons de qualité de construction moyenne semble varier moins intensément avec l'âge que pour les maisons de qualité mauvaise ou bonne. On constate également avec le PDP bivarié que les maisons aux prix prédits les plus élevés sont celles de bonne qualité de construction et peu âgée, ce qui semble logique.
@@ -354,7 +353,7 @@ L'interaction entre ces deux variables n'est pas extrêmement prononcée. Nous p
 Enfin, par curiosité, examinons le PDP bivarié des variables *lat* et *long*. Nous savons que les données spatiales ont eu un fort impact prédictif dans notre modèle. De plus, nous avons déjà concentré une partie de notre travail à examiner cet effet prédictif (création d'une *heatmap* dans l'analyse exploratoire et dans l'interprétation du modèle de forêt aléatoire), mais nous ne l'avons pas encore fait pour notre modèle le plus puissant, le *GBM*. Pour ces deux raisons, nous croyons donc qu'il est intéressant de jeter un oeil à ce PDP bivarié pour examiner plus en détail l'effet des données spatiales dans notre *GBM*.
 
 ```{r gbmpdp_latlong, echo=F}
-plot(pdp.long.lat)
+plot(gbm.modele9, i.var = c("long", "lat"), n.trees = n.iter9, main = "Graphique X : Graphique de dépendance \npartielle bivarié entre les variables long et lat")
 ```
 
 Nous observons de nouveau une *heatmap* du logarithme des prix des maisons, mais elle est mieux définie que celle obtenue avec le modèle de forêt aléatoire. En effet, les variations de prix prédit sont très graduelles et lisses par rapport à cette dernière. Nous pouvons voir très facilement la zone urbaine de Seattle et ses prix plus élevés en haut à gauche du PDP. Nous pouvons également constater une forte interaction entre les variables *lat* et *long*: pour les latitudes faibles, le logarithme du prix prédit ne varie pas beaucoup avec la longitude, alors qu'il varie beaucoup avec la longitude pour les latitudes élevées. La statistique *H* entre ces variables *lat* et *long* est en effet de 0,234, ce qui dénote une forte interaction entre les deux variables et confirme ce constat. 
