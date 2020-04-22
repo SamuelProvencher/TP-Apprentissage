@@ -15,7 +15,7 @@ header-includes:
   \Large
   Travail fait par \\
   \vspace{1cm}
-  \text{Matis Brassard-Verrier (111 182 740) }\\
+  \text{Matis Brassard-Verrier (111 182 740)}\\
   \text{Alyson Marquis (111 183 605)}\\
   \text{Alexis Picard (111 182 200)}\\
   \text{Samuel Provencher (111 181 794)}\\
@@ -62,32 +62,30 @@ Le jeu de données utilisé sera le suivant : \hyperlink{target1}{{\color{blue}\
 source("1-ModeleBase.R")
 ```
 
-Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu, qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seulement l'échantillon d'entrainement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. L'équation du modèle est la suivante : 
+Un bon modèle de base a été choisi en utilisant une technique étudiée dans le cours ACT-2003 Modèles linéaires en actuariat, soit la régression linéaire multiple. Ce type de modèle a été choisi en raison de sa simplicité et parce qu'il s'adapte bien au jeu de données. En effet, la variable réponse *price* est monétaire et possède une distribution asymétrique. Il a été vu qu'en présence de ce type de variable réponse, une régression linéaire multiple en appliquant une transformation logarithmique sur la variable réponse était appropriée. Tel que mentionné dans la première partie de ce travail, la transformation logarithmique permet de s'approcher de la distribution d'une loi normale, ce qui rend la variable réponse plus facile à modéliser. Pour construire le modèle, seul l'échantillon d'entraînement a été utilisé. De plus, le modèle utilise toutes les $17$ variables explicatives. L'équation du modèle choisi est la suivante : 
 $$
 log(\hat{Y_i}) = \hat{\beta_0} + \sum_{k=1}^{17} \hat{\beta_k} x_{i,k} 
 $$
 
-Ainsi, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement interprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables augmentaient le temps de calcul et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variables formelles n'a pas été effectuée contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
+Ainsi, aucune interaction entre les variables explicatives n'a été considérée afin de garder le modèle simple et facilement interprétable. Certaines variables catégorielles à plusieurs niveaux, dont l'importance des interactions étaient négligeables, augmentaient le temps de calcul et rendaient le modèle plus difficilement interprétable. Ainsi, dans l'idée d'avoir un modèle de base simple, il a été décidé de ne pas considérer les interactions dans ce modèle. En outre, une sélection de variables formelles n'a pas été effectuée, contrairement à ce qui est habituellement fait lorsqu'on veut raffiner un modèle linéaire multiple.
 
 \newpage
 \section{Ajustement des modèles}
 
-La présente section présentera les six modèles testés. Il est à noter que, pour tous ces modèles, une transformation logarithmique a été effectuée sur la variable réponse *price*, tel qu'expliqué dans la section \hyperlink{alyson}{{\color{black}\textbf{Modèle de base}}}.
-
-
+La présente section présentera les six modèles testés. Il est à noter que, pour tous ces modèles, une transformation logarithmique a été effectuée sur la variable réponse *price*, tel qu'expliqué dans la section \hyperlink{alyson}{{\color{black}\textbf{2 - Modèle de base}}}. Cela nous permet de supposer une distribution normale de la variable réponse, et donc d'utiliser le critère de l'erreur quadratique moyenne (EQM) pour tous nos modèles pour valider leurs hyperparamètres et pour les comparer entre eux.
 
 \subsection{Modèle linéaire généralisé avec une régularisation Lasso}
 ```{r echo=FALSE, eval=T, message=FALSE}
 options(digits = 10, scipen = 10)
 source("2-Lasso.R")
 ```
-Dans le cadre du travail, il a été choisi d'effectuer un modèle linéaire généralisé avec une régularisation de type Lasso. Notre choix s'est arrêté sur ce type de régularisation, puisque la régularisation Lasso permet d'effectuer la sélection de variables. Pour ce faire, il suffit de minimiser l'équation de score suivante :
+Dans le cadre du travail, il a été premièrement été choisi de construire un modèle linéaire généralisé avec une régularisation de type Lasso. Notre choix s'est arrêté sur ce type de régularisation, puisque la régularisation Lasso permet d'effectuer la sélection de variables. Pour ce faire, il suffit de minimiser l'équation de score suivante :
 $$
 S^{Lasso} = \sum_{i=1}^{p}(Y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \lambda \sum_{j=1}^{p} \lvert{\beta_j} \rvert,
 $$
-où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation mènera à des coefficients $\beta$ exactement égal à zéro, sélectionnant ainsi les variables du modèle. Nous avons utilisé la méthode implantée dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{glmnet}}} pour choisir le paramètre $\lambda$ ainsi que pour bâtir le modèle.
+où $p$ est le nombre de paramètres du modèle et $\lambda$ est le paramètre de régularisation. La minimisation de cette équation pourra mener à des coefficients $\beta$ exactement égaux à zéro, sélectionnant ainsi les variables du modèle. Nous avons utilisé la méthode implantée dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{glmnet}}} pour choisir le paramètre $\lambda$ ainsi que pour bâtir le modèle.
 
-Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entrainement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Cette validation croisée est intégrée dans la fonction `cv.glmnet`. Ainsi, la valeur optimale de ce paramètre est de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives, soient *sqft_lot*, *waterfront*, *view*, *sqft_above*, *sqft_basement*, *lat* et *reno*. Le modèle est aussi constitué de 22 termes d'interaction. L'équation du modèle est la suivante :
+Afin de modéliser le prix de vente des maisons à King County, le modèle linéaire généralisé avec une régularisation Lasso  a été construit à l'aide de l'échantillon d'entrainement. Le paramètre de régularisation a été choisi à l'aide d'une validation croisée à six plis. Cette validation croisée est intégrée dans la fonction `cv.glmnet`. Ainsi, la valeur optimale de ce paramètre était de $\lambda=$ `r meilleur.lam.lasso`. Le modèle retenu est composé de sept variables explicatives, soient *sqft_lot*, *waterfront*, *view*, *sqft_above*, *sqft_basement*, *lat* et *reno*. Le modèle est aussi constitué de 22 termes d'interaction. L'équation du modèle est la suivante :
 $$
 log(\hat{Y_i}) = \hat{\beta_0} + \sum_{k=1}^{7} \hat{\beta_k} x_{i,k} + \sum_{j=1}^{22} \hat{\alpha_j} z_{i,j} \quad,
 $$
@@ -97,11 +95,11 @@ où $z_{i,j}$ est le $j^{ième}$ terme d'interaction.
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 source("3-K_voisin.R")
 ```
-Un modèle qui a été testé est celui des *k* plus proches voisins. Étant donné que nous avons un problème de régression, la fonction `knn.reg` du paquetage \hyperlink{target1}{{\color{blue}\textbf{FNN}}} a été utilisée pour construire ce modèle. 
+Un autre modèle qui a été testé est celui des *k* plus proches voisins. Étant donné que nous sommes en présence d'un problème de régression, la fonction `knn.reg` du paquetage \hyperlink{target1}{{\color{blue}\textbf{FNN}}} a été utilisée pour construire ce modèle. 
 
-Le modèle des *k* plus proches voisins est simpliste. Afin de prédire une observation dont les valeurs des variables explicatives sont comprises dans le vecteur $\textbf{x}_0$, il faut regarder l'ensemble des *k* plus proche voisins de $\textbf{x}_0$, c'est-à-dire les observations qui minimisent la distance Euclidienne. Puis, la prévision du point $\textbf{x}_0$ est la moyenne des variables réponses des observations comprises dans l'ensemble des *k* plus proches voisins.
+Le modèle des *k* plus proches voisins est simple. Afin d'effectuer une prédiction pour une observation dont les valeurs des variables explicatives sont comprises dans le vecteur $\textbf{x}_0$, il faut regarder l'ensemble des *k* plus proches voisins de $\textbf{x}_0$, c'est-à-dire les *k* observations qui en sont le plus près selon la distance euclidienne. Puis, la prévision du point $\textbf{x}_0$ est la moyenne des variables réponses des observations comprises dans l'ensemble des *k* plus proches voisins.
 
-Il faut d'abord déterminer la valeur optimale de *k*, soit le nombre de voisins à considérer. Pour ce faire, une validation croisée à 10 plis a été utilisée. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. Étant donné que le modèle des *k* plus proches voisins est fondé sur la distance Euclidienne, les données ont été standardisées avant de procéder à la validation croisée. La métrique choisie pour sélectionner la valeur de *k* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *k* qui minimisait l'erreur quadratique moyenne est $k=9$, tel qu'illustré sur le graphique 1.
+Il faut d'abord déterminer la valeur optimale de *k*, soit le nombre de voisins à considérer. Pour ce faire, une validation croisée à dix plis a été utilisée. La fonction `train` du paquetage \hyperlink{target1}{{\color{blue}\textbf{{caret}}}} a été utilisée pour faire cette validation croisée. Étant donné que le modèle des *k* plus proches voisins est fondé sur la distance euclidienne, les données ont été standardisées avant de procéder à la validation croisée. La métrique choisie pour sélectionner la valeur de *k* est l'erreur quadratique moyenne (`metric="RMSE"`). Ainsi, la valeur de *k* qui minimisait l'erreur quadratique moyenne est $k=9$, tel qu'illustré sur le graphique 1.
 
 ```{r echo=FALSE, message=FALSE,warning=FALSE}
 load("kvoisins.Rdata")
@@ -113,11 +111,11 @@ gras
 ```{r echo=FALSE, eval=T, message=FALSE}
 source("4-Arbre.R")
 ```
-Un modèle qui a été décidé de tester est un arbre de décision, mais plus précisément dans le cas présent, un arbre de régression. Pour ce faire, l'algorithme \textit{classification and regression tree} (CART) implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{rpart}}}} a été utilisé. 
+Un autre modèle qu'il a fallu tester est un arbre de décision, mais plus précisément dans le cas présent, un arbre de régression. Pour ce faire, l'algorithme \textit{classification and regression tree (CART)} implanté dans le paquetage \hyperlink{target1}{{\color{blue}\textbf{{rpart}}}} a été utilisé. 
 
-Il a tout d'abord été décidé d'optimiser l'hyperparamètre `minbucket`, soit le nombre minimal d'observations dans une feuille de l'arbre. Une méthode manuelle a du être utilisée parce qu'on ne peut pas optimiser cet hyperparamètre à l'aide des méthodes habituelles. En premier lieu, l'échantillon d'entrainement a été séparé en échantillon de validation (20 %) et en un nouvel échantillon d'entrainement (80 %). L'échantillon de validation va être utile pour faire le choix optimal de l'hyperparamètre `minbucket`. En second lieu, plusieurs valeurs ont été testées entre `minbucket` $=1$ et `minbucket` $=200$ sur des arbres élagués afin de se donner une idée. Par la suite, la recherche a été raffinée et la valeur qui a ainsi été trouvée est de `minbucket` $=7$. Cette valeur est celle qui minimise l'erreur quadratique moyenne des arbres élagués sur l'échantillon de validation.
+Il a tout d'abord été décidé d'optimiser l'hyperparamètre `minbucket`, soit le nombre minimal d'observations dans une feuille de l'arbre. Une méthode manuelle a du être utilisée parce qu'aucune fonction intégrée connue ne permettait d'optimiser cet hyperparamètre. En premier lieu, l'échantillon d'entrainement a été séparé en échantillon de validation (20 %) et en un nouvel échantillon d'entrainement (80 %). L'échantillon de validation a été utilisé pour faire le choix optimal de l'hyperparamètre `minbucket`. En second lieu, plusieurs valeurs ont été testées entre `minbucket` $=1$ et `minbucket` $=200$ sur des arbres élagués afin de se donner une idée non raffinée. Par la suite, la recherche a été raffinée et la valeur optimale ainsi trouvée était de `minbucket` $=7$. Cette valeur était celle qui minimisait l'erreur quadratique moyenne des arbres élagués sur l'échantillon de validation.
 
-Avec cet hyperparamètre défini, un arbre de régression a été construit en utilisant toutes les variables explicatives ainsi qu'un paramètre de complexité nul ($cp=0$). L'abre de régression est obtenu en spécifiant `method="anova"` et permet de trouver l'arbre minimisant l'erreur quadratique moyenne. Seulement le nouvel échantillon d'entrainement créé pour optimiser `minbucket` a été utilisé pour entrainer ce modèle, l'échantillon test étant réservé pour analyser les performances prédictives du modèle. Afin d'optimiser le paramètre de complexité, une validation croisée en 10 plis a été effectuée. Cette validation croisée est implantée de base dans la fonction `rpart`, donc aucune programmation supplémentaire n'a été nécessaire. Ainsi, le paramètre de complexité optimal est de `r cp.choix`. Ce choix optimal a été utilisé pour élaguer l'arbre de régression et ainsi réduire la variance de la prédiction. L'élagage représente un bon compromis entre le biais et la variance de la prédiction.
+Une fois cet hyperparamètre défini, un arbre de régression a été construit en utilisant toutes les variables explicatives ainsi qu'un paramètre de complexité nul ($cp=0$). L'arbre de régression est obtenu en spécifiant `method="anova"` et permet de trouver l'arbre minimisant l'erreur quadratique moyenne. Seulement l'échantillon d'entrainement initial a été utilisé pour entrainer ce modèle, l'échantillon test étant réservé pour analyser les performances prédictives du modèle. Afin d'optimiser le paramètre de complexité, une validation croisée à dix plis a été effectuée. Cette validation croisée est implantée de base dans la fonction `rpart`, donc aucune programmation supplémentaire n'a été nécessaire. Ainsi, le paramètre de complexité optimal obtenu était de `r cp.choix`. Ce choix optimal a été utilisé pour élaguer l'arbre de régression et ainsi réduire la variance de la prédiction. L'arbre élagué représente donc le meilleur compromis entre le biais et la variance de la prédiction pour ce type d'arbre.
 
 Il aurait été intéressant de représenter graphiquement ce modèle puisqu'il s'agit d'une façon de bien comprendre ce type de modèle. Cependant, il n'a pas été possible de présenter ce modèle sous forme de graphique. En effet, malgré le fait que l'arbre a été élagué, il était trop complexe pour être agréable à regarder pour l'oeil. Ceci est dû au fait que le modèle a été entrainé avec `r nrow(donnees.train.arbre)` observations, ce qui est un nombre assez important.
 
@@ -189,6 +187,8 @@ La même méthode a été utilisée pour déterminer le nombre d'itérations opt
 
 Pour déterminer lequel de ces modèles est le meilleur, nous allons les comparer selon le critère de l'erreur quadratique moyenne minimale de validation croisée à cinq ensembles.
 
+\newpage
+
 ```{r gbmcompare, echo = F}
 library(knitr)
 compare <- data.frame(Profondeur = c(3,5,7,9), n.tree = c(n.iter3, n.iter5, n.iter7, n.iter9), EQM_CV = c(gbm.modele3$cv.error[n.iter3],
@@ -220,7 +220,7 @@ kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Mod
 
 Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle de forêt aléatoire et le modèle de boosting de gradient stochastique. En effet, leur EQM est respectivement de 0.03253 et de 0.02717.
 
-Les deux meille
+Dans la prochaine section, les résultats obtenus avec le meilleur modèle seront brièvement analysés et visualisé. Les deux meilleurs modèles seront également interprétés.
 
 \newpage
 \section{Interprétation des meilleurs modèles}
@@ -294,14 +294,14 @@ hist1 <- ggplot(mapping = aes(x = PredGbm)) +
   theme_bw() +
   xlim(11, 16) +
   ylim(0, 750) +
-  labs(title = "Graphique 11 : Histogrammes \ndes logarithmes de prix prédits \npar le GBM", y = "Fréquence", 
+  labs(title = "Graphique 11 : Histogramme \ndes logarithmes de prix prédits \npar le GBM", y = "Fréquence", 
        x = "Log(prix prédit)")
 hist2 <- ggplot(mapping = aes(x = log(donnees.test$price))) +
   geom_histogram(binwidth = 0.2) +
   theme_bw() +
   xlim(11, 16) +
   ylim(0, 750) +
-  labs(title = "Graphique 12 : Histogrammes \ndes logarithmes de prix \nréels", y = "Fréquence", 
+  labs(title = "Graphique 12 : Histogramme \ndes logarithmes de prix \nréels", y = "Fréquence", 
        x = "Log(prix réel)")
 grid.arrange(hist1, hist2, ncol=2)
 ```

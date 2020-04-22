@@ -81,14 +81,14 @@ hist1 <- ggplot(mapping = aes(x = PredGbm)) +
   theme_bw() +
   xlim(11, 16) +
   ylim(0, 750) +
-  labs(title = "Histogrammes des logarithmes de \nprix prédits par le GBM", y = "Fréquence", 
+  labs(title = "Histogramme des logarithmes de \nprix prédits par le GBM", y = "Fréquence", 
        x = "Log(prix prédit)")
 hist2 <- ggplot(mapping = aes(x = log(donnees.test$price))) +
   geom_histogram(binwidth = 0.2) +
   theme_bw() +
   xlim(11, 16) +
   ylim(0, 750) +
-  labs(title = "Histogrammes des logarithmes de \nprix réels", y = "Fréquence", 
+  labs(title = "Histogramme des logarithmes de \nprix réels", y = "Fréquence", 
        x = "Log(prix réel)")
 grid.arrange(hist1, hist2, ncol=2)
 
