@@ -75,15 +75,22 @@ PredGbm <- predict(gbm.modele9, newdata = donnees.test, n.trees = n.iter9)
 
 EQM.gbm <- mean((PredGbm - log(donnees.test$price))^2)
 
-
-ggplot(mapping = aes(x = PredGbm)) +
-  geom_histogram() +
+library(gridExtra)
+hist1 <- ggplot(mapping = aes(x = PredGbm)) +
+  geom_histogram(binwidth = 0.2) +
   theme_bw() +
-  xlim(11, 16)
-ggplot(mapping = aes(x = log(donnees.test$price))) +
-  geom_histogram() +
+  xlim(11, 16) +
+  ylim(0, 750) +
+  labs(title = "Histogrammes des logarithmes de \nprix prédits par le GBM", y = "Fréquence", 
+       x = "Log(prix prédit)")
+hist2 <- ggplot(mapping = aes(x = log(donnees.test$price))) +
+  geom_histogram(binwidth = 0.2) +
   theme_bw() +
-  xlim(11, 16)
+  xlim(11, 16) +
+  ylim(0, 750) +
+  labs(title = "Histogrammes des logarithmes de \nprix réels", y = "Fréquence", 
+       x = "Log(prix réel)")
+grid.arrange(hist1, hist2, ncol=2)
 
 
 #### Interprétation du modèle ####
@@ -117,7 +124,8 @@ imp <- FeatureImp$new(mod.gbm.iml, loss = "mse", compare = "difference")
 #                                  method = "pdp", grid.size = 40)
 # plot(pdp.XXX.YYY)
 
-summary(gbm.modele9, n.trees = n.iter9, cex.names = 0.5, las = 1) # lequel utiliser?
+summary(gbm.modele9, n.trees = n.iter9, cex.names = 0.53, las = 1,
+        main = "Importance des variables dans le GBM") # lequel utiliser?
 
 plot(gbm.modele9, i.var = "grade", n.trees = n.iter9)
 plot(gbm.modele9, i.var = "lat", n.trees = n.iter9)
@@ -140,9 +148,12 @@ ggplot(hstat.grade, aes(x = Variables, y = HStat)) +
   theme_bw() +
   labs(title = "Interactions")
 
-# pdp.grade.lat <- plot(gbm.modele9, i.var = c("grade", "lat"), n.trees = n.iter9)
-# pdp.grade.age <- plot(gbm.modele9, i.var = c("grade", "age"), n.trees = n.iter9)
-# pdp.long.lat <- plot(gbm.modele9, i.var = c("long", "lat"), n.trees = n.iter9)
+pdp.grade.lat <- plot(gbm.modele9, i.var = c("grade", "lat"), n.trees = n.iter9,
+                      main = "Graphique de dépendance partielle bivarié entre les variables grade et lat")
+pdp.grade.age <- plot(gbm.modele9, i.var = c("grade", "age"), n.trees = n.iter9,
+                      main = "Graphique de dépendance partielle bivarié entre les variables grade et age")
+pdp.long.lat <- plot(gbm.modele9, i.var = c("long", "lat"), n.trees = n.iter9,
+                     main = "Graphique de dépendance partielle bivarié entre les variables long et lat")
 
 # assez long: résultats ici
 load("gbm_pdp_bivaries.Rdata")

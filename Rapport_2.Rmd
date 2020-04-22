@@ -218,7 +218,9 @@ dataframe <- data.frame(c("Modèle de base", "Modèle Lasso", "Modèle des k plu
 kable(dataframe, caption = "L'EQM des sept modèles testés", col.names = c("Modèle","EQM"), digits = 5)
 ```
 
-Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle de forêt aléatoire et le modèle de boosting de gradient stochastique. En effet, leur EQM est respectivement de 0.03253 et de 0.02717. 
+Les valeurs de l'EQM pour les sept modèles testés sont présentées dans le Tableau 1. Les deux meilleurs modèles selon cette métrique sont le modèle de forêt aléatoire et le modèle de boosting de gradient stochastique. En effet, leur EQM est respectivement de 0.03253 et de 0.02717.
+
+Les deux meille
 
 \newpage
 \section{Interprétation des meilleurs modèles}
@@ -281,12 +283,39 @@ L'avantage de la forêt aléatoire est que l'utilisation d'un nombre élevé d'a
 load("gbm_hstat_grade.Rdata")
 ```
 
+\subsubsection{Analyse des résultats obtenus avec le modèle}
+
+Nous allons maintenant analyser très brièvement les résultats obtenus sur les données de l'échantillon de test en utilisant notre meilleur modèle, soit celui de boosting de gradient stochastique. Pour ce faire, nous allons comparer l'histogramme des logarithmes de prix prédits par le GBM sur l'échantillon de test à celui des logarithmes de prix réels.
+
+```{r histresults, echo=F, message=F, warning=F}
+library(gridExtra)
+hist1 <- ggplot(mapping = aes(x = PredGbm)) +
+  geom_histogram(binwidth = 0.2) +
+  theme_bw() +
+  xlim(11, 16) +
+  ylim(0, 750) +
+  labs(title = "Graphique 11 : Histogrammes \ndes logarithmes de prix prédits \npar le GBM", y = "Fréquence", 
+       x = "Log(prix prédit)")
+hist2 <- ggplot(mapping = aes(x = log(donnees.test$price))) +
+  geom_histogram(binwidth = 0.2) +
+  theme_bw() +
+  xlim(11, 16) +
+  ylim(0, 750) +
+  labs(title = "Graphique 12 : Histogrammes \ndes logarithmes de prix \nréels", y = "Fréquence", 
+       x = "Log(prix réel)")
+grid.arrange(hist1, hist2, ncol=2)
+```
+
+Nous observons que les logarithmes de prix prédits semblent suivre une distribution très similaire à celle des prix réels, ce qui témoigne à nouveau de la force de notre modèle. En effet, les deux semblent suivre une distribution normale centrée autour d'une moyenne d'environ 13. Cependant, on peut remarquer que le kurtosis de la distribution des logarithmes de prix prédits semble légèrement plus élevé que celui de la distribution des logarithmes des prix réels; en d'autres termes, les prédictions du GBM semblent légèrement plus centrées autour de la moyenne que ce qu'on observe avec les prix réels. Nous en concluons que notre modèle a un peu de difficulté à prévoir précisément les maisons de prix très faible ou très élevé, et que le modèle prédira des prix trop près de la moyenne pour ces maisons. La performance globale du moyenne est toutefois très bonne.
+
+\subsubsection{Interprétation du modèle}
+
 Enchaînons avec l'interprétation du modèle de boosting de gradient stochastique. Ce type de modèle est reconnu comme étant difficilement interprétable intuitivement, mais divers outils permettent d'ouvrir la boîte noire du modèle et d'y voir plus clair. Nous utiliserons les fonctions intégrées au paquetage \hyperlink{target1}{{\color{blue}\textbf{{gbm}}}} pour interpréter le modèle.
 
 Tout d'abord, nous pouvons déterminer l'importance des différentes variables dans le modèle selon le critère de diminution moyenne de l'EQM causée par chaque variable dans les arbres.
 
 ```{r gbmimportance, echo = F}
-fun <- summary(gbm.modele9, n.trees = n.iter9, las = 1, cex.names = 0.5)
+fun <- summary(gbm.modele9, n.trees = n.iter9, las = 1, cex.names = 0.5, main = "Graphique 13 : Importance des variables dans le GBM")
 ```
 
 Nous observons que les variables les plus utiles dans le modèle de boosting sont *grade*, *lat*, *sqft_above*, *sqft_living15* et *long*. De plus, ces cinq variables les plus importantes sont les mêmes que celles du modèle de forêt aléatoire selon le même critère.
@@ -296,7 +325,7 @@ Une bonne manière d'examiner plus en détail l'impact de chaque variable dans l
 Commençons avec le PDP de la variable *grade*, soit l'indice de qualité de la construction et de la conception des maisons.
 
 ```{r gbmpdp_grade, echo=F,fig.pos='H', fig.height=4, fig.width=5, fig.align="center"}
-plot(gbm.modele9, n.trees = n.iter9, i.var = "grade", main ="Graphique X : graphique de dépendance partielle \n de la variable grade")
+plot(gbm.modele9, n.trees = n.iter9, i.var = "grade", main ="Graphique 14 : graphique de dépendance partielle \n de la variable grade")
 ```
 
 L'effet marginal de la variable *grade* est très semblable à celui observé plus tôt avec le modèle de forêt aléatoire: le logarithme du prix des maisons prédit est une fonction monotone croissante en fonction de la qualité de construction des maisons. Encore une fois, il est logique qu'une maison bien construite et conçue vaille plus cher qu'une autre maison moins bien construite, *ceteris paribus*. La différence entre les logarithmes des prix moyens des maisons les mieux construites et les moins bien construites est d'environ 0,7. Si on quitte l'échelle logarithmique, cela correspond à une augmentation d'environ 101,38 % du prix moyen entre les maisons les moins bien construites et les mieux construites. Autrement dit, on peut s'attendre en moyenne à ce que le prix d'une maison extrêmement bien construite soit environ le double de celui d'une maison extrêmement mal construite. On voit donc que la variable *grade* a un caractère très important sur le prix des maisons, en plus de suivre une relation proportionnelle bien définie avec le prix, ce qui explique la grande force de prédiction de cette variable.
@@ -304,7 +333,7 @@ L'effet marginal de la variable *grade* est très semblable à celui observé pl
 Enchaînons avec le PDP de la variable *lat*, soit la latitude des maisons.
 
 ```{r gbmpdp_lat, echo=F,fig.pos='H', fig.height=4, fig.width=5, fig.align="center"}
-plot(gbm.modele9, n.trees = n.iter9, i.var = "lat", main ="Graphique X : graphique de dépendance partielle \n de la variable lat")
+plot(gbm.modele9, n.trees = n.iter9, i.var = "lat", main ="Graphique 15 : graphique de dépendance partielle \n de la variable lat")
 ```
 
 Encore une fois, le PDP est très similaire à celui obtenu en utilisant le modèle de forêt aléatoire. Le PDP obtenu avec le modèle de boosting de gradient stochastique semble cependant osciller plus, donc il a plus de variance et est plus ajusté aux données utilisées. Comme précédemment, on voit que le logarithme moyen du prix prédit est plus faible dans les zones de latitude faible (zone rurale au sud du comté), puis monte beaucoup à l'approche de la zone urbaine de Seattle pour enfin redescendre lorsqu'on atteint une nouvelle zone moins urbaine au nord du comté.
@@ -312,7 +341,7 @@ Encore une fois, le PDP est très similaire à celui obtenu en utilisant le mod�
 Terminons avec le PDP de la variable *sqft_above*, soit la superficie habitable au-dessus du niveau du sol des maisons.
 
 ```{r gbmpdp_sqftabove, echo=F,fig.pos='H', fig.height=4, fig.width=5, fig.align="center"}
-plot(gbm.modele9, n.trees = n.iter9, i.var = "sqft_above", main = "Graphique X : graphique de dépendance partielle \n de la variable sqft_above")
+plot(gbm.modele9, n.trees = n.iter9, i.var = "sqft_above", main = "Graphique 16 : graphique de dépendance partielle \n de la variable sqft_above")
 ```
 
 Cette variable n'avait pas été examinée en détail lors de l'interprétation du modèle de forêt aléatoire. On observe que le logarithme moyen du prix prédit est proportionnel à *sqft_above*: plus la superficie habitable de la maison augmente, plus son prix prédit augmentera, toutes choses étant égales par ailleurs. Cette relation est logique, puisque les maisons de grande superficie sont intuitivement plus dispendieuses que les petites maisons. On voit cependant une baisse marquée du logarithme du prix de la maison autour de 5000 pieds carrés de superficie qui semble contredire la tendance observée: cette baisse est probablement causée par un surajustement du modèle aux données d'entraînement. Nous croyons que si plus de données étaient disponibles et/ou que le problème de surajustement était réglé, la relation observée serait monotone.
@@ -324,7 +353,7 @@ ggplot(hstat.grade, aes(x = Variables, y = HStat)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   theme_bw() +
-  labs(title = "Graphique X : graphique des statistiques H \n selon la variable grade") +
+  labs(title = "Graphique 17 : graphique des statistiques H \n selon la variable grade") +
   ylab("Statistiques H") +
   xlab("Interaction des variables avec grade") +
   theme(plot.title = element_text(size = rel(1.4), h=0.5))
@@ -337,7 +366,7 @@ Les deux plus fortes interactions observées sont celles entre la variable *grad
 Commençons par le PDP bivarié des variables *grade* et *lat*.
 
 ```{r gbmpdp_gradelat, echo=F}
-plot(gbm.modele9, i.var = c("grade", "lat"), n.trees = n.iter9, main = "Graphique X : Graphique de dépendance \npartielle bivarié entre les variables grade et lat")
+plot(gbm.modele9, i.var = c("grade", "lat"), n.trees = n.iter9, main = "Graphique 18 : Graphique de dépendance \npartielle bivarié entre les variables grade et lat")
 ```
 
 Il semble en effet y avoir une certaine interaction entre ces variables: la variation du logarithme du prix prédit avec la latitude semble plus prononcée pour les mauvaises qualités de construction que pour les bonnes. Cet effet semble logique, puisqu'une maison très mal construite pourrait être extrêmement plus chère si elle est située en plein centre-ville que si elle est au milieu de la campagne, en raison de sa position prisée et de la valeur de son terrain. Des gens fortunés seraient prêts à payer très cher pour acquérir cette maison de mauvaise qualité et en construire une nouvelle sur le même terrain. En comparaison, une maison extrêmement bien construite vaudra aussi beaucoup plus cher si elle est bien située, mais intuitivement, cet écart serait moindre que pour une maison de basse qualité. On constate également avec le PDP bivarié que les maisons aux prix prédits les plus élevés sont celles de bonne qualité de construction et située à la latitude du centre-ville de Seattle. En effet, ces maisons peuvent atteindre un prix prédit de pas moins de 1,2 M $, ce qui est logique.
@@ -345,7 +374,7 @@ Il semble en effet y avoir une certaine interaction entre ces variables: la vari
 Enchaînons avec le PDP bivarié des variables *grade* et *age*.
 
 ```{r gbmpdp_gradeage, echo=F}
-plot(gbm.modele9, i.var = c("grade", "age"), n.trees = n.iter9, main = "Graphique X : Graphique de dépendance \npartielle bivarié entre les variables grade et age")
+plot(gbm.modele9, i.var = c("grade", "age"), n.trees = n.iter9, main = "Graphique 19 : Graphique de dépendance \npartielle bivarié entre les variables grade et age")
 ```
 
 L'interaction entre ces deux variables n'est pas extrêmement prononcée. Nous pouvons cependant constater que pour une qualité de construction donnée, la variation du logarithme du prix prédit avec l'âge de la maison ne suit pas exactement la même tendance que pour une autre qualité de construction. En particulier, le prix prédit des maisons de qualité de construction moyenne semble varier moins intensément avec l'âge que pour les maisons de qualité mauvaise ou bonne. On constate également avec le PDP bivarié que les maisons aux prix prédits les plus élevés sont celles de bonne qualité de construction et peu âgée, ce qui semble logique.
@@ -353,7 +382,7 @@ L'interaction entre ces deux variables n'est pas extrêmement prononcée. Nous p
 Enfin, par curiosité, examinons le PDP bivarié des variables *lat* et *long*. Nous savons que les données spatiales ont eu un fort impact prédictif dans notre modèle. De plus, nous avons déjà concentré une partie de notre travail à examiner cet effet prédictif (création d'une *heatmap* dans l'analyse exploratoire et dans l'interprétation du modèle de forêt aléatoire), mais nous ne l'avons pas encore fait pour notre modèle le plus puissant, le *GBM*. Pour ces deux raisons, nous croyons donc qu'il est intéressant de jeter un oeil à ce PDP bivarié pour examiner plus en détail l'effet des données spatiales dans notre *GBM*.
 
 ```{r gbmpdp_latlong, echo=F}
-plot(gbm.modele9, i.var = c("long", "lat"), n.trees = n.iter9, main = "Graphique X : Graphique de dépendance \npartielle bivarié entre les variables long et lat")
+plot(gbm.modele9, i.var = c("long", "lat"), n.trees = n.iter9, main = "Graphique 20 : Graphique de dépendance \npartielle bivarié entre les variables long et lat")
 ```
 
 Nous observons de nouveau une *heatmap* du logarithme des prix des maisons, mais elle est mieux définie que celle obtenue avec le modèle de forêt aléatoire. En effet, les variations de prix prédit sont très graduelles et lisses par rapport à cette dernière. Nous pouvons voir très facilement la zone urbaine de Seattle et ses prix plus élevés en haut à gauche du PDP. Nous pouvons également constater une forte interaction entre les variables *lat* et *long*: pour les latitudes faibles, le logarithme du prix prédit ne varie pas beaucoup avec la longitude, alors qu'il varie beaucoup avec la longitude pour les latitudes élevées. La statistique *H* entre ces variables *lat* et *long* est en effet de 0,234, ce qui dénote une forte interaction entre les deux variables et confirme ce constat. 
